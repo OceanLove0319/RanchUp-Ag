@@ -17,49 +17,43 @@ export default function Home() {
       <p className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-4">Next Steps</p>
       
       <div className="grid md:grid-cols-3 gap-4 md:gap-6">
-        <Link href="/app/log">
-          <a className="bg-[#111113] border border-white/10 p-6 md:p-8 rounded-lg hover:border-primary/50 transition-colors group flex flex-col justify-between min-h-[200px]">
-            <div>
-              <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-6 text-primary">
-                <ClipboardEdit className="w-6 h-6" />
-              </div>
-              <h2 className="text-2xl font-black uppercase tracking-tight text-white mb-2">Log Action</h2>
-              <p className="text-gray-400 font-medium">Record field work while you're in the orchard.</p>
+        <Link href="/app/log" className="bg-[#111113] border border-white/10 p-6 md:p-8 rounded-lg hover:border-primary/50 transition-colors group flex flex-col justify-between min-h-[200px]">
+          <div>
+            <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-6 text-primary">
+              <ClipboardEdit className="w-6 h-6" />
             </div>
-            <div className="mt-8 flex items-center text-primary font-bold uppercase tracking-widest text-sm group-hover:translate-x-2 transition-transform">
-              Start <ArrowRight className="ml-2 w-4 h-4" />
-            </div>
-          </a>
+            <h2 className="text-2xl font-black uppercase tracking-tight text-white mb-2">Log Action</h2>
+            <p className="text-gray-400 font-medium">Record field work while you're in the orchard.</p>
+          </div>
+          <div className="mt-8 flex items-center text-primary font-bold uppercase tracking-widest text-sm group-hover:translate-x-2 transition-transform">
+            Start <ArrowRight className="ml-2 w-4 h-4" />
+          </div>
         </Link>
 
-        <Link href="/app/blocks">
-          <a className="bg-[#111113] border border-white/10 p-6 md:p-8 rounded-lg hover:border-white/30 transition-colors group flex flex-col justify-between min-h-[200px]">
-            <div>
-              <div className="w-12 h-12 bg-white/5 rounded-full flex items-center justify-center mb-6 text-white">
-                <Target className="w-6 h-6" />
-              </div>
-              <h2 className="text-2xl font-black uppercase tracking-tight text-white mb-2">Plan</h2>
-              <p className="text-gray-400 font-medium">Review targets and ingredient plans by block.</p>
+        <Link href="/app/blocks" className="bg-[#111113] border border-white/10 p-6 md:p-8 rounded-lg hover:border-white/30 transition-colors group flex flex-col justify-between min-h-[200px]">
+          <div>
+            <div className="w-12 h-12 bg-white/5 rounded-full flex items-center justify-center mb-6 text-white">
+              <Target className="w-6 h-6" />
             </div>
-            <div className="mt-8 flex items-center text-white font-bold uppercase tracking-widest text-sm group-hover:translate-x-2 transition-transform">
-              Review <ArrowRight className="ml-2 w-4 h-4" />
-            </div>
-          </a>
+            <h2 className="text-2xl font-black uppercase tracking-tight text-white mb-2">Plan</h2>
+            <p className="text-gray-400 font-medium">Review targets and ingredient plans by block.</p>
+          </div>
+          <div className="mt-8 flex items-center text-white font-bold uppercase tracking-widest text-sm group-hover:translate-x-2 transition-transform">
+            Review <ArrowRight className="ml-2 w-4 h-4" />
+          </div>
         </Link>
 
-        <Link href="/app/vault">
-          <a className="bg-[#111113] border border-white/10 p-6 md:p-8 rounded-lg hover:border-white/30 transition-colors group flex flex-col justify-between min-h-[200px]">
-            <div>
-              <div className="w-12 h-12 bg-white/5 rounded-full flex items-center justify-center mb-6 text-white">
-                <Archive className="w-6 h-6" />
-              </div>
-              <h2 className="text-2xl font-black uppercase tracking-tight text-white mb-2">Vault</h2>
-              <p className="text-gray-400 font-medium">Access season records and field notes.</p>
+        <Link href="/app/vault" className="bg-[#111113] border border-white/10 p-6 md:p-8 rounded-lg hover:border-white/30 transition-colors group flex flex-col justify-between min-h-[200px]">
+          <div>
+            <div className="w-12 h-12 bg-white/5 rounded-full flex items-center justify-center mb-6 text-white">
+              <Archive className="w-6 h-6" />
             </div>
-            <div className="mt-8 flex items-center text-white font-bold uppercase tracking-widest text-sm group-hover:translate-x-2 transition-transform">
-              Open <ArrowRight className="ml-2 w-4 h-4" />
-            </div>
-          </a>
+            <h2 className="text-2xl font-black uppercase tracking-tight text-white mb-2">Vault</h2>
+            <p className="text-gray-400 font-medium">Access season records and field notes.</p>
+          </div>
+          <div className="mt-8 flex items-center text-white font-bold uppercase tracking-widest text-sm group-hover:translate-x-2 transition-transform">
+            Open <ArrowRight className="ml-2 w-4 h-4" />
+          </div>
         </Link>
       </div>
     </div>

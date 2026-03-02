@@ -11,10 +11,8 @@ export default function BlockDetail() {
 
   return (
     <div className="animate-in fade-in duration-500">
-      <Link href="/app/blocks">
-        <a className="inline-flex items-center text-xs font-bold uppercase tracking-widest text-gray-500 hover:text-white mb-6">
-          <ArrowLeft className="w-4 h-4 mr-2" /> Back to Blocks
-        </a>
+      <Link href="/app/blocks" className="inline-flex items-center text-xs font-bold uppercase tracking-widest text-gray-500 hover:text-white mb-6">
+        <ArrowLeft className="w-4 h-4 mr-2" /> Back to Blocks
       </Link>
 
       <header className="mb-10">

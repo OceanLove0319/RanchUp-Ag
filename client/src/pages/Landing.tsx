@@ -7,10 +7,8 @@ export default function Landing() {
       <nav className="p-6 flex justify-between items-center max-w-6xl mx-auto w-full">
         <div className="font-black text-2xl tracking-tighter">KEBB AG™</div>
         <div className="flex gap-4">
-          <Link href="/login">
-            <a className="px-6 py-2 border border-white/20 rounded font-bold uppercase tracking-wide text-sm hover:bg-white/5 transition-colors">
-              Sign In
-            </a>
+          <Link href="/login" className="px-6 py-2 border border-white/20 rounded font-bold uppercase tracking-wide text-sm hover:bg-white/5 transition-colors">
+            Sign In
           </Link>
         </div>
       </nav>
@@ -24,10 +22,8 @@ export default function Landing() {
         </p>
         
         <div className="flex flex-col sm:flex-row gap-4 mb-24 w-full sm:w-auto">
-          <Link href="/login">
-            <a className="px-8 py-4 bg-[#FD5A1E] text-white font-black uppercase tracking-widest text-lg rounded hover:bg-[#FD5A1E]/90 transition-colors flex items-center justify-center gap-2">
-              Try Demo <ArrowRight className="w-5 h-5" />
-            </a>
+          <Link href="/login" className="px-8 py-4 bg-[#FD5A1E] text-white font-black uppercase tracking-widest text-lg rounded hover:bg-[#FD5A1E]/90 transition-colors flex items-center justify-center gap-2">
+            Try Demo <ArrowRight className="w-5 h-5" />
           </Link>
         </div>
 

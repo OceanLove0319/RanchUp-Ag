@@ -23,17 +23,20 @@ function Router() {
       <Route path="/onboarding" component={Onboarding} />
       
       {/* App Routes wrapped in Shell */}
-      <Route path="/app/*">
-        <Shell>
-          <Switch>
-            <Route path="/app" component={Home} />
-            <Route path="/app/blocks" component={Blocks} />
-            <Route path="/app/blocks/:id" component={BlockDetail} />
-            <Route path="/app/log" component={Log} />
-            <Route path="/app/vault" component={Vault} />
-            <Route component={NotFound} />
-          </Switch>
-        </Shell>
+      <Route path="/app">
+        <Shell><Home /></Shell>
+      </Route>
+      <Route path="/app/blocks">
+        <Shell><Blocks /></Shell>
+      </Route>
+      <Route path="/app/blocks/:id">
+        <Shell><BlockDetail /></Shell>
+      </Route>
+      <Route path="/app/log">
+        <Shell><Log /></Shell>
+      </Route>
+      <Route path="/app/vault">
+        <Shell><Vault /></Shell>
       </Route>
 
       <Route component={NotFound} />

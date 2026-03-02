@@ -25,11 +25,9 @@ export default function Shell({ children }: { children: React.ReactNode }) {
           {navItems.map((item) => {
             const isActive = location === item.href;
             return (
-              <Link key={item.href} href={item.href}>
-                <a className={`flex flex-col md:flex-row items-center gap-1 md:gap-3 p-2 md:p-3 rounded-md transition-colors ${isActive ? 'text-primary' : 'text-muted-foreground hover:text-white hover:bg-white/5'}`}>
-                  <item.icon className="w-6 h-6 md:w-5 md:h-5" />
-                  <span className="text-[10px] md:text-sm font-semibold tracking-wider uppercase">{item.label}</span>
-                </a>
+              <Link key={item.href} href={item.href} className={`flex flex-col md:flex-row items-center gap-1 md:gap-3 p-2 md:p-3 rounded-md transition-colors ${isActive ? 'text-primary' : 'text-muted-foreground hover:text-white hover:bg-white/5'}`}>
+                <item.icon className="w-6 h-6 md:w-5 md:h-5" />
+                <span className="text-[10px] md:text-sm font-semibold tracking-wider uppercase">{item.label}</span>
               </Link>
             );
           })}
@@ -39,10 +37,8 @@ export default function Shell({ children }: { children: React.ReactNode }) {
           <button className="flex items-center gap-3 p-3 rounded-md text-muted-foreground hover:text-white transition-colors text-sm font-semibold tracking-wider uppercase">
             <Settings className="w-5 h-5" /> Settings
           </button>
-          <Link href="/">
-            <a onClick={logout} className="flex items-center gap-3 p-3 rounded-md text-muted-foreground hover:text-white transition-colors text-sm font-semibold tracking-wider uppercase">
-              <LogOut className="w-5 h-5" /> Exit
-            </a>
+          <Link href="/" onClick={logout} className="flex items-center gap-3 p-3 rounded-md text-muted-foreground hover:text-white transition-colors text-sm font-semibold tracking-wider uppercase">
+            <LogOut className="w-5 h-5" /> Exit
           </Link>
         </div>
       </nav>
