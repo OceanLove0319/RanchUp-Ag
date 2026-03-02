@@ -77,7 +77,7 @@ export default function BlockDetail() {
           <h3 className="text-xl font-black uppercase tracking-tight text-foreground mb-2 flex items-center gap-2">
             <Droplets className="w-5 h-5 text-primary" /> Chemical Plan & Spend
           </h3>
-          <p className="text-muted-foreground font-medium mb-1">This season: {useStore(s => s.chemicalApps.filter(a => a.blockId === block.id).length)} applications • Est. ${useStore(s => s.chemicalApps.filter(a => a.blockId === block.id).reduce((sum, app) => sum + (app.estimatedCost || 0), 0).toFixed(2)}</p>
+          <p className="text-muted-foreground font-medium mb-1">This season: {useStore(s => s.chemicalApps.filter(a => a.blockId === block.id).length)} applications • Est. ${useStore(s => s.chemicalApps.filter(a => a.blockId === block.id).reduce((sum, app) => sum + (app.estimatedCost || 0), 0)).toFixed(2)}</p>
           <p className="text-sm font-bold uppercase tracking-widest text-primary">Trending: +12% vs last 30 days</p>
         </div>
         <div className="flex gap-3 w-full md:w-auto">
