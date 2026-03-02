@@ -1,0 +1,202 @@
+Add a new “Chemical Clarity” feature to the existing WaterWise Autopilot (Pilot) Replit Next.js MVP.
+
+GOAL
+Create a simple, farmer-friendly chemical visibility tool (Step 1) that:
+- Produces a clean list of chemicals used per block
+- Tracks planned vs actual applications
+- Estimates spend and flags overspending trends
+- Requires minimal data entry (under 60 seconds)
+- Does NOT include purchasing or vendor quotes yet (Step 2 later)
+
+TECH STACK (same as existing app)
+- Next.js (App Router) + TypeScript
+- Tailwind CSS
+- shadcn/ui
+- lucide-react
+- Prisma + SQLite
+- Next.js route handlers for API
+
+THEME / UX
+Nike-style premium:
+- Dark green primary (#0B2B1E)
+- Gold accent (#D4AF37)
+- Off-white text
+- Minimal, bold, clean layout
+Accessibility (ADA/WCAG oriented):
+- Strong contrast
+- Visible focus states
+- Keyboard navigable
+- Icons + text for statuses (not color only)
+- ARIA labels where needed
+- Respect prefers-reduced-motion
+
+WHAT TO BUILD (FEATURE SCOPE)
+
+1) Navigation
+Add a new bottom-nav item:
+- “Chemicals”
+Routes:
+- /chemicals (overview)
+- /chemicals/new (quick add)
+- /chemicals/[id] (application detail)
+- /chemicals/[id]/edit (edit)
+Also add a block-level link/button:
+- From /blocks/[id], add “View Chemicals” deep link to /chemicals?blockId=...
+
+2) Data Model (Prisma)
+Add models:
+
+Chemical
+- id
+- farmId
+- name (string, required)
+- category (enum: FERTILIZER|HERBICIDE|FUNGICIDE|INSECTICIDE|ADJUVANT|OTHER)
+- unit (enum: GAL|LB|OZ|QT|TON|OTHER)
+- activeIngredientOptional (string, optional)
+- notesOptional (string, optional)
+
+ChemicalPlan (optional but recommended for “planned vs actual”)
+- id
+- blockId
+- seasonStart (date)
+- seasonEnd (date)
+- budgetAmount (decimal, optional)
+- currency (default USD)
+
+ChemicalApplication
+- id
+- blockId
+- chemicalId
+- dateApplied (date)
+- method (enum: SPRAY|FERTIGATION|SOIL|FOLIAR|OTHER)
+- rate (decimal, optional)  // per acre or per block (keep simple)
+- rateBasis (enum: PER_ACRE|PER_BLOCK, default PER_ACRE)
+- totalQuantity (decimal, optional)
+- quantityUnit (same as Chemical.unit, optional)
+- estimatedCost (decimal, optional)
+- vendorOptional (string, optional)
+- noteOptional (string, optional)
+- createdAt
+
+BudgetTracking (simple aggregation can live in code; no extra model required)
+But optionally add:
+FarmBudget
+- id
+- farmId
+- seasonStart
+- seasonEnd
+- chemicalBudget (decimal, optional)
+
+Seed demo data:
+- 3–5 common chemicals (generic names only; no brand IP)
+- 4–6 applications spread across two blocks
+- Include estimatedCost values so overspending UI can show immediately
+
+3) Core UI Screens
+
+A) /chemicals (Overview)
+Top: segmented control (All Farm | By Block)
+Filters:
+- Block dropdown (optional)
+- Category filter chips
+Primary content:
+- “This Season” summary cards:
+  - Total chemical spend (estimated)
+  - Top category by spend
+  - Applications logged
+  - Trend vs last 30 days (simple % using demo history)
+Then show a simple list grouped by block:
+Block 12
+- Nitrogen (Fertilizer) — 3 applications — est. $X
+- Fungicide — 1 application — est. $Y
+Each list row opens “Applications list” for that chemical+block view (can be /chemicals?blockId=...&chemicalId=...)
+
+Keep it super simple: no tables, only cards and lists.
+
+B) /chemicals/new (Quick Add – Step One MVP)
+A fast form optimized for field use:
+- Block (required)
+- Chemical name (typeahead from existing farm chemicals + “Add new”)
+- Category (required)
+- Method (spray/fertigation/etc.)
+- Date (defaults to today)
+- Estimated cost (optional; include “I don’t know” toggle)
+- Notes (optional)
+Big CTA button: “Save Application”
+After save: show toast + return to /chemicals or block page.
+
+C) /chemicals/[id] (Application Detail)
+Show:
+- Block name
+- Chemical name + category badge
+- Date, method, rate info (if provided)
+- Estimated cost
+- Notes
+Actions:
+- Edit
+- Duplicate (creates new with today’s date)
+- Delete (confirm dialog)
+
+D) Block Detail Integration (/blocks/[id])
+Add a “Chemicals” card beneath the Tonight Plan:
+- “This season: X applications • Est. $Y”
+- “Trending: +Z% vs last 30 days” (simple calc)
+Button: “Add Chemical Log” -> /chemicals/new?blockId=...
+Button: “View Chemicals” -> /chemicals?blockId=...
+
+4) “Overspending” / “Not Overspending” (Step One logic)
+Without revealing IP, implement basic guardrails:
+- Show “Budget status” badge at farm and block level:
+  - On Track / Watch / High
+Rules (simple MVP):
+- If farm chemicalBudget exists:
+  - On Track: spend <= 70% of budget (prorated by season progress)
+  - Watch: 70–90%
+  - High: >90%
+If no budget:
+- Compare spend to last 30 days baseline (demo) and flag if +20% increase as “Watch”
+
+Add a short tooltip explaining what “Watch” means in plain language:
+“Spend is trending above your recent pace. Double-check rates and repeats.”
+
+5) API Endpoints (Next.js route handlers)
+Implement:
+- GET /api/chemicals?farmId=... (and optional blockId/category)
+- POST /api/chemicals (create chemical)
+- GET /api/applications?blockId=...&chemicalId=...
+- POST /api/applications (create application)
+- GET /api/applications/:id
+- PATCH /api/applications/:id
+- DELETE /api/applications/:id
+
+Also add aggregation endpoints:
+- GET /api/chemicals/summary?farmId=...&blockId=...
+Returns totals, counts, category spend, trend calc.
+
+6) UX Requirements (critical)
+- No complicated configuration
+- Default everything smartly
+- “Estimated cost” is optional but encouraged
+- After 3 entries, show a gentle prompt:
+  “Want better overspend alerts? Add costs when you can.”
+- Keep interactions thumb-friendly
+- Provide skeleton loaders
+- Optimistic updates where safe
+
+7) Quality Bar
+- Clean component structure: components/chemicals/*, lib/chemicals/*
+- Fully typed data
+- Basic unit tests for:
+  - seasonal progress calc
+  - budget status calc
+  - trend calc
+- README update:
+  - Explain Step 1 (list + spend visibility)
+  - Note Step 2 future (quotes + procurement) but do NOT implement
+
+IMPORTANT: DO NOT BUILD QUOTING OR PURCHASING
+No vendor price requests, no checkout, no RFQs.
+Only “visibility + spend + discipline” in MVP.
+
+DELIVERABLE
+A runnable Replit Next.js project updated with a Chemicals module, seeded demo data, and a modern, ADA-compliant Nike-style dark green/gold UI that lets a farmer log chemical applications quickly and see spend trends per farm and per block.

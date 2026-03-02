@@ -14,6 +14,8 @@ import Blocks from "@/pages/Blocks";
 import BlockDetail from "@/pages/BlockDetail";
 import Log from "@/pages/Log";
 import Vault from "@/pages/Vault";
+import Chemicals from "@/pages/Chemicals";
+import ChemicalNew from "@/pages/ChemicalNew";
 
 function Router() {
   return (
@@ -34,6 +36,12 @@ function Router() {
       </Route>
       <Route path="/app/log">
         <Shell><Log /></Shell>
+      </Route>
+      <Route path="/app/chemicals">
+        <Shell><Chemicals /></Shell>
+      </Route>
+      <Route path="/app/chemicals/new">
+        <Shell><ChemicalNew /></Shell>
       </Route>
       <Route path="/app/vault">
         <Shell><Vault /></Shell>

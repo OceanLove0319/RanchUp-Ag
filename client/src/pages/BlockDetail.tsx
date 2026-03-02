@@ -60,7 +60,7 @@ export default function BlockDetail() {
         </div>
       </div>
 
-      <div className="bg-[#111113] border border-white/10 p-6 md:p-8 rounded-lg flex flex-col md:flex-row items-center justify-between gap-6">
+      <div className="bg-[#111113] border border-white/10 p-6 md:p-8 rounded-lg flex flex-col md:flex-row items-center justify-between gap-6 mb-6">
         <div>
           <h3 className="text-xl font-black uppercase tracking-tight text-white mb-1">Season Spend</h3>
           <p className="text-gray-400 font-medium">Estimated cost per bin based on target yield ({block.yieldTargetBins} b/ac).</p>
@@ -68,6 +68,25 @@ export default function BlockDetail() {
         <div className="text-right">
           <p className="text-4xl font-black text-white">$0.00</p>
           <p className="text-xs font-bold uppercase tracking-widest text-primary mt-1">Cost / Bin Target</p>
+        </div>
+      </div>
+
+      {/* Chemical Clarity Integration */}
+      <div className="bg-card border border-border p-6 rounded-lg flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+        <div>
+          <h3 className="text-xl font-black uppercase tracking-tight text-foreground mb-2 flex items-center gap-2">
+            <Droplets className="w-5 h-5 text-primary" /> Chemical Plan & Spend
+          </h3>
+          <p className="text-muted-foreground font-medium mb-1">This season: {useStore(s => s.chemicalApps.filter(a => a.blockId === block.id).length)} applications • Est. ${useStore(s => s.chemicalApps.filter(a => a.blockId === block.id).reduce((sum, app) => sum + (app.estimatedCost || 0), 0).toFixed(2)}</p>
+          <p className="text-sm font-bold uppercase tracking-widest text-primary">Trending: +12% vs last 30 days</p>
+        </div>
+        <div className="flex gap-3 w-full md:w-auto">
+          <Link href={`/app/chemicals?blockId=${block.id}`} className="flex-1 md:flex-none text-center px-6 py-3 border border-border rounded font-bold uppercase tracking-wide text-sm hover:bg-white/5 transition-colors">
+            View Details
+          </Link>
+          <Link href={`/app/chemicals/new?blockId=${block.id}`} className="flex-1 md:flex-none text-center px-6 py-3 bg-primary text-primary-foreground rounded font-bold uppercase tracking-wide text-sm hover:bg-primary/90 transition-colors shadow-[0_0_15px_rgba(212,175,55,0.3)]">
+            Log Chem
+          </Link>
         </div>
       </div>
     </div>
