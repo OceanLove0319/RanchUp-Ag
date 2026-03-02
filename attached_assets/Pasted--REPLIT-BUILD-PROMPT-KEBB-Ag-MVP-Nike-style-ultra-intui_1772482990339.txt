@@ -1,0 +1,286 @@
+# REPLIT BUILD PROMPT — KEBB Ag™ MVP (Nike-style, ultra-intuitive, fast onboard)
+**Goal:** Build a clean, professional, Nike-style web app MVP for Central Valley tree fruit growers.
+**Theme:** Black + White primary, SF Giants Orange accents. Minimal, bold typography, big whitespace, confident CTAs.
+**Experience priorities:** 60-second onboarding, zero clutter, mobile-first field logging, clear instructions everywhere.
+
+---
+
+## 0) Tech Stack (use exactly this)
+- Frontend: React + Vite + TypeScript
+- Styling: TailwindCSS (no component libraries)
+- Routing: React Router
+- State: TanStack Query (server data) + Zustand (light UI state)
+- Backend: Express + TypeScript
+- DB: SQLite with Prisma (easy in Replit)
+- Auth: Simple demo auth (email + password) with session cookie OR a “Demo Mode” login (single org)
+
+---
+
+## 1) Brand + Design System
+### 1.1 Colors (hardcode tokens)
+- Black: #0B0B0C (primary background)
+- White: #FFFFFF (primary surface/text)
+- Gray: #A6A6A8 (secondary text)
+- Giants Orange (accent): #FD5A1E
+- Dark Surface: #111113
+- Border: rgba(255,255,255,0.08)
+
+### 1.2 Typography
+- Use a bold, athletic system font stack:
+  - font-sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Inter, Roboto
+- Style:
+  - H1: huge, tight tracking, all-caps optional
+  - Labels: uppercase, letter spacing wide
+  - Buttons: strong, rectangular, subtle radius (8px), high contrast
+
+### 1.3 Nike-style UI rules
+- Big hero headlines. Minimal copy. Powerful verbs.
+- Strong CTAs: “Start Your Season”, “Log a Field Action”, “View Block Plan”
+- Cards with strong borders, subtle shadow, generous padding.
+- Always show “Next step” guidance at top of each page.
+
+---
+
+## 2) App Concept (MVP Features)
+This MVP is a “Stone Fruit Operating System” with 4 pillars:
+1) Blocks & Varieties
+2) Ingredients Plan (fert + water + spray windows)
+3) Field Log (fast actions)
+4) Season Vault (records archive)
+
+IMPORTANT: Keep it SIMPLE. No complex dashboards.
+
+---
+
+## 3) Information Architecture / Routes
+### Public
+- `/` Landing (Nike style hero)
+- `/login` + `/demo`
+
+### Authenticated
+- `/onboarding` (60-second setup wizard)
+- `/app` (Home)
+- `/app/blocks` (Blocks list)
+- `/app/blocks/:id` (Block details)
+- `/app/log` (Field Log: “one action, one save”)
+- `/app/vault` (Season Vault)
+- `/app/settings`
+
+---
+
+## 4) Landing Page Copy (simple, relevant, farm-real)
+Hero:
+- H1: “RUN YOUR ORCHARD. NOT YOUR NOTEBOOK.”
+- Sub: “Block-level plans, fast field logging, and clean season records—built for tree fruit.”
+Buttons:
+- “Try Demo” (orange)
+- “Sign In” (outline)
+
+3 benefit tiles:
+- “Ingredients Plan” — “Dial in fert + water targets by variety and yield goal.”
+- “Field Log” — “Log spray, fert, irrigation in seconds—while you’re in the orchard.”
+- “Season Vault” — “Your records, organized by block and season. No paper hunts.”
+
+Trust line:
+- “Made for Central Valley stone fruit growers.”
+
+---
+
+## 5) Onboarding Wizard (fast, 3 steps, 60 seconds)
+### Step 1: Operation Basics
+Fields:
+- Operation name (required)
+- Primary crops (multi-select): Peach, Nectarine, Plum, Apricot, Cherry, Almond, Citrus, Blueberry
+- Irrigation methods used (multi-select): Flood, Drip, Fanjet, Sprinkler
+
+### Step 2: Create First Block (required)
+Fields:
+- Block name (e.g., “North 20”)
+- Acreage
+- Variety (text + suggestion list)
+- Season group: Early / Mid / Late
+- Irrigation type (single)
+- Yield target: 20 / 30 / 40 bins per acre (radio)
+
+### Step 3: Confirm + Start
+Show:
+- A generated “Ingredients Plan Preview”
+- CTA: “Start Your Season”
+
+Wizard should feel like Nike: big steps, progress bar, minimal fields.
+
+---
+
+## 6) Ingredients Plan (structured, rules-based, not AI)
+On the Block detail page, show 3 cards:
+
+### Fertilizer Targets
+- Show suggested “lbs/acre range” based on yield target:
+  - 20 bins: 200–250 lbs/acre
+  - 30 bins: 250–300 lbs/acre
+  - 40 bins: 300+ lbs/acre
+Copy:
+- “Set your target. Adjust as you learn. Keep it consistent.”
+
+### Water Targets
+- Show annual target:
+  - default 3.0 acre-feet/year for stone fruit (editable per block)
+Copy:
+- “Track against target—less guesswork, tighter decisions.”
+
+### Spray Windows (simple)
+- Not a pesticide database.
+- Just “windows” and “notes”:
+  - Dormant
+  - Bloom
+  - Fruit set
+  - Pre-harvest
+Copy:
+- “Keep your program visible. Log what you actually ran.”
+
+Everything editable and saved per block.
+
+---
+
+## 7) Field Log (the most important screen)
+Route: `/app/log`
+Design:
+- Big picker: Choose Block
+- Big action buttons (3): “Spray”, “Fertilize”, “Irrigate”
+- When tapped, show a single compact form:
+  - Date (default today)
+  - Product/Material (text)
+  - Amount (number + unit)
+  - Notes (optional)
+- Save button: “Save Field Action” (orange)
+- After save: success toast + “Log Another” or “Go to Block”
+
+Make it usable with one hand on mobile.
+
+---
+
+## 8) Cost Snapshot (simple, immediate)
+On Block detail page, show:
+- “Season Spend (to date)”
+- “Spend per acre”
+- Breakdown by type: Spray / Fert / Water
+- “Estimated cost per bin target” (simple calculation):
+  - (season spend) / (yield target * acreage)
+
+Allow user to enter unit costs in each log entry OR keep a default “cost per unit” in Settings.
+
+---
+
+## 9) Season Vault (records without clutter)
+Route: `/app/vault`
+Filters:
+- Season (default current year)
+- Block
+Tabs:
+- “Field Actions” (table list)
+- “Documents” (upload PDF/JPG) [basic file upload to local storage]
+- “Notes” (simple season notes)
+
+Keep it clean. No heavy analytics.
+
+---
+
+## 10) Data Model (Prisma + SQLite)
+Entities:
+- User { id, email, passwordHash?, orgId }
+- Org { id, name, cropsJson, irrigationJson, createdAt }
+- Block { id, orgId, name, acreage, variety, seasonGroup, irrigationType, yieldTargetBins, waterTargetAcreFeet }
+- Plan { id, blockId, fertMinLbsAcre, fertMaxLbsAcre, notes, sprayWindowsJson }
+- FieldLog { id, blockId, date, actionType (SPRAY|FERT|IRRIGATE), material, amount, unit, unitCost?, notes, createdAt }
+- Document { id, orgId, blockId?, season, filename, path, uploadedAt }
+
+Seed demo data for:
+- 3 blocks (early/mid/late)
+- 12 field logs
+- 2 documents (placeholder)
+
+---
+
+## 11) UI Components (build reusable primitives)
+- `PageShell` (top nav, left rail on desktop, bottom nav on mobile)
+- `NikeCard` (dark surface, border, padding)
+- `PrimaryButton` (orange)
+- `GhostButton` (outline white)
+- `StepWizard` (progress bar, step labels)
+- `BlockPicker`
+- `ActionButtonGrid` (Spray/Fert/Irrigate)
+
+---
+
+## 12) Navigation (simple)
+Top/side nav items:
+- Home
+- Blocks
+- Log
+- Vault
+- Settings
+
+Home page (`/app`) should show 3 “Next Step” cards:
+1) “Log a Field Action”
+2) “Review Today’s Plan”
+3) “Open Season Vault”
+
+---
+
+## 13) Copy Guidelines (every screen)
+- Start each page with one line instruction in small caps:
+  - “NEXT STEP: LOG WHAT YOU DID TODAY.”
+  - “NEXT STEP: REVIEW THIS BLOCK’S TARGETS.”
+- Keep tone farmer-real, not tech-jargon.
+- Avoid long paragraphs.
+
+---
+
+## 14) Backend API (REST)
+- POST `/api/auth/demo` (creates demo user/org)
+- POST `/api/auth/login`
+- POST `/api/auth/logout`
+- GET `/api/me`
+- CRUD `/api/blocks`
+- GET/PUT `/api/blocks/:id/plan`
+- POST `/api/blocks/:id/logs`
+- GET `/api/blocks/:id/logs`
+- GET `/api/vault?season=&blockId=`
+- POST `/api/docs` (multipart upload)
+
+Add basic validation (zod) for all write endpoints.
+
+---
+
+## 15) Performance + UX Requirements
+- Instant navigation (skeleton loaders)
+- Zero “empty states” without guidance
+- Every empty list has a CTA button
+- Use toasts for saves
+- Mobile first for `/app/log`
+
+---
+
+## 16) Deliverables
+1) Working fullstack app in Replit
+2) Seeded demo mode
+3) Nike-style theme applied everywhere
+4) Onboarding wizard flows into first block + plan preview
+5) Field Log is extremely fast and satisfying
+
+---
+
+## 17) Definition of Done
+- A new user can:
+  - Demo login
+  - Complete onboarding in under 60 seconds
+  - Create a block
+  - See an Ingredients Plan
+  - Log a spray/fert/irrigation action in < 15 seconds
+  - See season spend rollups
+  - Upload a document into the Vault
+
+BUILD IT NOW.
+DO NOT over-engineer.
+DO NOT add enterprise features.
+KEEP IT CLEAN, FAST, FIELD-READY.
