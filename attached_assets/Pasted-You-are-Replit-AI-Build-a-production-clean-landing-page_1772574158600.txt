@@ -1,0 +1,250 @@
+You are Replit AI. Build a production-clean landing page + lightweight backend for “KEBB Ag™ Grower’s Guild” with a modern, minimal UI and a little intrigue.
+
+GOAL
+Create a fast, responsive marketing site that converts growers/PCAs/partners into “Request Invite” leads. Include:
+1) Landing page with sections + copy (provided below)
+2) Sticky “Request an Invite” CTA
+3) “See a Redacted Packet” modal (mock PDF preview image + disclaimer)
+4) FAQ accordion
+5) Application form with validation
+6) Backend endpoint to store submissions (SQLite via Prisma) + admin view page protected by simple password
+7) Basic anti-spam (honeypot + rate limit + server-side validation)
+8) Clean folder structure, types, and env-based config
+
+TECH STACK
+- Frontend: React + Vite + TypeScript
+- Styling: TailwindCSS
+- Backend: Express + TypeScript
+- DB: SQLite + Prisma
+- Validation: Zod
+- UI bits: Headless UI (optional) or simple custom components
+- Deploy-ready: use a single Replit project with client + server; server serves the built client in production.
+
+DESIGN SYSTEM
+- Look: clean, modern, “ag-credible” (not SaaS cheesy), lots of whitespace, strong typography.
+- Colors: black/white with a single accent (SF Giants orange vibe) used sparingly.
+- Components: Section, Card, Badge, Button, Modal, Accordion, FormField.
+- Mobile-first, then desktop. Keep the page snappy and readable outdoors.
+
+ROUTES
+Frontend routes:
+- /  (landing)
+- /thanks  (after submission)
+- /admin  (simple admin viewer, password gate)
+
+Backend routes:
+- POST /api/apply  (submit application)
+- GET  /api/admin/applications  (list submissions; requires admin password header)
+- GET  /api/health
+
+ENV VARS
+- ADMIN_PASSWORD (required)
+- RATE_LIMIT_WINDOW_MS (default 600000)
+- RATE_LIMIT_MAX (default 20)
+- APP_NAME = "KEBB Ag™ Grower’s Guild" (optional)
+- REDACTED_PACKET_URL (optional; if empty, show placeholder modal content)
+
+DATABASE (Prisma)
+Model Application:
+- id (cuid)
+- createdAt (DateTime)
+- name (string)
+- ranchCompany (string)
+- town (string)
+- phone (string)
+- email (string)
+- crops (string)  // store as CSV, or JSON string
+- acresBand (string) // e.g., "0-49", "50-199", "200-499", "500-999", "1000+"
+- role (string)
+- peakMonths (string) // CSV or JSON string
+- ranchCount (string) // "1", "2-3", "4+"
+- needsMultiRanch (boolean)
+- dailyLogger (string) // text
+- commitPilot (boolean)
+- commitProofPoints (boolean)
+- commitIntroPerMonth (boolean)
+- oneThingToStopDoing (string)
+- source (string) // "landing"
+- utm (string) // JSON string (optional)
+- userAgent (string)
+- ipHash (string) // hash IP server-side; do not store raw IP
+- honeypot (string) // store for debugging; reject if filled
+
+VALIDATION (Zod)
+- name: 2–80 chars
+- ranchCompany: 2–120
+- town: 2–80 (dropdown list + “Other”)
+- phone: simple permissive regex
+- email: valid email
+- crops: min 1
+- acresBand: required
+- role: required
+- peakMonths: min 1
+- commit* checkboxes must be true to submit
+- oneThingToStopDoing: 0–180 chars
+- honeypot must be empty
+
+ANTI-SPAM
+- Honeypot hidden input; reject if non-empty.
+- Rate limit by IP (in-memory ok) on /api/apply.
+- Hash IP with SHA-256 + salt (use ADMIN_PASSWORD as salt or separate salt env var if you want).
+
+ADMIN
+- /admin page: simple password prompt (client side) -> stores password in memory only (not localStorage).
+- Admin requests send header: x-admin-password.
+- Admin table columns: createdAt, name, ranchCompany, town, crops, acresBand, role, phone, email, ranchCount, needsMultiRanch, commit flags.
+- Add CSV export button (client-side export from fetched JSON).
+- Add “Copy lead” button per row.
+
+LANDING PAGE IA + COPY
+Implement the sections below in order, with subtle animations (fade/slide) and a sticky CTA.
+
+1) Hero
+H1: The Grower’s Guild
+Subhead: A limited circle of Central Valley operators piloting KEBB Ag™ in-season—then getting paid for the adoption they help originate.
+Intrigue line: Not public. Not for everyone. Built on proof, not hype.
+Buttons: Request an Invite (scroll to form) | See How Kickbacks Work (scroll to kickbacks)
+Micro-trust strip: Permanent crops only: almonds · pistachios · walnuts · citrus · stone fruit · specialty
+Line: Foreman-first logs → clean packets → real spend visibility
+
+2) The Reality (Problem)
+Title: The same problems keep costing money
+Copy: Most ranches don’t have a record problem until they suddenly do. A packer asks. An auditor asks. A buyer asks. Or the office needs to explain why a block blew its budget.
+Bullets:
+- Records scattered across trucks, texts, and memory
+- Substitutions and extra passes quietly inflate spend
+- Unit mistakes happen—then show up later when it hurts
+- “We’ll find it later” doesn’t survive audit week
+Bridge: The Guild exists to prove a better way—on real ranches, during real pressure.
+
+3) What the Guild Is (and isn’t)
+Title: What this is
+Bullets:
+- A small group piloting KEBB Ag™ during the season
+- A proof-driven program: time saved, errors caught, packets produced
+- A warm-intro distribution engine powered by trusted relationships
+Title: What this isn’t
+Bullets:
+- Not an influencer program
+- Not pay-to-play
+- Not a supplier lock-in
+- Not “more office work” disguised as tech
+
+4) How It Works
+Title: Three steps. Real outcomes.
+Step 1: Pilot in-season — Foremen log sprays, fertigations, and irrigations at the block level in seconds—right from the truck.
+Step 2: Produce proof — Document time saved, fewer mistakes, faster compliance packets, cost variance caught early.
+Step 3: Drive adoption — One warm intro per month—growers, PCAs, retail counters, packer QA circles. Clean tracking. No weirdness.
+
+5) What Members Get
+Title: Membership has benefits (and expectations)
+Bullets:
+- Priority onboarding built around your blocks and crops
+- Templates tuned for your seasonal reality (not generic software)
+- Early access to Pro features (cost engine, projections, compliance packets)
+- A direct line to influence what gets built next
+- Net-profit kickbacks tied to the business you originate
+Callout: Most programs pay you to talk. This one pays you when adoption sticks.
+
+6) Kickbacks
+Title: Net-profit kickbacks—kept clean
+Copy: If you help originate real adoption, you participate in the upside. Kickbacks apply only to guild-sourced accounts—tracked by referral code or recorded intro.
+Option A card:
+- 10% of net profit from the accounts you originate
+- Paid quarterly
+- Applies for 24 months per referred account
+Option B card:
+- Quarterly pool equal to 10% of subscription net profit
+- Distributed by contribution points (intros, closes, case studies, demos)
+Guardrails line (small):
+Caps may apply early. If churn occurs inside 60 days, clawback/offset applies. No exclusivity. No forced purchasing.
+Button: Download the one-page term sheet (for now, link to /term-sheet placeholder route or modal)
+
+7) Proof
+Title: Proof the Valley respects
+Copy: We don’t do vague testimonials. We track measurable outcomes that matter to operations.
+Tiles:
+- Hours saved per week (logging + compliance)
+- Errors caught (unit mismatches, wrong-rate entries)
+- Compliance turnaround (time to produce a clean packet)
+- Cost variance visibility (spikes by block/window surfaced early)
+Teaser: Want to see examples? We’ll show redacted packets and dashboards after you request an invite.
+Button: See a Redacted Packet (opens modal)
+
+8) Who It’s For
+Title: Who gets invited
+Copy: We’re keeping this small on purpose. The Guild is for operators who will actually run it in-season and contribute proof.
+Eligibility bullets:
+- Permanent-crop operations in the Central Valley
+- Pilot one season or 8–12 peak weeks
+- Provide two measurable proof points
+- Commit to one intro per month (grower/PCA/retail/QA)
+Scarcity line: 20 seats. Mixed commodity makeup. Renewed by contribution and conduct.
+Town bar: Kingsburg · Reedley · Traver · Fowler · Visalia · Hanford · Tulare · Madera · Fresno
+
+9) Distribution Lanes
+Title: Built for how ag actually moves
+Cards:
+- PCA Lane: View access + program approval state = cleaner continuity and fewer chaotic calls
+- Retail Counter Lane: QR starter packs + bundled onboarding through trusted dealers
+- Packer/Compliance Lane: Weekly packet + season vault = audit readiness without scrambling
+- Irrigation/Service Lane: Irrigation + fertigation records that crews can’t quietly drift
+
+10) FAQ Accordion
+Include:
+- Is this equity? (No. Kickbacks are marketing/referral compensation only.)
+- Are you locking me into a supplier or retailer? (No.)
+- What data gets shared? (Only what you approve; sanitized/redacted.)
+- How is “net profit” defined? (Collected subscription revenue minus direct attributable costs.)
+- What if someone I refer cancels quickly? (Clawback/offset inside 60 days.)
+- How much time does this take? (Foremen log in seconds; 1 intro/month.)
+- Is this only for certain crops? (Permanent crops in the Central Valley.)
+
+11) Apply (Form)
+Title: Request an Invite
+Short copy: Tell us what you run. If there’s fit and seat availability, we’ll reach out.
+Fields:
+- Name
+- Ranch / Company
+- Town (dropdown + Other)
+- Phone
+- Email
+- Crops (multi-select)
+- Approx acres under management (acresBand)
+- Role (Owner / Ranch Manager / Foreman / PCA / Office / Other)
+Pilot readiness:
+- Peak months (multi-select)
+- Number of ranches (1 / 2–3 / 4+)
+- Need multi-ranch switching? (yes/no)
+- Who will log daily? (short text)
+Commit checks (must be true):
+- Can you pilot 8–12 weeks (or full season)?
+- Can you provide 2 proof points?
+- Can you do 1 intro/month?
+Open response:
+- “What’s the one thing you’d love to stop doing every week?”
+Submit -> POST /api/apply -> redirect /thanks
+
+12) Footer
+Small legal line:
+Kickbacks subject to signed Guild Participation Agreement. Terms, eligibility, caps, and clawback provisions apply.
+Links: Privacy (placeholder) | Term Sheet (placeholder) | Contact (mailto)
+
+IMPLEMENTATION DETAILS
+- Create a shared TypeScript type for ApplicationPayload in /shared.
+- Use fetch with proper error handling and toast messages.
+- Add loading states.
+- Add smooth scroll to anchor sections.
+- Add simple analytics-ready UTM capture: read URL params utm_source, utm_medium, utm_campaign, utm_content, utm_term; include in submission.
+- Server should sanitize/trim inputs and reject invalid payloads.
+- Use Prisma migrations; provide seed script optional (not required).
+- Make sure “npm run dev” starts both client and server concurrently (use concurrently).
+- Make “npm run build” build client and server (tsc) and “npm start” run server serving static dist.
+
+DELIVERABLES
+- Working landing page at /
+- Form submits and stores in SQLite
+- Admin page shows submissions
+- Clean README with setup steps and env vars
+
+NOW BUILD IT.
