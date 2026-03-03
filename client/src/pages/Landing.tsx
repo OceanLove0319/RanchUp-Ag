@@ -13,7 +13,7 @@ export default function Landing() {
         </div>
       </nav>
       <main className="flex-1 flex flex-col items-center justify-center p-6 text-center max-w-4xl mx-auto">
-        <h1 className="md:text-8xl font-black uppercase tracking-tighter mb-6 text-foreground text-[68px]">
+        <h1 className="md:text-8xl font-black uppercase tracking-tighter mb-6 text-foreground text-[73px]">
           Run your orchard.<br/>Not your notebook.
         </h1>
         <p className="md:text-2xl mb-10 max-w-2xl text-[#bababa] font-semibold text-[21px]">
