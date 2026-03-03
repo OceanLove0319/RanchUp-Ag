@@ -1,10 +1,29 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useStore } from "@/lib/store";
-import { Droplets, Sprout, ShieldAlert, Check } from "lucide-react";
+import { Droplets, Sprout, ShieldAlert, Check, Zap } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { todayPacificISO } from "@/utils/dates";
 
 type ActionType = 'SPRAY' | 'FERT' | 'IRRIGATE';
+
+// Hardcoded templates for the prototype
+const QUICK_TEMPLATES = {
+  SPRAY: [
+    { name: "Standard Bloom", material: "Rovral + Oil", amount: "2", unit: "gal" },
+    { name: "Summer Mite Control", material: "Acramite", amount: "16", unit: "oz" },
+    { name: "Pre-Harvest Fungicide", material: "Pristine", amount: "1", unit: "lbs" },
+  ],
+  FERT: [
+    { name: "Spring N Push", material: "CAN 17", amount: "10", unit: "gal" },
+    { name: "Post-Harvest Mix", material: "Potassium Nitrate", amount: "25", unit: "lbs" },
+    { name: "Foliar Zinc", material: "Zinc Sulfate 36%", amount: "5", unit: "lbs" },
+  ],
+  IRRIGATE: [
+    { name: "Standard Set", material: "Water", amount: "24", unit: "hrs" },
+    { name: "Deep Soak", material: "Water", amount: "48", unit: "hrs" },
+    { name: "Quick Flush", material: "Water", amount: "6", unit: "hrs" },
+  ]
+};
 
 export default function Log() {
   const blocks = useStore(s => s.blocks);
@@ -13,6 +32,7 @@ export default function Log() {
 
   const [selectedBlock, setSelectedBlock] = useState(blocks[0]?.id || "");
   const [action, setAction] = useState<ActionType | null>(null);
+  const [activeTemplate, setActiveTemplate] = useState<string | null>(null);
   
   const [formData, setFormData] = useState({
     date: todayPacificISO(),
@@ -20,6 +40,27 @@ export default function Log() {
     amount: "",
     unit: ""
   });
+
+  // Reset form when action changes
+  useEffect(() => {
+    setFormData(prev => ({
+      ...prev,
+      material: "",
+      amount: "",
+      unit: ""
+    }));
+    setActiveTemplate(null);
+  }, [action]);
+
+  const applyTemplate = (template: any) => {
+    setFormData(prev => ({
+      ...prev,
+      material: template.material,
+      amount: template.amount,
+      unit: template.unit
+    }));
+    setActiveTemplate(template.name);
+  };
 
   const handleSave = () => {
     if (!action || !formData.amount) return;
@@ -43,6 +84,7 @@ export default function Log() {
     // Reset form
     setAction(null);
     setFormData({ ...formData, material: "", amount: "", unit: "" });
+    setActiveTemplate(null);
   };
 
   const actionConfig = {
@@ -96,7 +138,26 @@ export default function Log() {
 
       {action && (
         <div className="animate-in slide-in-from-bottom-4 fade-in duration-300 bg-card border border-border p-6 rounded-lg">
-          <label className="block text-sm font-bold uppercase tracking-widest text-muted-foreground mb-6">3. Details</label>
+          <div className="flex justify-between items-center mb-6">
+            <label className="block text-sm font-bold uppercase tracking-widest text-muted-foreground">3. Details</label>
+            {QUICK_TEMPLATES[action]?.length > 0 && (
+              <div className="flex gap-2">
+                {QUICK_TEMPLATES[action].map(t => (
+                  <button
+                    key={t.name}
+                    onClick={() => applyTemplate(t)}
+                    className={`flex items-center gap-1 px-3 py-1.5 rounded text-xs font-bold uppercase tracking-widest transition-colors ${
+                      activeTemplate === t.name 
+                        ? 'bg-primary text-primary-foreground' 
+                        : 'bg-background border border-border text-muted-foreground hover:border-primary/50'
+                    }`}
+                  >
+                    <Zap className="w-3 h-3" /> {t.name}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
           
           <div className="space-y-4">
             <div>
