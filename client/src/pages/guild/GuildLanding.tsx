@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { Check, ChevronDown, ChevronUp, FileText, Lock, ArrowRight, Menu, X, Leaf, Target, Shield, Users, Clock, LayoutDashboard, Zap, Sprout, ShieldAlert, Award } from "lucide-react";
 
-export default function Landing() {
+export default function GuildLanding() {
   const [, setLocation] = useLocation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
@@ -65,7 +65,7 @@ export default function Landing() {
     // Mock submission
     setTimeout(() => {
       setIsSubmitting(false);
-      setLocation("/thanks");
+      setLocation("/guild/thanks");
     }, 1000);
   };
 

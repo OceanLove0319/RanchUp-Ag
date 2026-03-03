@@ -7,6 +7,9 @@ export default function Landing() {
       <nav className="p-6 flex justify-between items-center max-w-6xl mx-auto w-full">
         <div className="font-black text-2xl tracking-tighter text-primary">KEBB AG™</div>
         <div className="flex gap-6 items-center">
+          <Link href="/guild" className="text-sm font-bold uppercase tracking-widest text-primary hover:text-primary/80 transition-colors">
+            Grower's Guild
+          </Link>
           <Link href="/how-it-works" className="text-sm font-bold uppercase tracking-widest text-muted-foreground hover:text-foreground transition-colors">
             How It Works
           </Link>
