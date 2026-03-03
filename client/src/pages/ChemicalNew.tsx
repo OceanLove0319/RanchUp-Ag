@@ -103,6 +103,7 @@ export default function ChemicalNew() {
               onChange={e => setFormData({...formData, dateApplied: e.target.value})}
               className="w-full bg-background border border-border rounded px-4 py-3 text-foreground focus:outline-none focus:border-primary"
             />
+            <p className="text-[10px] uppercase tracking-widest text-muted-foreground mt-2">Default date uses Pacific time.</p>
           </div>
         </div>
 

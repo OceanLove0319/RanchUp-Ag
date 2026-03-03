@@ -5,6 +5,8 @@ import { Link } from "wouter";
 import { getActiveSeasonWindow } from "@/utils/season";
 import { getSeasonSpendForBlock } from "@/utils/rollups";
 import { isWithin } from "@/utils/dates";
+import { computeStoneFruitFertTarget } from "@/utils/fertTargets";
+import { getSprayChartWindows } from "@/utils/sprayTemplates";
 
 export default function BlockDetail() {
   const [, params] = useRoute("/app/blocks/:id");
@@ -17,6 +19,9 @@ export default function BlockDetail() {
   const activeSpend = getSeasonSpendForBlock(block.id, chemicalApps, activeWindow);
   
   const formattedSpend = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(activeSpend);
+  
+  const fertTarget = computeStoneFruitFertTarget(block.yieldTargetBins);
+  const sprayWindows = getSprayChartWindows(block);
 
   return (
     <div className="animate-in fade-in duration-500">
@@ -37,16 +42,26 @@ export default function BlockDetail() {
       <p className="text-xs font-bold uppercase tracking-widest text-primary mb-4">NEXT STEP: REVIEW THIS BLOCK'S TARGETS.</p>
 
       <div className="grid md:grid-cols-3 gap-6 mb-10">
-        <div className="bg-[#111113] border border-white/10 p-6 rounded-lg">
+        <div className="bg-[#111113] border border-white/10 p-6 rounded-lg flex flex-col">
           <div className="flex items-center gap-3 mb-4 text-orange-400">
             <Sprout className="w-5 h-5" />
-            <h3 className="font-black uppercase tracking-widest">Fertilizer Target</h3>
+            <h3 className="font-black uppercase tracking-widest">Fertility Target</h3>
           </div>
-          <p className="text-3xl font-black text-white mb-2">250-300 <span className="text-lg text-gray-500">lbs/ac</span></p>
-          <p className="text-sm text-gray-400 leading-relaxed">Set your target. Adjust as you learn. Keep it consistent.</p>
+          <p className="text-3xl font-black text-white mb-2">{fertTarget.minLbsAc}-{fertTarget.maxLbsAc} <span className="text-lg text-gray-500">lbs/ac</span></p>
+          <p className="text-sm text-gray-400 leading-relaxed mb-4">{fertTarget.basis}</p>
+          
+          <div className="mt-auto pt-4 border-t border-white/10">
+            <p className="text-[10px] uppercase tracking-widest text-gray-500">
+              {block.irrigationType === "Drip" || block.irrigationType === "Fanjet" 
+                ? "Drip/Fanjet: target converts to fertigation schedule in v2." 
+                : block.irrigationType === "Flood" 
+                  ? "Flood: aligns with granular programs (furrow/ranchero)."
+                  : "Program varies by method; target is a planning guide."}
+            </p>
+          </div>
         </div>
 
-        <div className="bg-[#111113] border border-white/10 p-6 rounded-lg">
+        <div className="bg-[#111113] border border-white/10 p-6 rounded-lg flex flex-col">
           <div className="flex items-center gap-3 mb-4 text-blue-400">
             <Droplets className="w-5 h-5" />
             <h3 className="font-black uppercase tracking-widest">Water Target</h3>
@@ -55,17 +70,27 @@ export default function BlockDetail() {
           <p className="text-sm text-gray-400 leading-relaxed">Track against target—less guesswork, tighter decisions.</p>
         </div>
 
-        <div className="bg-[#111113] border border-white/10 p-6 rounded-lg">
+        <div className="bg-[#111113] border border-white/10 p-6 rounded-lg flex flex-col">
           <div className="flex items-center gap-3 mb-4 text-purple-400">
             <ShieldAlert className="w-5 h-5" />
             <h3 className="font-black uppercase tracking-widest">Spray Windows</h3>
           </div>
-          <ul className="space-y-2 text-sm font-bold uppercase tracking-wide text-gray-300 mb-4">
-            <li className="flex items-center gap-2"><div className="w-1.5 h-1.5 rounded-full bg-green-500"></div> Dormant</li>
-            <li className="flex items-center gap-2"><div className="w-1.5 h-1.5 rounded-full bg-primary"></div> Bloom</li>
-            <li className="flex items-center gap-2"><div className="w-1.5 h-1.5 rounded-full bg-yellow-500"></div> Fruit set</li>
+          <ul className="space-y-3 mb-4">
+            {sprayWindows.map((w, i) => (
+              <li key={w.key} className="flex gap-3">
+                <div className="mt-1.5 w-1.5 h-1.5 rounded-full bg-purple-400 flex-shrink-0"></div>
+                <div>
+                  <p className="text-sm font-bold uppercase tracking-wide text-gray-300">{w.title}</p>
+                  {w.description && <p className="text-[10px] text-gray-500 uppercase tracking-widest mt-0.5">{w.description}</p>}
+                </div>
+              </li>
+            ))}
           </ul>
-          <p className="text-xs text-gray-500 uppercase tracking-widest mt-auto">Keep your program visible.</p>
+          <div className="mt-auto pt-4 border-t border-white/10">
+            <p className="text-[10px] text-gray-500 uppercase tracking-widest flex items-center gap-1">
+              <Info className="w-3 h-3" /> Window guide aligned to active season: {activeWindow.label}
+            </p>
+          </div>
         </div>
       </div>
 

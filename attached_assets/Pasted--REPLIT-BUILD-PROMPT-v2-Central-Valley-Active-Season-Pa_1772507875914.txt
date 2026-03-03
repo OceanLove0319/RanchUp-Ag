@@ -1,0 +1,249 @@
+# REPLIT BUILD PROMPT (v2) — Central Valley “Active Season” + Pacific Dates + Fert Targets + Spray Chart Templates
+
+You are editing an existing React + TypeScript prototype (SPA). Keep changes minimal and safe. Do NOT break existing backend routes. The app currently stores dates as date-only ISO strings ("YYYY-MM-DD") and defaults dates using `new Date().toISOString().split('T')[0]` (UTC bug). We will fix Pacific date handling, define “Active Season” windows without seasonYear, compute Season Spend correctly, and replace hardcoded Fertilizer Target + Spray Windows with Central Valley stone-fruit-informed dynamic values driven by existing Block fields.
+
+## Existing Data Structures (DO NOT REMOVE)
+### Block fields (stored)
+- name: string
+- acreage: number
+- variety: string (e.g., “Yellow Peach” or “Citrus”)
+- seasonGroup: "Early" | "Mid" | "Late"
+- irrigationType: "Flood" | "Drip" | "Fanjet" | "Sprinkler"
+- yieldTargetBins: number  // bins per acre
+- waterTargetAcreFeet: number
+
+NOTE: Fertilizer target and Spray windows are currently hardcoded in UI; not stored.
+
+### Chemical Log (ChemicalApp)
+- blockId: string
+- chemicalId: string
+- chemicalName: string
+- category: "FERTILIZER" | "FUNGICIDE" | "HERBICIDE" | "INSECTICIDE" | "ADJUVANT" | "OTHER" | string
+- dateApplied: string  // "YYYY-MM-DD"
+- method: "SPRAY" | "FERTIGATION" | "SOIL" | "FOLIAR"
+- estimatedCost?: number
+- notes?: string
+
+---
+
+# GOALS (Implement All)
+1) Fix UTC rollover by generating default dates in America/Los_Angeles.
+2) Define “Active Season” without seasonYear:
+   - Use derived season window computed from block.seasonGroup + inferred crop type.
+3) Compute Season Spend header dynamically:
+   - Sum estimatedCost for all logs for this block within the active season window.
+4) Replace hardcoded Fertilizer Target with a bins/ac-driven target table (stone fruit) + irrigation-aware labeling.
+5) Replace hardcoded Spray Windows list with a crop-aware Spray Chart template (stone fruit) aligned to the active season.
+
+Keep UI farmer-friendly: concise, legible, low-cognitive-load.
+
+---
+
+# STEP 1 — Add Pacific Date Utilities (Fix Default Date Bug)
+Create file: `src/utils/dates.ts`
+
+Implement:
+## 1.1 todayPacificISO(): string
+Return today’s date in America/Los_Angeles formatted "YYYY-MM-DD" using Intl.DateTimeFormat + formatToParts.
+Do NOT use toISOString().
+
+## 1.2 isWithin(dateISO, startISO, endISO): boolean
+Because all are "YYYY-MM-DD", do lexicographic inclusive compare.
+
+## 1.3 formatUSD(amount): string
+Intl.NumberFormat("en-US", { style:"currency", currency:"USD" })
+
+Then search codebase and replace ALL uses of:
+- `new Date().toISOString().split('T')[0]`
+with:
+- `todayPacificISO()`
+
+This must apply to:
+- New Chemical Log form defaults
+- Demo seed generation (if present)
+- Any “Add Log” button logic
+- Any reducer/store initialization with dates
+
+Acceptance check: logging at 5–11 PM PT defaults to TODAY (PT), not tomorrow.
+
+---
+
+# STEP 2 — Infer Crop Type (No Schema Changes)
+Create file: `src/utils/crops.ts`
+
+Implement:
+`inferCropType(variety: string): "STONE_FRUIT" | "CITRUS" | "NUT" | "OTHER"`
+
+Heuristics (case-insensitive substring match):
+- STONE_FRUIT: "peach", "nectarine", "plum"
+- CITRUS: "citrus", "orange", "mandarin", "lemon", "lime", "grapefruit"
+- NUT: "almond", "pistachio", "walnut"
+- else OTHER
+
+NOTE: This is v1 prototype inference because current Block schema uses `variety` for both crop type and variety.
+
+---
+
+# STEP 3 — Active Season Window Without seasonYear
+Create file: `src/utils/season.ts`
+
+Implement:
+`getActiveSeasonWindow(block): { startISO: string; endISO: string; label: string }`
+
+Rules:
+- Determine current Pacific year from todayPacificISO().slice(0,4)
+- Determine cropType via inferCropType(block.variety)
+- If cropType === STONE_FRUIT:
+  - Early:  `${year}-02-01` to `${year}-06-30`
+  - Mid:    `${year}-02-01` to `${year}-08-31`
+  - Late:   `${year}-02-01` to `${year}-10-31`
+  - label:  `Active season (Stone fruit ${block.seasonGroup}): Feb 1 – <end>`
+- Else (CITRUS/NUT/OTHER):
+  - `${year}-01-01` to `${year}-12-31`
+  - label: `Active season: Jan 1 – Dec 31`
+
+IMPORTANT: Do not add seasonYear right now. Use this derived window everywhere Season Spend is computed.
+
+---
+
+# STEP 4 — Spend Rollups (Season Spend Header + Category Breakdown)
+Create file: `src/utils/rollups.ts`
+
+Implement:
+## 4.1 getSeasonSpendForBlock(blockId, logs, window): number
+Filter:
+- log.blockId === blockId
+- isWithin(log.dateApplied, window.startISO, window.endISO)
+- estimatedCost is finite number
+Sum, return 0 if none
+
+## 4.2 getSeasonSpendByCategory(blockId, logs, window): Record<string, number>
+Same filters; group by log.category
+
+Update UI:
+- Replace “Season Spend” header hardcoded $0.00 with computed total
+- Ensure “Chemical Plan & Spend” uses the SAME window filtering so the numbers match
+- Show optional small breakdown list for top categories if already present in UI (keep it simple)
+
+Add helper text near spend:
+- “Season totals reflect this block’s active season window (Early/Mid/Late).”
+- “Dates use Pacific time (CA).”
+
+---
+
+# STEP 5 — Dynamic Fertilizer Target (Bins/ac-driven + Irrigation-aware)
+Replace hardcoded Fertilizer Target UI with computed values.
+
+Create file: `src/utils/fertTargets.ts`
+
+Implement:
+`computeStoneFruitFertTarget(yieldTargetBins: number): { minLbsAc: number; maxLbsAc: number; basis: string }`
+
+Use v1 table keyed to common onboarding targets:
+- If yieldTargetBins >= 40: 250–300 lbs/ac
+- Else if >= 30:           225–275 lbs/ac
+- Else if >= 20:           200–250 lbs/ac
+- Else:                    175–225 lbs/ac
+
+Set basis string like:
+- `Based on ${yieldTargetBins} b/ac yield goal`
+
+UI integration:
+- On BlockDetail, show:
+  - “Fertility Target: {min}-{max} lbs/ac”
+  - Subtext: basis
+  - Add irrigation-aware note:
+    - If irrigationType is "Drip" or "Fanjet":
+      - “Drip/Fanjet: target converts to fertigation schedule in v2.”
+    - If "Flood":
+      - “Flood: aligns with granular programs (furrow/ranchero).”
+    - Else:
+      - “Program varies by method; target is a planning guide.”
+
+IMPORTANT: This is a prototype target guideline, not a prescription. Use “planning guide” language.
+
+---
+
+# STEP 6 — Dynamic Spray Chart Windows (Block-aware templates)
+Replace hardcoded list (Dormant, Bloom, Fruit set) with template function.
+
+Create file: `src/utils/sprayTemplates.ts`
+
+Implement:
+`getSprayChartWindows(block): Array<{ key: string; title: string; description?: string }>`
+
+Rules:
+- cropType = inferCropType(block.variety)
+
+If STONE_FRUIT:
+Return:
+1) Dormant — “Pre-bloom cleanup + overwintering pressure”
+2) Bloom — “Blossom blight / brown rot protection window”
+3) Fruit set — “Early insect + disease prevention as crop sets”
+4) Pre-harvest (optional v1 add) — “Finish window as fruit matures and color develops”
+
+If CITRUS:
+Return:
+- Dormant/Pre-bloom (if desired) OR “Spring flush”
+- Bloom
+- Fruit set
+(Keep minimal; no claims of perfect timing)
+
+If NUT:
+Return:
+- Dormant
+- Bloom
+- Early season
+- Hull split (optional)
+(Keep minimal; do not overcomplicate)
+
+UI integration:
+- Display as a simple vertical timeline list (existing style)
+- Use the block’s active season label under the list:
+  - “Window guide aligned to active season: <label>”
+
+Do NOT require users to input dates. This remains a visual guide.
+
+---
+
+# STEP 7 — Make Date Handling Consistent in Forms
+In Chemical Log entry form:
+- Default `dateApplied` should be todayPacificISO()
+- If editing an existing log, use the stored dateApplied string.
+- Ensure the date picker uses the value exactly and saves "YYYY-MM-DD" unchanged.
+
+Add a small inline helper:
+- “Default date uses Pacific time.”
+
+---
+
+# STEP 8 — Manual Acceptance Checks
+1) At 5–11 PM PT, new chemical log defaults to today’s PT date.
+2) Season Spend header matches sum of estimatedCost for this block in the active season window.
+3) Logs outside the window do not count.
+4) Fertility target changes when yieldTargetBins changes (20/30/40 b/ac).
+5) Spray chart windows change based on inferred crop type (stone fruit vs citrus/nut).
+
+---
+
+# Non-Goals / Constraints
+- Do NOT add seasonYear yet.
+- Do NOT break existing routes/state structure.
+- Do NOT introduce heavy dependencies.
+- Keep UI “simple and quick” (per farmer feedback).
+
+---
+
+# Deliverables
+- New utilities:
+  - `src/utils/dates.ts`
+  - `src/utils/crops.ts`
+  - `src/utils/season.ts`
+  - `src/utils/rollups.ts`
+  - `src/utils/fertTargets.ts`
+  - `src/utils/sprayTemplates.ts`
+- Replaced UTC date defaulting with Pacific-safe dates
+- Dynamic Season Spend header + consistent window filtering
+- Dynamic Fertility Target + Spray Chart Windows based on block fields
+
+Proceed to implement now.
