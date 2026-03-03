@@ -14,6 +14,7 @@ import Blocks from "@/pages/Blocks";
 import BlockDetail from "@/pages/BlockDetail";
 import Log from "@/pages/Log";
 import Vault from "@/pages/Vault";
+import VaultPrint from "@/pages/VaultPrint";
 import Chemicals from "@/pages/Chemicals";
 import ChemicalNew from "@/pages/ChemicalNew";
 
@@ -24,10 +25,14 @@ function Router() {
       <Route path="/login" component={Login} />
       <Route path="/onboarding" component={Onboarding} />
       
+      {/* Print route must be outside the normal Shell so it takes over the full page styling */}
+      <Route path="/app/vault/print/:id" component={VaultPrint} />
+
       {/* App Routes wrapped in Shell */}
       <Route path="/app">
         <Shell><Home /></Shell>
       </Route>
+
       <Route path="/app/blocks">
         <Shell><Blocks /></Shell>
       </Route>

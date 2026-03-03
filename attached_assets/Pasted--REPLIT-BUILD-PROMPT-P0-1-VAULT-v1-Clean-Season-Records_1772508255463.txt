@@ -1,0 +1,93 @@
+# REPLIT BUILD PROMPT (P0-1) — VAULT v1 “Clean Season Records” + Export-to-PDF (Print Packet)
+
+You are editing the existing KEBB Ag™ React + TypeScript prototype. Do NOT break existing routes. Keep the Nike-style dark forest green + gold aesthetic. Vault must feel like a “season records packet,” not a raw table dump.
+
+## Objective
+Transform the Vault page into a clean, block-aware, season-aware records cabinet and add an “Export Season Packet (PDF)” experience using a print-ready route + CSS (window.print). No backend needed.
+
+## Existing State
+- Blocks exist in Zustand.
+- ChemicalApp logs exist in Zustand and include:
+  - blockId, category, dateApplied ("YYYY-MM-DD"), method, estimatedCost?, notes?
+- Active season logic exists (Pacific time safe + crop-type inference + season windows).
+- Vault currently renders a raw table of logs.
+
+## Requirements
+
+### 1) Vault Layout: Block + Season First
+On `/vault`:
+- Add a Block selector at top (chips or dropdown).
+  - Default selection: last viewed block OR first block.
+- Show a Season Window Badge under selector:
+  - Use existing `getActiveSeasonWindow(block)` returning startISO/endISO/label.
+  - Display label like: “Stone Fruit Early: Feb 1 – Jun 30 (Pacific)”
+- Show three content sections (Cards, not tables):
+  1) **Sprays** (FUNGICIDE/INSECTICIDE/HERBICIDE/ADJUVANT/OTHER)
+  2) **Fertility** (FERTILIZER)
+  3) **Notes** (if notes exist across logs, show them inline; otherwise omit)
+
+Each section:
+- Shows chronological list within active season window.
+- Each row/card item shows:
+  - Date (dateApplied)
+  - Chemical name (chemicalName)
+  - Method (method)
+  - Cost (formatted USD if present)
+  - Notes (trim to 1 line, expand/collapse)
+
+### 2) Filtering Rules (must be consistent)
+Vault shows ONLY logs where:
+- log.blockId === selectedBlock.id
+- log.dateApplied is within active season window (use existing `isWithin` string compare)
+
+### 3) Totals & Summary (top of Vault)
+Above sections, show a compact summary bar:
+- Season Spend (sum of estimatedCost within window)
+- Total Applications (# logs within window)
+- Optional: Category counts (small badges)
+
+Use existing rollup utilities if present; otherwise implement small helpers.
+
+### 4) Export to PDF (Print Packet)
+Add primary button near the top:
+- “Export Season Packet (PDF)”
+
+Implementation:
+- Create route: `/vault/print/:blockId`
+- This route renders a print-optimized page with:
+  - Cover header:
+    - “KEBB Ag™ Season Packet”
+    - Block name + acreage
+    - Variety + irrigationType + yieldTargetBins (b/ac)
+    - Season window label + Pacific note
+  - Summary:
+    - Season Spend, # Applications
+  - Sections:
+    - Sprays list
+    - Fertility list
+
+When user clicks Export:
+- Open `/vault/print/:blockId` in same tab and auto-trigger `window.print()` on mount.
+- Add a “Back to Vault” link at top for normal viewing (hidden in print).
+
+### 5) Print Styles
+Add `src/styles/print.css` (or equivalent) and ensure it’s loaded.
+- Use @media print:
+  - Hide nav/sidebar/header
+  - White background, black text
+  - Clean spacing, readable typography
+  - Page breaks between sections if needed
+- Ensure lists don’t get cut awkwardly.
+
+### 6) Keep Aesthetic Consistent
+On normal `/vault`, use existing dark theme cards.
+On `/vault/print`, switch to clean white “packet” style (print-friendly).
+
+## Acceptance Checks
+1) Vault shows grouped, chronological records per selected block.
+2) Logs outside the active season window do not appear.
+3) Season Spend matches the Block Detail Season Spend for the same block.
+4) Export opens print view and print dialog appears automatically.
+5) Printed output looks like a “season records packet.”
+
+Proceed to implement now.
