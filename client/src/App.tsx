@@ -1,4 +1,5 @@
-import { Switch, Route } from "wouter";
+import { useEffect } from "react";
+import { Switch, Route, useLocation } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
@@ -29,6 +30,20 @@ import VarianceFlags from "@/pages/VarianceFlags";
 import ProjectionsDashboard from "@/pages/ProjectionsDashboard";
 import BlockProjectionDetail from "@/pages/BlockProjectionDetail";
 import TemplatesManager from "@/pages/TemplatesManager";
+
+function ScrollToTop() {
+  const [pathname] = useLocation();
+
+  useEffect(() => {
+    window.scrollTo({
+      top: 0,
+      left: 0,
+      behavior: "instant"
+    });
+  }, [pathname]);
+
+  return null;
+}
 
 function Router() {
   return (
@@ -101,6 +116,7 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
+        <ScrollToTop />
         <Toaster />
         <Router />
       </TooltipProvider>
