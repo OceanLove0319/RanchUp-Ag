@@ -6,7 +6,10 @@ export default function Landing() {
     <div className="min-h-screen bg-background text-foreground selection:bg-primary selection:text-primary-foreground flex flex-col">
       <nav className="p-6 flex justify-between items-center max-w-6xl mx-auto w-full">
         <div className="font-black text-2xl tracking-tighter text-primary">KEBB AG™</div>
-        <div className="flex gap-4">
+        <div className="flex gap-6 items-center">
+          <Link href="/how-it-works" className="text-sm font-bold uppercase tracking-widest text-muted-foreground hover:text-foreground transition-colors">
+            How It Works
+          </Link>
           <Link href="/login" className="px-6 py-2 border border-primary/50 text-primary rounded font-bold uppercase tracking-wide text-sm hover:bg-primary/10 transition-colors">
             Sign In
           </Link>
