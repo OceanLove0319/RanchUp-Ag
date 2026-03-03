@@ -471,12 +471,14 @@ export default function GuildLanding() {
                 <span>Kingsburg</span><span>·</span>
                 <span>Reedley</span><span>·</span>
                 <span>Traver</span><span>·</span>
+                <span>Orange Cove</span><span>·</span>
                 <span>Fowler</span><span>·</span>
                 <span>Visalia</span><span>·</span>
                 <span>Hanford</span><span>·</span>
                 <span>Tulare</span><span>·</span>
                 <span>Madera</span><span>·</span>
-                <span>Fresno</span>
+                <span>Fresno</span><span>·</span>
+                <span>Bakersfield</span>
               </div>
             </div>
           </div>
