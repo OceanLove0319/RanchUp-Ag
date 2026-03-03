@@ -1,0 +1,139 @@
+# REPLIT BUILD PROMPT — KEBB Ag “Stone Fruit Block Proof Pilot” (Packer/Shipper Compliance + Cost Discipline)
+
+Build a clean, modern web app prototype (React + TypeScript + Vite + Tailwind). The app is a lightweight, foreman-first logging tool that produces audit-ready compliance packets and cost variance summaries across multiple ranches. Keep it fast, intuitive, and not data-heavy.
+
+## Product Name (UI)
+“KEBB Ag — Block Proof Pilot”
+
+## Core Users
+- Foreman / applicator: quick daily logging + “log again” reuse
+- Ranch manager / office: weekly compliance packet + monthly summary + spend variance flags
+
+## Core Entities (in-memory + localStorage persistence)
+1) Ranch
+- id, name, region (optional)
+2) Block
+- id, ranchId, name, crop (peach/nectarine/plum), variety, acres, irrigationMethod (drip/micro/fan-jets), notes
+3) LogEntry
+- id, ranchId, blockId, dateTime
+- type: SPRAY | NUTRITION | FERTIGATION
+- materialName (free text)
+- rateValue, rateUnit (support per-acre units like gal/ac, lb/ac, qt/ac, oz/ac)
+- totalMaterialNeeded (computed)
+- optional tankSize + loads (computed)
+- notes
+- matchedLibraryItemId (optional)
+- estimatedCost (computed from library midpoint)
+- flags: UNIT_MISMATCH | MISSING_ACRES | UNKNOWN_MATERIAL | NONE
+
+4) MaterialLibraryItem (seed ~25 items, stone fruit + valley common)
+- id, name, category (FUNGICIDE/HERBICIDE/INSECTICIDE/NUTRITIONAL/ADJUVANT)
+- baseUnit (GAL/LB/QT/OZ)
+- priceLow, priceHigh (planning ranges)
+- packSize (optional: e.g., 2.5 GAL, 50 LB)
+- aliases (array of strings)
+
+## Required UX Screens
+1) Landing / Pilot Overview
+- Simple explanation: “Track passes. Auto-calc totals. Print weekly packets. See cost variance.”
+- CTA: “Enter Pilot” (no auth for prototype)
+
+2) Ranch Switcher + Dashboard
+- Dropdown to select Ranch
+- Tiles:
+  - “Quick Log”
+  - “Blocks”
+  - “Weekly Packet”
+  - “Monthly Summary”
+  - “Variance Flags”
+
+3) Blocks
+- List blocks filtered by ranch
+- Add/Edit/Delete block (name, acres, crop, variety, irrigation)
+- Block detail shows:
+  - last 5 logs
+  - “Log again” button on each (copies entry fields, sets dateTime to now)
+
+4) Quick Log (Foreman-first)
+- Step 1: select block (searchable)
+- Step 2: select type (SPRAY/NUTRITION/FERTIGATION)
+- Step 3: material name (typeahead; alias match silently)
+- Step 4: rate + unit
+- Show “Acres-aware Total Material Needed” auto panel:
+  - If unit is per-acre and acres exist:
+    - Total = acres * rate (with unit normalization)
+  - Tank helper:
+    - optional tankSize input (same base unit)
+    - Loads = total / tankSize (1 decimal)
+- Cost panel:
+  - If matched library item and unit compatible:
+    - estimatedCost = midpointPrice * normalizedTotal
+  - If unit mismatch:
+    - estimatedCost forced to 0
+    - show orange “Unit Mismatch” badge
+- Save log (persist to localStorage)
+
+5) Weekly Packet (by ranch)
+- Date range picker (default last 7 days)
+- Generate “Audit-Ready Packet” view:
+  - Group by Block, then chronological logs
+  - Show: date, type, material, rate, total, notes, cost (if available), flags
+- Print-friendly route with page breaks + auto print trigger:
+  - /print/weekly?ranchId=...&start=...&end=...
+
+6) Monthly Summary (by ranch)
+- Month selector
+- Summary cards:
+  - Total logs
+  - Total estimated spend (only valid costs)
+  - Counts of flags (unit mismatch, unknown materials)
+- Table:
+  - Spend by Block
+  - Spend by Type (spray/nutrition/fertigation)
+
+7) Variance Flags (Actionable)
+- “Top 10 cost spikes” (simple heuristic):
+  - Compare current month spend per block to last month (if exists), show % change
+  - If no prior month, compare block spend vs ranch median
+- Display as a list with red/yellow tags:
+  - “Block A — +42% vs last month”
+  - “Block B — 1 unit mismatch this month”
+
+## Design Requirements
+- Dark mode by default (deep green/charcoal background, off-white text, gold accents)
+- Very clear typography and spacing; big buttons for field use
+- Badges for flags (orange for unit mismatch, gray for unknown material, etc.)
+- Avoid dense tables; use cards + collapsible sections
+
+## Math & Guardrails (must be deterministic)
+- Only show totals panel if:
+  - rateUnit includes “/ac” and block.acres > 0
+- Normalize pack size:
+  - If library item priced per pack (e.g., 2.5GAL), normalize to base unit before costing
+- Unit mismatch behavior:
+  - If log unit base doesn’t match library baseUnit, set estimatedCost = 0 and flag UNIT_MISMATCH
+- Unknown material:
+  - If no alias match, flag UNKNOWN_MATERIAL, estimatedCost = 0
+- Sorting:
+  - Logs always sorted by dateTime descending in UI; packet prints ascending per block
+
+## Seed Data (realistic)
+- 3 ranches
+- 30 blocks total distributed across ranches
+- crops: peach/nectarine/plum with varieties and acres
+- 25 material library items with aliases and planning price ranges (valley common + stone fruit relevant)
+
+## Tech Requirements
+- React + TS + Vite + Tailwind
+- LocalStorage persistence for all entities
+- Minimal state management (Zustand recommended)
+- Wouter or React Router for routes
+- Provide clean folder structure and readable components
+- Include a simple “Reset Demo Data” button in Settings
+
+## Demo Script (ensure UX supports this)
+- Select ranch → open Quick Log → log a spray with gal/ac → see total + loads → save
+- Use “Log again” from block detail
+- Generate weekly packet → open print route → print preview
+- Open monthly summary → view spend totals
+- Open variance flags → see cost spike list and unit mismatch counts

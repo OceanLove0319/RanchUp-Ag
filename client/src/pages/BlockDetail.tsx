@@ -10,6 +10,7 @@ import { computeStoneFruitFertTarget } from "@/utils/fertTargets";
 import { getSprayChartWindows } from "@/utils/sprayTemplates";
 import { useGating } from "@/utils/gating";
 import { useToast } from "@/hooks/use-toast";
+import BlockLogs from "@/components/BlockLogs";
 
 export default function BlockDetail() {
   const [, params] = useRoute("/app/blocks/:id");
@@ -267,6 +268,8 @@ export default function BlockDetail() {
           )}
         </div>
       </div>
+
+      <BlockLogs blockId={block.id} />
 
       {/* Chemical Clarity Integration */}
       <div className="bg-card border border-border p-6 rounded-lg flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
