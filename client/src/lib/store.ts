@@ -106,59 +106,82 @@ export const useStore = create<AppState>((set) => ({
   
   blocks: [
     {
-      id: '1',
-      name: 'North 20',
-      acreage: 20,
-      variety: 'Peach',
-      seasonGroup: 'Early',
+      id: 'demo-peach-1',
+      name: 'North 40 Peaches',
+      acreage: 40,
+      variety: 'O\'Henry Peach',
+      seasonGroup: 'Mid',
       irrigationType: 'Drip',
-      yieldTargetBins: 30,
-      waterTargetAcreFeet: 3.0
+      yieldTargetBins: 35,
+      waterTargetAcreFeet: 3.5
     },
     {
-      id: '2',
-      name: 'South 15',
-      acreage: 15,
-      variety: 'Nectarine',
-      seasonGroup: 'Mid',
+      id: 'demo-citrus-1',
+      name: 'East Navels',
+      acreage: 25,
+      variety: 'Washington Navel',
+      seasonGroup: 'Late',
       irrigationType: 'Fanjet',
-      yieldTargetBins: 35,
-      waterTargetAcreFeet: 3.2
+      yieldTargetBins: 25,
+      waterTargetAcreFeet: 2.8
+    },
+    {
+      id: 'demo-citrus-2',
+      name: 'South Lemons',
+      acreage: 15,
+      variety: 'Lisbon Lemon',
+      seasonGroup: 'Early',
+      irrigationType: 'Fanjet',
+      yieldTargetBins: 30,
+      waterTargetAcreFeet: 3.0
     }
   ],
   logs: [
     {
-      id: '1',
-      blockId: '1',
+      id: 'l1',
+      blockId: 'demo-peach-1',
       date: todayPacificISO(),
       actionType: 'IRRIGATE',
       material: 'Water',
-      amount: 1.5,
-      unit: 'acre-feet'
+      amount: 12,
+      unit: 'hrs'
+    },
+    {
+      id: 'l2',
+      blockId: 'demo-citrus-1',
+      date: todayPacificISO(),
+      actionType: 'FERT',
+      material: 'CAN-17 (calcium ammonium nitrate)',
+      amount: 10,
+      unit: 'gal/ac',
+      cost: 500
     }
   ],
   chemicals: CHEMICALS_SEED,
   chemicalApps: [
     {
       id: 'a1',
-      blockId: '1',
-      chemicalId: 'c1',
-      chemicalName: 'Nitrogen 32%',
-      category: 'FERTILIZER',
-      dateApplied: todayPacificISO(),
-      method: 'FERTIGATION',
-      estimatedCost: 250,
-      notes: 'Early season push'
-    },
-    {
-      id: 'a2',
-      blockId: '2',
-      chemicalId: 'c2',
-      chemicalName: 'Copper Sulfate',
+      blockId: 'demo-peach-1',
+      chemicalId: 'cv-022',
+      chemicalName: 'Boscalid + Pyraclostrobin (Pristine)',
       category: 'FUNGICIDE',
       dateApplied: todayPacificISO(),
       method: 'SPRAY',
-      estimatedCost: 120,
+      estimatedCost: 800,
+      costStatus: "ESTIMATED",
+      notes: 'Bloom spray'
+    },
+    {
+      id: 'a2',
+      blockId: 'demo-citrus-1',
+      chemicalId: 'cv-093',
+      chemicalName: 'CAN-17 (calcium ammonium nitrate)',
+      category: 'FERTILIZER',
+      dateApplied: todayPacificISO(),
+      method: 'FERTIGATION',
+      estimatedCost: 1500,
+      costStatus: "ESTIMATED",
+      notes: 'Spring flush'
     }
   ],
   login: () => set({ user: { name: 'Demo User', org: 'KEBB Farms' } }),
