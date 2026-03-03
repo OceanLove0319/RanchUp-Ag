@@ -17,20 +17,20 @@ export default function MarketingNav() {
         
         <div className="flex items-center gap-4 md:gap-8">
           <Link 
-            href="/guild" 
-            className={`text-sm font-bold uppercase tracking-widest transition-colors ${
-              location === '/guild' ? 'text-primary' : 'text-gray-400 hover:text-white'
-            }`}
-          >
-            Grower's Guild
-          </Link>
-          <Link 
             href="/how-it-works" 
             className={`text-sm font-bold uppercase tracking-widest transition-colors ${
               location === '/how-it-works' ? 'text-primary' : 'text-gray-400 hover:text-white'
             }`}
           >
             How It Works
+          </Link>
+          <Link 
+            href="/guild" 
+            className={`text-sm font-bold uppercase tracking-widest transition-colors ${
+              location === '/guild' ? 'text-primary' : 'text-gray-400 hover:text-white'
+            }`}
+          >
+            Grower's Guild
           </Link>
           
           <div className="w-px h-6 bg-white/10 mx-2 hidden sm:block"></div>
