@@ -23,6 +23,9 @@ import Billing from "@/pages/Billing";
 import WeeklyPacket from "@/pages/WeeklyPacket";
 import MonthlySummary from "@/pages/MonthlySummary";
 import VarianceFlags from "@/pages/VarianceFlags";
+import ProjectionsDashboard from "@/pages/ProjectionsDashboard";
+import BlockProjectionDetail from "@/pages/BlockProjectionDetail";
+import TemplatesManager from "@/pages/TemplatesManager";
 
 function Router() {
   return (
@@ -63,6 +66,15 @@ function Router() {
       </Route>
       <Route path="/app/settings/billing">
         <Shell><Billing /></Shell>
+      </Route>
+      <Route path="/app/projections">
+        <Shell><ProjectionsDashboard /></Shell>
+      </Route>
+      <Route path="/app/projections/templates">
+        <Shell><TemplatesManager /></Shell>
+      </Route>
+      <Route path="/app/projections/block/:id">
+        <Shell><BlockProjectionDetail /></Shell>
       </Route>
       <Route path="/app/reports/weekly">
         <Shell><WeeklyPacket /></Shell>

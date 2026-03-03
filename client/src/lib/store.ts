@@ -1,6 +1,8 @@
 import { create } from 'zustand';
+import { persist } from "zustand/middleware";
 import { todayPacificISO } from '@/utils/dates';
 import { CHEMICALS_SEED } from '@/data/chemicalsSeed';
+import { TEMPLATES_SEED } from '@/data/templatesSeed';
 
 export type Ranch = {
   id: string;
@@ -47,6 +49,32 @@ export type Chemical = {
   notes?: string;
 };
 
+export type ProgramLine = {
+  id: string;
+  type: "SPRAY" | "FERT" | "IRRIGATE";
+  materialId?: string;
+  materialName: string;
+  rateValue: number;
+  rateUnit: string;
+  passesPlanned: number;
+  monthHint?: number;
+};
+
+export type ProgramTemplate = {
+  id: string;
+  name: string;
+  cropTags: string[];
+  notes?: string;
+  lines: ProgramLine[];
+};
+
+export type BlockProjection = {
+  blockId: string;
+  templateId: string;
+  overrides: { lines?: Record<string, { rateValue?: number; passesPlanned?: number; rateUnit?: string }> };
+  updatedAt: string;
+};
+
 export type ChemicalApp = {
   id: string;
   ranchId: string;
@@ -76,6 +104,8 @@ type AppState = {
   logs: FieldLog[];
   chemicals: Chemical[];
   chemicalApps: ChemicalApp[];
+  templates: ProgramTemplate[];
+  projections: BlockProjection[];
   billing: BillingState;
   
   login: () => void;
@@ -91,6 +121,11 @@ type AppState = {
   addChemicalApp: (app: ChemicalApp) => void;
   deleteChemicalApp: (id: string) => void;
   setOnboarded: (data: any) => void;
+
+  setProjection: (blockId: string, templateId: string) => void;
+  updateProjectionLineOverride: (blockId: string, lineId: string, overrides: { rateValue?: number; passesPlanned?: number; rateUnit?: string }) => void;
+  resetProjectionOverrides: (blockId: string) => void;
+  addTemplate: (template: ProgramTemplate) => void;
   
   // Billing Actions
   setPlan: (planId: "STARTER" | "PRO" | "OPS", isAnnual: boolean) => void;
@@ -213,6 +248,8 @@ export const useStore = create<AppState>((set) => ({
       notes: 'Spring flush'
     }
   ],
+  templates: TEMPLATES_SEED as ProgramTemplate[],
+  projections: [],
   
   login: () => set({ 
     user: { name: 'Demo User', org: 'KEBB Farms' },
@@ -247,6 +284,49 @@ export const useStore = create<AppState>((set) => ({
   addChemicalApp: (app) => set((state) => ({ chemicalApps: [app, ...state.chemicalApps] })),
   deleteChemicalApp: (id) => set((state) => ({ chemicalApps: state.chemicalApps.filter(c => c.id !== id) })),
   setOnboarded: (data) => set({ user: { name: 'Grower', org: data.operationName } }),
+
+  setProjection: (blockId, templateId) => set((state) => {
+    const existing = state.projections.filter(p => p.blockId !== blockId);
+    return {
+      projections: [...existing, {
+        blockId,
+        templateId,
+        overrides: {},
+        updatedAt: new Date().toISOString()
+      }]
+    };
+  }),
+
+  updateProjectionLineOverride: (blockId, lineId, overrides) => set((state) => {
+    return {
+      projections: state.projections.map(p => {
+        if (p.blockId !== blockId) return p;
+        const existingOverrides = p.overrides.lines || {};
+        return {
+          ...p,
+          overrides: {
+            ...p.overrides,
+            lines: {
+              ...existingOverrides,
+              [lineId]: { ...(existingOverrides[lineId] || {}), ...overrides }
+            }
+          },
+          updatedAt: new Date().toISOString()
+        };
+      })
+    };
+  }),
+
+  resetProjectionOverrides: (blockId) => set((state) => {
+    return {
+      projections: state.projections.map(p => {
+        if (p.blockId !== blockId) return p;
+        return { ...p, overrides: {}, updatedAt: new Date().toISOString() };
+      })
+    };
+  }),
+
+  addTemplate: (template) => set((state) => ({ templates: [...state.templates, template] })),
   
   setPlan: (planId, isAnnual) => set(state => {
     const newBilling = { ...state.billing, planId, isAnnual };

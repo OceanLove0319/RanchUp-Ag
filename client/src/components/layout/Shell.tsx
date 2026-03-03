@@ -1,5 +1,5 @@
 import { Link, useLocation } from "wouter";
-import { Home, Map, ClipboardEdit, Archive, Settings, LogOut, FlaskConical } from "lucide-react";
+import { Home, Map, ClipboardEdit, Archive, Settings, LogOut, FlaskConical, LineChart } from "lucide-react";
 import { useStore } from "@/lib/store";
 
 import RanchSwitcher from "@/components/RanchSwitcher";
@@ -13,6 +13,7 @@ export default function Shell({ children }: { children: React.ReactNode }) {
     { href: "/app/blocks", icon: Map, label: "Blocks" },
     { href: "/app/log", icon: ClipboardEdit, label: "Log" },
     { href: "/app/chemicals", icon: FlaskConical, label: "Chemicals" },
+    { href: "/app/projections", icon: LineChart, label: "Budget" },
     { href: "/app/vault", icon: Archive, label: "Vault" },
   ];
 

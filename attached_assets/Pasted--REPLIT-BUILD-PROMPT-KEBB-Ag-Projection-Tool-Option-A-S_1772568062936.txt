@@ -1,0 +1,195 @@
+# REPLIT BUILD PROMPT — KEBB Ag “Projection Tool (Option A)” = Season Budget by Block (Plan vs Actual)
+
+Build a clean, modern prototype module inside an existing React + TypeScript + Vite + Tailwind app (dark mode). Use Zustand for state and localStorage persistence. Use wouter for routing. DO NOT add a backend—everything is client-side.
+
+## Goal
+Add a “Projection Tool” that lets a ranch manager select a **Program Template** for each block and instantly see:
+- Projected season spend (block + ranch)
+- Actual-to-date spend (from logs)
+- Remaining projected spend
+- Over/Under vs plan
+- Top cost drivers (materials)
+
+Keep it fast, orchard-operator friendly, and not data-heavy.
+
+---
+
+## New Routes (wouter)
+- /app/projections (Projections Dashboard)
+- /app/projections/block/:blockId (Block Projection Detail)
+- /app/projections/templates (Program Templates Manager)
+
+Add “Projections” to the App Shell nav.
+
+---
+
+## Data Model (Zustand Store + localStorage)
+### Existing entities assumed
+- Ranch, Block, LogEntry, MaterialLibraryItem
+- LogEntry has: blockId, ranchId, type, dateTime, materialName, rateValue, rateUnit, totalMaterialNeeded, matchedLibraryItemId?, estimatedCost, flags[]
+
+### Add new entities
+1) ProgramTemplate
+- id: string
+- name: string (e.g., “Stone Fruit Base Program”)
+- cropTags: string[] (PEACH/NECT/PLUM/CITRUS/NUTS etc.)
+- notes?: string
+- lines: ProgramLine[]
+
+2) ProgramLine
+- id: string
+- type: "SPRAY" | "NUTRITION" | "FERTIGATION"
+- materialId?: string (optional link to library item)
+- materialName: string (fallback if no materialId)
+- rateValue: number
+- rateUnit: string (support per-acre units: gal/ac, lb/ac, qt/ac, oz/ac)
+- passesPlanned: number (default 1)
+- monthHint?: number (1–12) optional; if absent, treat as “unscheduled”
+
+3) BlockProjection
+- blockId: string
+- templateId: string
+- overrides: {
+    lines?: Record<string, { rateValue?: number; passesPlanned?: number; rateUnit?: string }>
+  }
+- updatedAt: string (ISO)
+
+Persist:
+- templates[]
+- blockProjections[] keyed by blockId
+- (reuse existing localStorage patterns)
+
+---
+
+## Projection Math (deterministic + guarded)
+### For each ProgramLine on a Block:
+- Only compute totals if:
+  - block.acres > 0
+  - rateUnit contains "/ac"
+- plannedTotalMaterial = block.acres * rateValue * passesPlanned
+
+### Planned Cost
+- Resolve material:
+  - If materialId exists, use that library item.
+  - Else attempt alias match on materialName to library (same matcher used in Quick Log).
+- If no match => plannedCost = 0 and flag "UNKNOWN_MATERIAL"
+- If match but base unit incompatible with rate unit => plannedCost = 0 and flag "UNIT_MISMATCH"
+- If match:
+  - Use midpointPrice = (priceLow + priceHigh)/2
+  - Apply pack-size normalization if library item priced by pack (e.g., 2.5 GAL jug), normalize to base unit price
+  - plannedCost = normalizedPlannedTotal * normalizedUnitPrice
+
+### Actual Cost (from logs)
+- actualToDate = sum(log.estimatedCost) where:
+  - log.blockId matches
+  - log.flags does NOT include UNIT_MISMATCH
+  - log.estimatedCost > 0
+- Allow filtering by date range (month/season) but default is season-to-date.
+
+### Remaining + Over/Under
+- plannedSeasonTotal = sum(plannedCost across lines)
+- remaining = max(plannedSeasonTotal - actualToDate, 0)
+- overUnder = actualToDate - plannedSeasonTotal
+
+### Cost Drivers
+- For a block or ranch: group plannedCost by material name and show top 5.
+
+---
+
+## UX Requirements
+
+### 1) Projections Dashboard (/app/projections)
+Layout:
+- Ranch selector (dropdown) + “All Ranches” option
+- KPI cards (large numbers):
+  - Planned Season Spend
+  - Actual-to-Date Spend
+  - Remaining Spend
+  - Over/Under (show +/– with badge)
+- “Setup Coverage” card:
+  - Blocks with projection template assigned: X / Y
+- “Top Cost Drivers” list (Top 5 materials by planned cost)
+- Blocks table (simple, not dense):
+  - Block name, acres, crop, template name, planned, actual, remaining, over/under
+  - Row click opens Block Projection Detail
+- Filters:
+  - Crop filter (peach/nect/plum/citrus/nuts)
+  - Only show “Needs Setup” blocks toggle
+
+### 2) Block Projection Detail (/app/projections/block/:blockId)
+Header:
+- Block name + ranch + acres + crop + irrigation method
+- Dropdown: select Program Template
+- Buttons:
+  - “Copy from Template” (applies template to block)
+  - “Reset Overrides”
+  - “Back”
+
+Main content:
+- Planned Passes list (cards per line):
+  - Type badge (SPRAY/NUTRITION/FERTIGATION)
+  - Material (name)
+  - Editable fields inline:
+    - rateValue
+    - rateUnit (dropdown limited to per-acre units)
+    - passesPlanned
+  - Computed:
+    - plannedTotalMaterial
+    - plannedCost
+  - Flags badges:
+    - Unit mismatch
+    - Unknown material
+- Totals footer:
+  - Planned Season Total
+  - Actual-to-Date
+  - Remaining
+  - Over/Under
+
+Add a “Quick Add Line” button:
+- Type, material name, rate, unit, passes
+- Uses alias match + guardrails.
+
+### 3) Program Templates Manager (/app/projections/templates)
+- List templates with crop tags
+- Create new template
+- Edit template lines (same line UI as block)
+- Duplicate template
+- Delete template (confirm modal)
+Seed 8 templates:
+- Stone fruit base program (peach/nect/plum)
+- Stone fruit high-pressure (extra fungicide passes)
+- Citrus fertigation-heavy
+- Almond base
+- Pistachio base
+- Walnut base
+(Templates can be rough/credible; allow edits.)
+
+---
+
+## Visual / Design
+- Dark mode default: deep green/charcoal surfaces, off-white text, gold accents
+- Use cards, badges, and spacing—avoid dense spreadsheets
+- Make numbers big and readable on mobile
+- Use consistent “warning orange” for mismatch/unknown flags
+
+---
+
+## Integration Notes (must not break existing app)
+- Add new Zustand slices for templates + projections
+- Reuse existing:
+  - unit parsing/normalization logic
+  - alias matching logic
+  - pack-size normalization logic
+  - cost guardrails behavior (fail closed to $0 + badges)
+- Add nav entry but keep routes isolated
+- Include a “Reset Demo Data” button that resets projections + templates too
+
+---
+
+## Demo Script (must work)
+1) Go to Projections → select a ranch
+2) Assign “Stone Fruit Base Program” to a block
+3) See planned totals and costs update instantly
+4) Edit passesPlanned from 1 → 2 and watch planned/remaining change
+5) Go back to dashboard and see ranch totals + top cost drivers
+6) Show a UNIT_MISMATCH badge on one line and confirm plannedCost = 0
