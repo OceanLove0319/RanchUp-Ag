@@ -1,0 +1,139 @@
+# REPLIT PATCH PROMPT — Vault v1.1 Tighteners (Audit-Usable Packet + Deterministic Sort + Print Polish)
+
+You are editing an existing React + TypeScript prototype. Keep the Nike-style dark forest green + gold aesthetic on the interactive Vault. Keep the print route clean white. Do NOT break existing routing. Modify ONLY these files unless you truly need a small shared util:
+
+- `client/src/pages/Vault.tsx`
+- `client/src/pages/VaultPrint.tsx`
+
+Goal: tighten the Vault + print packet so it behaves like a real Central Valley season records system in front of growers, PCAs, and audits.
+
+---
+
+## 0) Assumptions (match existing build)
+- Logs are stored with `dateApplied` as `"YYYY-MM-DD"` string.
+- You already have:
+  - Pacific “today” helper OR equivalent
+  - crop inference + active season window logic (startISO/endISO/label)
+  - rollups for Season Spend and counts
+- Vault already filters logs by selected block + active season window and groups into:
+  - “Sprays & Chemicals”
+  - “Fertility Program”
+
+If any helper isn’t easily importable, implement a tiny local helper inside the page file (do not refactor widely).
+
+---
+
+## 1) Make Every Line Item Audit-Usable (Vault + Print)
+For each displayed record row/card in BOTH `Vault.tsx` and `VaultPrint.tsx`, ensure these fields appear:
+
+- Date Applied: `dateApplied`
+- Material: `chemicalName`
+- Category: `category` (small badge)
+- Method: `method` (small badge)
+- Cost: formatted USD if present, otherwise show “—”
+- Notes: show 1-line preview; add “Show more” expand/collapse if notes length > 80 chars
+
+### Notes expand/collapse behavior
+- Default collapsed.
+- Expand only that row.
+- Keep state local to each page (React state keyed by log id or stable index).
+
+---
+
+## 2) Deterministic Sort (Must Be Identical on Vault + Print)
+Before grouping into sections, sort filtered logs with a deterministic comparator:
+
+Primary: `dateApplied` ascending (oldest → newest)  
+Secondary: `category` alphabetical  
+Tertiary: `chemicalName` alphabetical
+
+Because dateApplied is ISO date-only string, lexicographic compare is valid.
+
+Implement helper function inside BOTH files (or shared in one small util if preferred):
+- `sortLogsDeterministic(logs)`
+
+IMPORTANT: Apply same sorting to both sections.
+
+---
+
+## 3) Packet Header Tighteners (Print Route)
+In `VaultPrint.tsx`, add a top “packet header” section with:
+
+- Title: `KEBB Ag™ Season Packet`
+- Block name + acreage
+- Variety + irrigationType + yieldTargetBins (b/ac) + waterTargetAcreFeet (ac-ft)
+- Active Season Window (explicit): `startISO – endISO`
+- Generated on: Pacific date (use existing helper or implement local `todayPacificISO` with Intl timeZone)
+
+Add a small line:
+- “Dates default to Pacific Time (CA).”
+
+---
+
+## 4) Summary Bar Improvements (Vault + Print)
+In BOTH routes, show:
+- Total Season Spend (USD)
+- Total Applications (# logs)
+- Section sub-totals:
+  - Sprays & Chemicals: spend + count
+  - Fertility Program: spend + count
+
+Also add “Cost coverage” indicator:
+- `costCoverage = logsWithCost / totalLogs`
+- Display as: `Cost coverage: 7/10` (and optionally percentage)
+
+Add a short disclaimer line (subtle):
+- “Some applications may not have costs entered.”
+
+IMPORTANT:
+- “Spend” must only sum logs where estimatedCost is a finite number.
+- Blank costs should not count toward spend but should count toward application totals.
+
+---
+
+## 5) Print Layout Polish (Prevent Bad Page Breaks + Footer)
+In `VaultPrint.tsx`, add minimal print styles (inline `<style>` tag is acceptable if you don’t have a global print.css pipeline):
+
+### Required print CSS behaviors
+- Hide any non-essential UI controls in print (Back link, buttons).
+- Ensure no row is split across pages:
+  - Apply `break-inside: avoid; page-break-inside: avoid;` to each log row container.
+- Add clean section spacing and optional page breaks:
+  - Allow page breaks BETWEEN sections, not inside rows.
+- Add footer with page numbers + context:
+  - Use CSS counters:
+    - `@page { margin: ... }`
+    - `body { counter-reset: page; }` (or rely on browser)
+  - Add footer element fixed at bottom:
+    - `BlockName • startISO–endISO • Page X`
+  - If page counters are unreliable in some browsers, still include the footer text without page number.
+
+Keep typography clean and readable.
+
+---
+
+## 6) Ensure Export Preserves Selection Context
+In `Vault.tsx` export button handler, ensure it routes to `/vault/print/:id` using the currently selected block id. No additional query params needed.
+
+Print route must recompute the same active season window for that block and filter identically.
+
+---
+
+## 7) Acceptance Checks (Must Pass)
+1) Vault and Print show identical records for the same selected block (same counts).
+2) Sorting is stable: same-day entries always appear in category/name order.
+3) Print packet includes explicit season window and “Generated on” date.
+4) Print output doesn’t chop rows mid-page.
+5) Cost coverage reads correctly when some logs have no estimatedCost.
+
+---
+
+## Implementation Notes (Stay Minimal)
+- Do not introduce new dependencies.
+- If logs don’t have an id, create a stable key using:
+  - `${blockId}-${dateApplied}-${chemicalId}-${method}-${index}`
+- Use existing formatting utilities if present; otherwise use Intl.NumberFormat inline.
+
+Proceed to implement these tighteners now in:
+- `client/src/pages/Vault.tsx`
+- `client/src/pages/VaultPrint.tsx`
