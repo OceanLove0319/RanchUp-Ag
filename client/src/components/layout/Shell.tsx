@@ -2,6 +2,8 @@ import { Link, useLocation } from "wouter";
 import { Home, Map, ClipboardEdit, Archive, Settings, LogOut, FlaskConical } from "lucide-react";
 import { useStore } from "@/lib/store";
 
+import RanchSwitcher from "@/components/RanchSwitcher";
+
 export default function Shell({ children }: { children: React.ReactNode }) {
   const [location] = useLocation();
   const logout = useStore((state) => state.logout);
@@ -18,8 +20,9 @@ export default function Shell({ children }: { children: React.ReactNode }) {
     <div className="min-h-screen bg-background text-foreground flex flex-col md:flex-row">
       {/* Top Nav (Mobile) / Side Nav (Desktop) */}
       <nav className="border-b border-border md:border-r md:w-64 flex-shrink-0 flex md:flex-col justify-between bg-background p-4 fixed md:sticky bottom-0 md:top-0 w-full md:h-screen z-50 order-last md:order-first">
-        <div className="hidden md:block mb-8">
-          <h1 className="text-xl font-black text-white tracking-widest">KEBB AG™</h1>
+        <div className="hidden md:block mb-6">
+          <h1 className="text-xl font-black text-white tracking-widest mb-4">KEBB AG™</h1>
+          <RanchSwitcher />
         </div>
         
         <div className="flex md:flex-col justify-around md:justify-start w-full gap-2">

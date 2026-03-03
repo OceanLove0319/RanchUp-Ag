@@ -20,6 +20,9 @@ import Chemicals from "@/pages/Chemicals";
 import ChemicalNew from "@/pages/ChemicalNew";
 import Pricing from "@/pages/Pricing";
 import Billing from "@/pages/Billing";
+import WeeklyPacket from "@/pages/WeeklyPacket";
+import MonthlySummary from "@/pages/MonthlySummary";
+import VarianceFlags from "@/pages/VarianceFlags";
 
 function Router() {
   return (
@@ -60,6 +63,15 @@ function Router() {
       </Route>
       <Route path="/app/settings/billing">
         <Shell><Billing /></Shell>
+      </Route>
+      <Route path="/app/reports/weekly">
+        <Shell><WeeklyPacket /></Shell>
+      </Route>
+      <Route path="/app/reports/monthly">
+        <Shell><MonthlySummary /></Shell>
+      </Route>
+      <Route path="/app/reports/variance">
+        <Shell><VarianceFlags /></Shell>
       </Route>
 
       <Route component={NotFound} />

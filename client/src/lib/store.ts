@@ -2,8 +2,15 @@ import { create } from 'zustand';
 import { todayPacificISO } from '@/utils/dates';
 import { CHEMICALS_SEED } from '@/data/chemicalsSeed';
 
+export type Ranch = {
+  id: string;
+  name: string;
+  region?: string;
+};
+
 export type Block = {
   id: string;
+  ranchId: string;
   name: string;
   acreage: number;
   variety: string;
@@ -15,6 +22,7 @@ export type Block = {
 
 export type FieldLog = {
   id: string;
+  ranchId: string;
   blockId: string;
   date: string;
   actionType: 'SPRAY' | 'FERT' | 'IRRIGATE';
@@ -41,6 +49,7 @@ export type Chemical = {
 
 export type ChemicalApp = {
   id: string;
+  ranchId: string;
   blockId: string;
   chemicalId: string;
   chemicalName: string;
@@ -61,6 +70,8 @@ export type BillingState = {
 
 type AppState = {
   user: { name: string; org: string } | null;
+  ranches: Ranch[];
+  activeRanchId: string | null;
   blocks: Block[];
   logs: FieldLog[];
   chemicals: Chemical[];
@@ -69,6 +80,8 @@ type AppState = {
   
   login: () => void;
   logout: () => void;
+  addRanch: (ranch: Ranch) => void;
+  setActiveRanch: (id: string) => void;
   addBlock: (block: Block) => void;
   updateBlock: (id: string, block: Partial<Block>) => void;
   deleteBlock: (id: string) => void;
@@ -93,20 +106,30 @@ const getInitialBilling = (): BillingState => {
   } catch (e) {}
   
   return {
-    planId: "STARTER",
+    planId: "PRO", // Default to PRO for demo
     isAnnual: false,
-    addOns: {},
+    addOns: { "COST_ENGINE": true }, // Default Cost engine on
     onboardingPurchased: false
   };
 };
 
+const demoRanches: Ranch[] = [
+  { id: "ranch-1", name: "North Home Ranch" },
+  { id: "ranch-2", name: "River Bottom" },
+  { id: "ranch-3", name: "East Side Pilot" },
+];
+
 export const useStore = create<AppState>((set) => ({
-  user: null,
+  user: { name: 'Demo User', org: 'KEBB Farms' }, // Auto logged in for demo
   billing: getInitialBilling(),
   
+  ranches: demoRanches,
+  activeRanchId: demoRanches[0].id,
+
   blocks: [
     {
       id: 'demo-peach-1',
+      ranchId: 'ranch-1',
       name: 'North 40 Peaches',
       acreage: 40,
       variety: 'O\'Henry Peach',
@@ -117,6 +140,7 @@ export const useStore = create<AppState>((set) => ({
     },
     {
       id: 'demo-citrus-1',
+      ranchId: 'ranch-1',
       name: 'East Navels',
       acreage: 25,
       variety: 'Washington Navel',
@@ -127,6 +151,7 @@ export const useStore = create<AppState>((set) => ({
     },
     {
       id: 'demo-citrus-2',
+      ranchId: 'ranch-2',
       name: 'South Lemons',
       acreage: 15,
       variety: 'Lisbon Lemon',
@@ -139,6 +164,7 @@ export const useStore = create<AppState>((set) => ({
   logs: [
     {
       id: 'l1',
+      ranchId: 'ranch-1',
       blockId: 'demo-peach-1',
       date: todayPacificISO(),
       actionType: 'IRRIGATE',
@@ -148,6 +174,7 @@ export const useStore = create<AppState>((set) => ({
     },
     {
       id: 'l2',
+      ranchId: 'ranch-1',
       blockId: 'demo-citrus-1',
       date: todayPacificISO(),
       actionType: 'FERT',
@@ -161,6 +188,7 @@ export const useStore = create<AppState>((set) => ({
   chemicalApps: [
     {
       id: 'a1',
+      ranchId: 'ranch-1',
       blockId: 'demo-peach-1',
       chemicalId: 'cv-022',
       chemicalName: 'Boscalid + Pyraclostrobin (Pristine)',
@@ -173,6 +201,7 @@ export const useStore = create<AppState>((set) => ({
     },
     {
       id: 'a2',
+      ranchId: 'ranch-1',
       blockId: 'demo-citrus-1',
       chemicalId: 'cv-093',
       chemicalName: 'CAN-17 (calcium ammonium nitrate)',
@@ -184,8 +213,24 @@ export const useStore = create<AppState>((set) => ({
       notes: 'Spring flush'
     }
   ],
-  login: () => set({ user: { name: 'Demo User', org: 'KEBB Farms' } }),
-  logout: () => set({ user: null }),
+  
+  login: () => set({ 
+    user: { name: 'Demo User', org: 'KEBB Farms' },
+    ranches: demoRanches,
+    activeRanchId: demoRanches[0].id
+  }),
+  logout: () => set({ 
+    user: null,
+    ranches: [],
+    activeRanchId: null,
+    blocks: [],
+    logs: [],
+    chemicalApps: []
+  }),
+  
+  addRanch: (ranch) => set((state) => ({ ranches: [...state.ranches, ranch] })),
+  setActiveRanch: (id) => set({ activeRanchId: id }),
+  
   addBlock: (block) => set((state) => ({ blocks: [...state.blocks, block] })),
   updateBlock: (id, updatedFields) => set((state) => ({
     blocks: state.blocks.map(b => b.id === id ? { ...b, ...updatedFields } : b)

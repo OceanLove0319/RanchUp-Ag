@@ -1,0 +1,173 @@
+--- client/src/lib/store.ts
++++ client/src/lib/store.ts
+@@ -2,6 +2,12 @@
+ import { persist } from "zustand/middleware";
+ import { TOP_100_CHEMICALS } from "@/data/chemicalsSeed";
+ 
++export type Ranch = {
++  id: string;
++  name: string;
++  region?: string;
++};
++
+ export type Block = {
+   id: string;
++  ranchId: string;
+   name: string;
+   acreage: number;
+   variety: string;
+@@ -14,6 +20,7 @@
+ 
+ export type FieldLog = {
+   id: string;
++  ranchId: string;
+   blockId: string;
+   date: string;
+   actionType: 'SPRAY' | 'FERT' | 'IRRIGATE';
+@@ -41,6 +48,7 @@
+ 
+ export type ChemicalApp = {
+   id: string;
++  ranchId: string;
+   blockId: string;
+   chemicalId: string;
+   chemicalName: string;
+@@ -82,6 +90,8 @@
+   user: { email: string, org: string } | null;
+   onboardingComplete: boolean;
+   billing: BillingState;
++  ranches: Ranch[];
++  activeRanchId: string | null;
+   blocks: Block[];
+   logs: FieldLog[];
+   chemicals: Chemical[]; // Full library
+@@ -93,6 +103,8 @@
+   setOnboardingComplete: (complete: boolean) => void;
+   setPlan: (plan: BillingState['plan']) => void;
+   setAddOn: (addon: keyof BillingState['addOns'], value: boolean) => void;
++  addRanch: (ranch: Ranch) => void;
++  setActiveRanch: (id: string) => void;
+   addBlock: (block: Block) => void;
+   updateBlock: (id: string, block: Partial<Block>) => void;
+   deleteBlock: (id: string) => void;
+@@ -107,17 +119,25 @@
+   onboardingComplete: false,
+   billing: { plan: 'FREE', addOns: { COST_ENGINE: false, EXTRA_USERS: false } },
+   user: null,
++  ranches: [],
++  activeRanchId: null,
+   blocks: [],
+   logs: [],
+   chemicals: TOP_100_CHEMICALS,
+   chemicalApps: [],
+ 
+   login: (email, org) => {
+-    // Demo account magic: Auto-activate PRO and Cost Engine
++    // Pre-seed some ranches for demo
++    const demoRanches = [
++      { id: "ranch-1", name: "North Home Ranch" },
++      { id: "ranch-2", name: "River Bottom" },
++      { id: "ranch-3", name: "East Side Pilot" },
++    ];
++
+     if (email === 'demo@kebbfarms.com') {
+       set((state) => ({ 
+         user: { email, org },
+-        billing: { ...state.billing, plan: 'PRO', addOns: { ...state.billing.addOns, COST_ENGINE: true } },
++        billing: { ...state.billing, plan: 'PRO', addOns: { ...state.billing.addOns, COST_ENGINE: true } },
++        ranches: demoRanches,
++        activeRanchId: demoRanches[0].id,
+         blocks: [
+           {
+             id: "demo-b1",
++            ranchId: "ranch-1",
+             name: "North 40 Peaches",
+             acreage: 40,
+             variety: "O'Henry",
+@@ -131,6 +151,7 @@
+           },
+           {
+             id: "demo-b2",
++            ranchId: "ranch-1",
+             name: "East Navels",
+             acreage: 25,
+             variety: "Washington Navel",
+@@ -144,6 +165,7 @@
+           },
+           {
+             id: "demo-b3",
++            ranchId: "ranch-2",
+             name: "South Lemons",
+             acreage: 18,
+             variety: "Lisbon",
+@@ -158,6 +180,7 @@
+         logs: [
+           {
+             id: "log-1",
++            ranchId: "ranch-1",
+             blockId: "demo-b1",
+             date: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+             actionType: "SPRAY",
+@@ -168,6 +191,7 @@
+           },
+           {
+             id: "log-2",
++            ranchId: "ranch-1",
+             blockId: "demo-b1",
+             date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+             actionType: "FERT",
+@@ -180,6 +204,7 @@
+         chemicalApps: [
+           {
+             id: "app-1",
++            ranchId: "ranch-1",
+             blockId: "demo-b1",
+             chemicalId: "pristine",
+             chemicalName: "Pristine",
+@@ -192,6 +217,7 @@
+           },
+           {
+             id: "app-2",
++            ranchId: "ranch-1",
+             blockId: "demo-b1",
+             chemicalId: "can17",
+             chemicalName: "CAN-17",
+@@ -204,6 +230,7 @@
+           },
+           {
+             id: "app-3",
++            ranchId: "ranch-1",
+             blockId: "demo-b1",
+             chemicalId: "bad-unit-test",
+             chemicalName: "Pristine",
+@@ -218,6 +245,7 @@
+         ]
+       }));
+     } else {
+-      set({ user: { email, org } });
++      set({ user: { email, org }, ranches: demoRanches, activeRanchId: demoRanches[0].id });
+     }
+   },
+   logout: () => set({ 
+     user: null, 
+     onboardingComplete: false, 
++    ranches: [],
++    activeRanchId: null,
+     blocks: [], 
+     logs: [],
+     chemicalApps: []
+   }),
+   setOnboardingComplete: (complete) => set({ onboardingComplete: complete }),
+   setPlan: (plan) => set((state) => ({ billing: { ...state.billing, plan } })),
+   setAddOn: (addon, value) => set((state) => ({ billing: { ...state.billing, addOns: { ...state.billing.addOns, [addon]: value } } })),
++  addRanch: (ranch) => set((state) => ({ ranches: [...state.ranches, ranch] })),
++  setActiveRanch: (id) => set({ activeRanchId: id }),
+   addBlock: (block) => set((state) => ({ blocks: [...state.blocks, block] })),
+   updateBlock: (id, updates) => set((state) => ({
+     blocks: state.blocks.map(b => b.id === id ? { ...b, ...updates } : b)
+   })),
+   deleteBlock: (id) => set((state) => ({
+     blocks: state.blocks.filter(b => b.id !== id),
+     logs: state.logs.filter(l => l.blockId !== id),
+     chemicalApps: state.chemicalApps.filter(a => a.blockId !== id)
+   })),

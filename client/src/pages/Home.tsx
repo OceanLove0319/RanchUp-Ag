@@ -1,26 +1,34 @@
 import { Link } from "wouter";
-import { ClipboardEdit, Target, Archive, ArrowRight } from "lucide-react";
+import { ClipboardEdit, Target, Archive, ArrowRight, FileText, BarChart, AlertTriangle } from "lucide-react";
 import { useStore } from "@/lib/store";
 
 export default function Home() {
   const user = useStore(s => s.user);
+  const activeRanchId = useStore(s => s.activeRanchId);
+  const activeRanch = useStore(s => s.ranches.find(r => r.id === activeRanchId));
 
   return (
     <div className="animate-in fade-in duration-500">
       <header className="mb-10">
         <p className="text-xs font-bold uppercase tracking-widest text-primary mb-2">Good Morning</p>
-        <h1 className="text-4xl md:text-5xl font-black uppercase tracking-tighter text-foreground">
+        <h1 className="text-4xl md:text-5xl font-black uppercase tracking-tighter text-foreground mb-2">
           {user?.org || "Operation"}
         </h1>
+        {activeRanch && (
+          <div className="inline-flex items-center bg-white/5 border border-white/10 px-3 py-1.5 rounded-full mt-2">
+            <span className="text-sm font-bold uppercase tracking-widest text-white">{activeRanch.name}</span>
+          </div>
+        )}
       </header>
 
-      <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-4">Next Steps</p>
+      <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-4">Quick Actions</p>
       
-      <div className="grid md:grid-cols-3 gap-4 md:gap-6">
-        <Link href="/app/log" className="bg-card border border-border p-6 md:p-8 rounded-lg hover:border-primary/50 transition-colors group flex flex-col justify-between min-h-[200px]">
+      {/* Top row: Core flow */}
+      <div className="grid md:grid-cols-2 gap-4 md:gap-6 mb-10">
+        <Link href="/app/log" className="bg-card border border-border p-6 md:p-8 rounded-lg hover:border-primary/50 transition-colors group flex flex-col justify-between min-h-[160px]">
           <div>
-            <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-6 text-primary">
-              <ClipboardEdit className="w-6 h-6" />
+            <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center mb-4 text-primary">
+              <ClipboardEdit className="w-5 h-5" />
             </div>
             <h2 className="text-2xl font-black uppercase tracking-tight text-foreground mb-2">Log Action</h2>
             <p className="text-muted-foreground font-medium">Record field work while you're in the orchard.</p>
@@ -30,29 +38,50 @@ export default function Home() {
           </div>
         </Link>
 
-        <Link href="/app/blocks" className="bg-card border border-border p-6 md:p-8 rounded-lg hover:border-primary/50 transition-colors group flex flex-col justify-between min-h-[200px]">
+        <Link href="/app/blocks" className="bg-card border border-border p-6 md:p-8 rounded-lg hover:border-primary/50 transition-colors group flex flex-col justify-between min-h-[160px]">
           <div>
-            <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-6 text-primary">
-              <Target className="w-6 h-6" />
+            <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center mb-4 text-primary">
+              <Target className="w-5 h-5" />
             </div>
-            <h2 className="text-2xl font-black uppercase tracking-tight text-foreground mb-2">Plan</h2>
-            <p className="text-muted-foreground font-medium">Review targets and ingredient plans by block.</p>
+            <h2 className="text-2xl font-black uppercase tracking-tight text-foreground mb-2">Blocks</h2>
+            <p className="text-muted-foreground font-medium">Manage blocks and targets.</p>
           </div>
           <div className="mt-8 flex items-center text-primary font-bold uppercase tracking-widest text-sm group-hover:translate-x-2 transition-transform">
-            Review <ArrowRight className="ml-2 w-4 h-4" />
+            Manage <ArrowRight className="ml-2 w-4 h-4" />
+          </div>
+        </Link>
+      </div>
+
+      <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-4">Reports & Analysis</p>
+
+      <div className="grid md:grid-cols-3 gap-4 md:gap-6">
+        <Link href="/app/reports/weekly" className="bg-card border border-border p-6 rounded-lg hover:border-primary/50 transition-colors group flex flex-col justify-between">
+          <div>
+            <div className="w-10 h-10 bg-white/5 rounded flex items-center justify-center mb-4 text-white">
+              <FileText className="w-5 h-5" />
+            </div>
+            <h2 className="text-lg font-black uppercase tracking-tight text-foreground mb-1">Weekly Packet</h2>
+            <p className="text-sm text-muted-foreground">Audit-ready compliance report.</p>
           </div>
         </Link>
 
-        <Link href="/app/vault" className="bg-card border border-border p-6 md:p-8 rounded-lg hover:border-primary/50 transition-colors group flex flex-col justify-between min-h-[200px]">
+        <Link href="/app/reports/monthly" className="bg-card border border-border p-6 rounded-lg hover:border-primary/50 transition-colors group flex flex-col justify-between">
           <div>
-            <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-6 text-primary">
-              <Archive className="w-6 h-6" />
+            <div className="w-10 h-10 bg-white/5 rounded flex items-center justify-center mb-4 text-white">
+              <BarChart className="w-5 h-5" />
             </div>
-            <h2 className="text-2xl font-black uppercase tracking-tight text-foreground mb-2">Vault</h2>
-            <p className="text-muted-foreground font-medium">Access season records and field notes.</p>
+            <h2 className="text-lg font-black uppercase tracking-tight text-foreground mb-1">Monthly Summary</h2>
+            <p className="text-sm text-muted-foreground">Spend by block and type.</p>
           </div>
-          <div className="mt-8 flex items-center text-primary font-bold uppercase tracking-widest text-sm group-hover:translate-x-2 transition-transform">
-            Open <ArrowRight className="ml-2 w-4 h-4" />
+        </Link>
+
+        <Link href="/app/reports/variance" className="bg-card border border-border p-6 rounded-lg hover:border-primary/50 transition-colors group flex flex-col justify-between">
+          <div>
+            <div className="w-10 h-10 bg-orange-400/10 rounded flex items-center justify-center mb-4 text-orange-400">
+              <AlertTriangle className="w-5 h-5" />
+            </div>
+            <h2 className="text-lg font-black uppercase tracking-tight text-foreground mb-1">Variance Flags</h2>
+            <p className="text-sm text-muted-foreground">Cost spikes and unit mismatches.</p>
           </div>
         </Link>
       </div>
