@@ -42,7 +42,7 @@ export default function Landing() {
         </div>
         
         <div className="mt-20 text-muted-foreground/50 font-semibold uppercase tracking-widest text-sm">
-          Made for Central Valley stone fruit growers.
+          Made for Central Valley tree fruit, nut, and citrus growers.
         </div>
       </main>
     </div>

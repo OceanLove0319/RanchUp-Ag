@@ -19,7 +19,7 @@ export default function Onboarding() {
     yieldTarget: "30"
   });
 
-  const crops = ["Peach", "Nectarine", "Plum", "Apricot", "Cherry", "Almond"];
+  const crops = ["Peach", "Nectarine", "Plum", "Apricot", "Cherry", "Almond", "Citrus", "Pistachio"];
   const seasons = ["Early", "Mid", "Late"];
   const irrigation = ["Flood", "Drip", "Fanjet", "Sprinkler"];
   const yields = ["20", "30", "40"];
