@@ -48,6 +48,7 @@ export type ChemicalApp = {
   dateApplied: string;
   method: string;
   estimatedCost?: number;
+  costStatus?: "ESTIMATED" | "UNIT_MISMATCH" | "INVOICE";
   notes?: string;
 };
 

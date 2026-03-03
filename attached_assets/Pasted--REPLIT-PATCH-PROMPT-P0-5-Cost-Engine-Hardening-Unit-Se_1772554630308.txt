@@ -1,0 +1,145 @@
+# REPLIT PATCH PROMPT — P0.5 Cost Engine Hardening (Unit Semantics + Unit Normalization Guardrails)
+
+You are editing the existing KEBB Ag™ React + TypeScript prototype. Do NOT break existing routing, Vault, VaultPrint, Quick Log templates, or the new Chemical Library alias matching. Goal: harden cost calculations so demo math is deterministic and never silently wrong.
+
+## Scope (keep surgical)
+Modify only where needed:
+- `client/src/pages/Log.tsx` (Field Log UI + Quick Log + ChemicalApp creation)
+- `client/src/pages/Vault.tsx` (display badges for unit mismatch)
+- `client/src/pages/VaultPrint.tsx` (display badges for unit mismatch)
+- `client/src/lib/store.ts` (types + helper functions if appropriate)
+
+No new dependencies.
+
+---
+
+# PART 1 — Unit Semantics Must Be Explicit (Rate vs Total)
+
+## Problem
+Cost math requires knowing whether the entered amount is:
+- rate per acre (lb/ac, oz/ac, gal/ac), or
+- total product (lb, oz, gal), or
+- time (hrs), or
+- program item ($/acre)
+
+Right now, the UI may only expose units like: GAL/LB/OZ/HRS, which is ambiguous.
+
+## Solution (Best)
+### A) Add explicit “/AC” units to the unit dropdown
+In `Log.tsx`, update the unit options:
+- For SPRAY action: `OZ/AC`, `LB/AC`, `GAL/AC`, plus optionally `OZ`, `LB`, `GAL`
+- For FERT action: `LB/AC`, `GAL/AC`, plus optionally `LB`, `GAL`
+- For IRRIGATE: `HRS` (only)
+- For OTHER/program: `$/AC` (optional, used for mating disruption)
+
+Default selection:
+- SPRAY and FERT default to `/AC` units
+- IRRIGATE defaults to `HRS`
+
+### B) If you cannot add /AC units (fallback)
+Add a toggle next to Amount:
+- Label: **Per Acre**
+- Default ON for SPRAY + FERT
+- Default OFF for IRRIGATE
+When ON, treat the entered amount as “per acre” even if the unit lacks `/AC`.
+
+Implement BOTH if feasible:
+- Prefer explicit `/AC` units; keep the toggle as a safety net only if needed.
+
+---
+
+# PART 2 — Deterministic Total Units Rule (No Guessing)
+Implement helper in `Log.tsx` (or store util):
+
+`computeTotalUnits({ amount, unit, perAcre, blockAcreage }): number`
+
+Rules:
+1) Parse amount safely: `rate = parseFloat(amount)`; if NaN → return 0.
+2) Determine per-acre:
+   - `isPerAcre = unit.includes("/AC") || perAcre === true`
+3) If `isPerAcre` → `totalUnits = rate * blockAcreage`
+4) Else → `totalUnits = rate`
+5) Round to a sensible precision (2–4 decimals) for cost math stability.
+
+Store the user’s unit EXACTLY as entered (do not silently change it).
+
+---
+
+# PART 3 — Unit Normalization Guardrails (Avoid Silent Wrong Totals)
+
+## Problem
+Chemical Library units include mixed pricing units: GAL, LB, OZ, TON, ACRE, pack sizes like 2.5GAL/50LB.
+If the Chemical unit doesn’t match the Log unit, you can produce wrong costs.
+
+## Prototype-safe rule (Must Implement)
+**Cost Engine v1 only calculates cost when units are compatible.**
+If incompatible:
+- `estimatedCost = 0`
+- set a flag on the ChemicalApp: `costStatus = "UNIT_MISMATCH"` (see below)
+- show small badge: “Cost not estimated (unit mismatch)”
+
+### Compatibility matrix
+Define a function:
+
+`areUnitsCompatible(chemicalUnit: string, logUnit: string): boolean`
+
+Allowed matches (case-insensitive):
+- Same base unit:
+  - Chemical: GAL matches Log: GAL or GAL/AC
+  - Chemical: LB matches Log: LB or LB/AC
+  - Chemical: OZ matches Log: OZ or OZ/AC
+  - Chemical: ACRE matches Log: $/AC (program items)
+- TON only matches TON (v1)
+  - If chemical unit is TON and log unit is GAL/AC or GAL → mismatch (no density conversion in v1)
+- Pack sizes (e.g., 2.5GAL, 50LB, 25LB, 7.5LB, 45OZ):
+  - v1 behavior: treat as mismatch unless log unit matches that exact pack size string
+  - OR simpler: convert the chemical’s unit to its base unit by stripping pack sizes:
+    - 2.5GAL → base GAL
+    - 50LB / 25LB / 7.5LB → base LB
+    - 45OZ / 20OZ → base OZ
+  Choose one approach:
+  - Preferred: **strip to base unit** so your pricing still works.
+
+Implement helper:
+`normalizeUnit(u: string): { base: "GAL"|"LB"|"OZ"|"TON"|"ACRE"| "HRS" | "USD_AC" | "UNKNOWN"; multiplier?: number }`
+
+Examples:
+- "2.5GAL" → base GAL, multiplier 2.5
+- "7.5LB" → base LB, multiplier 7.5
+- "45OZ" → base OZ, multiplier 45
+- "GAL/AC" → base GAL (log-side), indicates per-acre
+- "$/AC" → base USD_AC (log-side program)
+- "HRS" → base HRS (no cost calc here unless you add water pricing later)
+
+Then:
+- Compare normalized bases for compatibility.
+
+---
+
+# PART 4 — Cost Calculation v1 (Never Wrong, Sometimes Zero)
+When generating a ChemicalApp from Log:
+1) Look up matched Chemical from library:
+   - use unitCostLow + unitCostHigh midpoint
+2) Compute totalUnits using Part 2
+3) If units compatible:
+   - If Chemical unit is pack-sized and you normalized it with multiplier:
+     - Convert chemical’s unit price to base unit price:
+       - baseUnitCostMid = packPriceMid / multiplier
+     - estimatedCost = totalUnits * baseUnitCostMid
+   - Else:
+     - estimatedCost = totalUnits * unitCostMid
+   - Set `costStatus = "ESTIMATED"`
+4) If units NOT compatible:
+   - estimatedCost = 0
+   - costStatus = "UNIT_MISMATCH"
+
+Also allow:
+- If user manually enters/overrides cost (if that exists), set costStatus = "INVOICE"
+
+---
+
+# PART 5 — Extend ChemicalApp With costStatus (Minimal Add)
+In `client/src/lib/store.ts`, extend ChemicalApp type:
+
+```ts
+costStatus?: "ESTIMATED" | "UNIT_MISMATCH" | "INVOICE";

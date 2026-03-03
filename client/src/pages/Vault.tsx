@@ -174,9 +174,16 @@ export default function Vault() {
                     {app.method}
                   </span>
                 </div>
-                <span className="font-bold text-foreground">
-                  {Number.isFinite(app.estimatedCost) ? `$${app.estimatedCost.toLocaleString()}` : '—'}
-                </span>
+                <div className="flex flex-col items-end gap-1">
+                  <span className="font-bold text-foreground">
+                    {Number.isFinite(app.estimatedCost) ? `$${app.estimatedCost.toLocaleString()}` : '—'}
+                  </span>
+                  {app.costStatus === 'UNIT_MISMATCH' && (
+                    <span className="text-[9px] font-bold uppercase tracking-widest text-orange-400 bg-orange-400/10 px-1.5 py-0.5 rounded border border-orange-400/30">
+                      Unit Mismatch
+                    </span>
+                  )}
+                </div>
               </div>
               <h3 className="text-lg font-black text-foreground">{app.chemicalName}</h3>
               {renderNote(app)}
@@ -205,9 +212,16 @@ export default function Vault() {
                     {app.method}
                   </span>
                 </div>
-                <span className="font-bold text-foreground">
-                  {Number.isFinite(app.estimatedCost) ? `$${app.estimatedCost.toLocaleString()}` : '—'}
-                </span>
+                <div className="flex flex-col items-end gap-1">
+                  <span className="font-bold text-foreground">
+                    {Number.isFinite(app.estimatedCost) ? `$${app.estimatedCost.toLocaleString()}` : '—'}
+                  </span>
+                  {app.costStatus === 'UNIT_MISMATCH' && (
+                    <span className="text-[9px] font-bold uppercase tracking-widest text-orange-400 bg-orange-400/10 px-1.5 py-0.5 rounded border border-orange-400/30">
+                      Unit Mismatch
+                    </span>
+                  )}
+                </div>
               </div>
               <h3 className="text-lg font-black text-foreground">{app.chemicalName}</h3>
               {renderNote(app)}

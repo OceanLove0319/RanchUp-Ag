@@ -3,7 +3,7 @@ import { useStore } from "@/lib/store";
 import { Droplets, Sprout, ShieldAlert, Check, Zap, Star } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { todayPacificISO } from "@/utils/dates";
-import { isPerAcreUnit, getBaseUnit, calcTotal, calcLoads, formatNumber } from "@/utils/mathHelpers";
+import { isPerAcreUnit, getBaseUnit, calcTotal, calcLoads, formatNumber, normalizeUnit, areUnitsCompatible } from "@/utils/mathHelpers";
 
 type ActionType = 'SPRAY' | 'FERT' | 'IRRIGATE';
 
@@ -219,6 +219,7 @@ export default function Log() {
     let activeChemicalId: string | undefined;
     let activeChemicalName = formData.material || action;
     let estimatedCost: number | undefined;
+    let costStatus: "ESTIMATED" | "UNIT_MISMATCH" | "INVOICE" | undefined;
 
     // Try to match material to the new Chemical Library seed
     if (action === 'SPRAY' || action === 'FERT') {
@@ -232,16 +233,30 @@ export default function Log() {
         activeChemicalId = matchedChem.id;
         activeChemicalName = matchedChem.name; // Normalize name to library
 
-        // Compute cost if possible
-        if (matchedChem.unitCostLow && matchedChem.unitCostHigh) {
-          const midCost = (matchedChem.unitCostLow + matchedChem.unitCostHigh) / 2;
-          
-          if (isPerAcreUnit(formData.unit) && block?.acreage) {
-            const totalUnits = Number(formData.amount) * block.acreage;
-            estimatedCost = Math.round(totalUnits * midCost);
-          } else {
-            // Assume the amount is total units
-            estimatedCost = Math.round(Number(formData.amount) * midCost);
+        const logUnit = formData.unit || '';
+        
+        // 1. Check unit compatibility
+        if (!areUnitsCompatible(matchedChem.unit, logUnit)) {
+          estimatedCost = 0;
+          costStatus = "UNIT_MISMATCH";
+        } else {
+          // Units match, calculate cost
+          if (matchedChem.unitCostLow && matchedChem.unitCostHigh) {
+            const packPriceMid = (matchedChem.unitCostLow + matchedChem.unitCostHigh) / 2;
+            
+            // Normalize chemical unit to check for multiplier (e.g. 2.5GAL)
+            const chemNorm = normalizeUnit(matchedChem.unit);
+            const baseUnitCostMid = chemNorm.multiplier ? (packPriceMid / chemNorm.multiplier) : packPriceMid;
+            
+            let totalUnits = 0;
+            if (isPerAcreUnit(logUnit) && block?.acreage) {
+              totalUnits = Number(formData.amount) * block.acreage;
+            } else {
+              totalUnits = Number(formData.amount);
+            }
+            
+            estimatedCost = Math.round(totalUnits * baseUnitCostMid);
+            costStatus = "ESTIMATED";
           }
         }
       }
@@ -272,6 +287,7 @@ export default function Log() {
         dateApplied: formData.date,
         method: action,
         estimatedCost: estimatedCost,
+        costStatus: costStatus,
         notes: isPerAcreUnit(formData.unit) 
           ? `Logged via Quick Log: ${formData.amount} ${formData.unit}` 
           : `Logged via Quick Log`

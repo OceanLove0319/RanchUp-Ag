@@ -198,8 +198,15 @@ export default function VaultPrint() {
                       {app.method}
                     </span>
                   </div>
-                  <div className="w-24 text-right font-bold">
-                    {Number.isFinite(app.estimatedCost) ? `$${app.estimatedCost.toLocaleString()}` : '—'}
+                  <div className="w-24 flex flex-col items-end gap-1">
+                    <span className="font-bold">
+                      {Number.isFinite(app.estimatedCost) ? `$${app.estimatedCost.toLocaleString()}` : '—'}
+                    </span>
+                    {app.costStatus === 'UNIT_MISMATCH' && (
+                      <span className="text-[8px] font-bold uppercase tracking-widest text-gray-500 border border-gray-300 px-1 py-0.5 rounded">
+                        Unit Mismatch
+                      </span>
+                    )}
                   </div>
                 </div>
               ))}
@@ -238,8 +245,15 @@ export default function VaultPrint() {
                       {app.method}
                     </span>
                   </div>
-                  <div className="w-24 text-right font-bold">
-                    {Number.isFinite(app.estimatedCost) ? `$${app.estimatedCost.toLocaleString()}` : '—'}
+                  <div className="w-24 flex flex-col items-end gap-1">
+                    <span className="font-bold">
+                      {Number.isFinite(app.estimatedCost) ? `$${app.estimatedCost.toLocaleString()}` : '—'}
+                    </span>
+                    {app.costStatus === 'UNIT_MISMATCH' && (
+                      <span className="text-[8px] font-bold uppercase tracking-widest text-gray-500 border border-gray-300 px-1 py-0.5 rounded">
+                        Unit Mismatch
+                      </span>
+                    )}
                   </div>
                 </div>
               ))}
