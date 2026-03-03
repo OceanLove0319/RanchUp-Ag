@@ -3,6 +3,7 @@ import { useStore } from "@/lib/store";
 import { Droplets, Sprout, ShieldAlert, Check, Zap, Star } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { todayPacificISO } from "@/utils/dates";
+import { isPerAcreUnit, getBaseUnit, calcTotal, calcLoads, formatNumber } from "@/utils/mathHelpers";
 
 type ActionType = 'SPRAY' | 'FERT' | 'IRRIGATE';
 
@@ -86,6 +87,7 @@ export default function Log() {
     amount: "",
     unit: ""
   });
+  const [tankSize, setTankSize] = useState<string>("");
 
   const block = blocks.find(b => b.id === selectedBlock);
   const blockContext = block ? {
@@ -103,7 +105,8 @@ export default function Log() {
       unit: ""
     }));
     setActiveTemplate(null);
-  }, [action]);
+    setTankSize("");
+  }, [action, selectedBlock]);
 
   // Persist pins/recents
   useEffect(() => {
@@ -131,6 +134,7 @@ export default function Log() {
       unit: finalUnit
     }));
     setActiveTemplate(template.name);
+    setTankSize("");
 
     if (action && selectedBlock) {
       setRecentTemplates(prev => ({
@@ -396,6 +400,55 @@ export default function Log() {
                 <p className="text-[10px] text-muted-foreground mt-2 italic">Rates are entered per acre (typical).</p>
               </div>
             </div>
+
+            {/* Math Helper Panel */}
+            {isPerAcreUnit(formData.unit) && (
+              <div className="mt-4 bg-background border border-border rounded-lg p-4">
+                <div className="flex justify-between items-center mb-3">
+                  <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Block Acres</span>
+                  <span className="text-sm font-black text-foreground">{block?.acreage || '—'}</span>
+                </div>
+                <div className="flex justify-between items-center mb-3">
+                  <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Total Needed</span>
+                  <span className="text-sm font-black text-primary">
+                    {formatNumber(calcTotal(Number(formData.amount), block?.acreage), 2)} {getBaseUnit(formData.unit)}
+                  </span>
+                </div>
+                
+                {(!block?.acreage || block.acreage <= 0) && (
+                  <p className="text-[10px] text-orange-400 mt-1 mb-3">Fix block acres to compute totals.</p>
+                )}
+                {(!formData.amount || isNaN(Number(formData.amount))) && (
+                  <p className="text-[10px] text-orange-400 mt-1 mb-3">Rate required to compute totals.</p>
+                )}
+
+                {(action === 'SPRAY' || action === 'FERT') && (
+                  <div className="pt-3 border-t border-border mt-1">
+                    <div className="flex items-center gap-3">
+                      <div className="flex-1">
+                        <label className="block text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-1">
+                          Tank Size ({getBaseUnit(formData.unit)})
+                        </label>
+                        <input 
+                          type="number" 
+                          value={tankSize}
+                          onChange={e => setTankSize(e.target.value)}
+                          placeholder="e.g. 500"
+                          className="w-full bg-card border border-border rounded px-2 py-1.5 text-xs text-foreground focus:outline-none focus:border-primary"
+                        />
+                      </div>
+                      <div className="flex-1 text-right">
+                        <span className="block text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-1">Loads</span>
+                        <span className="text-sm font-black text-foreground">
+                          {formatNumber(calcLoads(calcTotal(Number(formData.amount), block?.acreage), Number(tankSize)), 1)}
+                        </span>
+                      </div>
+                    </div>
+                    <p className="text-[9px] text-muted-foreground mt-2 italic text-right">Loads = Total ÷ Tank Size</p>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
           <button 

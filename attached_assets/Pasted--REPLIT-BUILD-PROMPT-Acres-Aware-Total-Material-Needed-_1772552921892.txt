@@ -1,0 +1,127 @@
+# REPLIT BUILD PROMPT — Acres-Aware “Total Material Needed” + Tank/Set Helper (Quick Log)
+
+You are working inside an existing farm operations app with a “Quick Log” feature.
+DO NOT break any existing backend code or endpoints. Keep changes additive and isolated.
+
+## Goal
+Enhance Quick Log so that when a user selects a template (rate + units), the UI also shows:
+1) Block Acres (from block setup)
+2) Total Material Needed (auto-calculated)
+3) Optional Tank/Set Helper (tank size input + load count output) for Spray + Fertilize
+
+This must be accurate and unit-safe.
+
+---
+
+## Data assumptions (do NOT invent new required fields)
+- A Block already exists and is selectable in Quick Log.
+- The selected Block includes `acres` (number, may be integer or decimal).
+- A Quick Template provides:
+  - `materialName` (string)
+  - `rate` (number)
+  - `unit` (string) — examples: `gal/ac`, `lb/ac`, `qt/ac`, `oz/ac`, `pt/ac`, `hrs`, etc.
+
+If any of these are missing, handle gracefully (show “—” and don’t compute).
+
+---
+
+## Scope rules
+- Compute “Total Material Needed” ONLY when the template unit is a per-acre unit:
+  - must match pattern `*/ac` (case-insensitive), e.g. `gal/ac`, `lb/ac`, `qt/ac`, `oz/ac`, `pt/ac`.
+- If unit is NOT per-acre (e.g. `hrs`, `sets`, `minutes`, `inches`), do not compute total material; show “Total Material Needed: —”.
+- Tank/Set Helper is ONLY shown for action types:
+  - Spray
+  - Fertilize
+- Do not show Tank Helper for Irrigate.
+
+---
+
+## Accuracy requirements (math)
+Use decimal-safe rounding and display:
+- Total Material Needed = `rate * acres`
+- Load Count (if tank size provided and > 0) = `total / tankSize`
+Display formatting:
+- Total Material Needed: round to 2 decimals (but avoid trailing zeros if you already have a formatting helper)
+- Load Count: show to 1 decimal (e.g., 1.4 loads)
+- If tank size <= 0 or blank, show “Loads: —”
+- If acres <= 0, show totals as “—” and add a subtle validation message: “Block acres must be > 0”
+
+Example validation:
+- CAN-17 @ 15 gal/ac on 22.5 ac:
+  - Total = 337.5 gal
+  - Tank 250 gal => Loads ≈ 1.4
+
+---
+
+## UI requirements (keep it simple, not data-heavy)
+Add a compact “Math Helper” panel directly under the template auto-filled fields.
+
+Panel contents:
+- Block Acres: {acres}
+- Total Material Needed: {total} {baseUnit}
+  - baseUnit is the unit without `/ac` (e.g., `gal` from `gal/ac`)
+- (Spray/Fert only) Tank/Set Helper:
+  - Input: “Tank Size ({baseUnit})” numeric field
+  - Output: “Loads: {loads}”
+  - Small helper text: “Loads = Total ÷ Tank Size”
+
+Design:
+- Use existing dark theme styling.
+- Keep typography small and tight.
+- No extra screens, no modals.
+
+---
+
+## Implementation tasks (frontend)
+1) Add pure helper functions (no side effects) in a small utility module:
+   - `isPerAcreUnit(unit: string): boolean`
+   - `getBaseUnit(unit: string): string` // "gal/ac" -> "gal"
+   - `calcTotal(rate: number, acres: number): number | null`
+   - `calcLoads(total: number, tankSize: number): number | null`
+   - `formatNumber(n: number, decimals: number): string` (or use existing formatter)
+
+2) Update Quick Log state:
+   - When template selected, store `rate`, `unit`, `materialName` as it already does.
+   - Add local UI-only state `tankSize` (number | empty) that resets when:
+     - action type changes
+     - block changes
+     - template changes
+   - Do NOT persist tankSize in backend unless a field already exists for it.
+
+3) Render the Math Helper panel:
+   - Compute derived values in-memory using selected template + block acres.
+   - Show “—” when not computable.
+
+4) Add minimal inline validation:
+   - If per-acre unit AND acres <= 0 => show “Fix block acres to compute totals.”
+   - If per-acre unit AND (rate is null/NaN) => show “Rate required to compute totals.”
+
+---
+
+## Implementation tasks (backend)
+None required.
+Do not change DB schema.
+Do not change any existing API.
+If FieldLog already stores `rate`, `unit`, and `amount`, keep existing behavior.
+This feature is a UI helper only.
+
+---
+
+## Edge cases you MUST handle
+- acres = 0, null, undefined
+- rate = null, undefined, NaN
+- unit casing differences: `GAL/AC`, `gal/AC`, etc.
+- unit strings with spaces: `gal / ac` (normalize by removing spaces)
+- non-per-acre units should not compute totals/loads
+- tankSize empty or 0 should not compute loads
+
+---
+
+## Done criteria
+- Selecting a template instantly shows Block Acres, Total Material Needed, and (Spray/Fert) optional Tank Helper.
+- Example matches:
+  - 15 gal/ac, 22.5 ac => Total 337.5 gal
+  - Tank 250 gal => Loads 1.4
+- No backend changes, no broken Quick Log save.
+
+Build the feature now with clean, readable code and minimal UI changes.
