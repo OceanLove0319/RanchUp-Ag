@@ -16,7 +16,7 @@ export default function Landing() {
         <h1 className="md:text-8xl font-black uppercase tracking-tighter mb-6 text-foreground text-[74px]">
           Run your orchard.<br/>Not your notebook.
         </h1>
-        <p className="text-xl md:text-2xl text-muted-foreground mb-10 max-w-2xl font-medium">
+        <p className="md:text-2xl mb-10 max-w-2xl text-[#bababa] font-semibold text-[21px]">
           Block-level plans, fast field logging, and clean season records—built for tree fruit.
         </p>
         
