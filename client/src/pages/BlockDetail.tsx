@@ -1,17 +1,19 @@
 import { useRoute } from "wouter";
 import { useStore } from "@/lib/store";
-import { Droplets, Sprout, ShieldAlert, ArrowLeft, Info } from "lucide-react";
+import { Droplets, Sprout, ShieldAlert, ArrowLeft, Info, Lock } from "lucide-react";
 import { Link } from "wouter";
 import { getActiveSeasonWindow } from "@/utils/season";
 import { getSeasonSpendForBlock } from "@/utils/rollups";
 import { isWithin } from "@/utils/dates";
 import { computeStoneFruitFertTarget } from "@/utils/fertTargets";
 import { getSprayChartWindows } from "@/utils/sprayTemplates";
+import { useGating } from "@/utils/gating";
 
 export default function BlockDetail() {
   const [, params] = useRoute("/app/blocks/:id");
   const block = useStore(s => s.blocks.find(b => b.id === params?.id));
   const chemicalApps = useStore(s => s.chemicalApps);
+  const { requireCostEngine } = useGating();
 
   if (!block) return <div>Block not found</div>;
 
@@ -22,6 +24,7 @@ export default function BlockDetail() {
   
   const fertTarget = computeStoneFruitFertTarget(block.yieldTargetBins);
   const sprayWindows = getSprayChartWindows(block);
+  const costEngine = requireCostEngine();
 
   return (
     <div className="animate-in fade-in duration-500">
@@ -101,8 +104,20 @@ export default function BlockDetail() {
           <p className="text-xs text-muted-foreground flex items-center gap-1"><Info className="w-3 h-3" /> Totals reflect this block's active season window based on Early/Mid/Late timing.</p>
         </div>
         <div className="text-right">
-          <p className="text-4xl font-black text-white">{formattedSpend}</p>
-          <p className="text-xs font-bold uppercase tracking-widest text-primary mt-1">Total Spend</p>
+          {costEngine.allowed ? (
+            <>
+              <p className="text-4xl font-black text-white">{formattedSpend}</p>
+              <p className="text-xs font-bold uppercase tracking-widest text-primary mt-1">Total Spend</p>
+            </>
+          ) : (
+            <div className="bg-black/50 border border-border p-4 rounded-lg text-center min-w-[200px]">
+              <Lock className="w-5 h-5 text-primary mx-auto mb-2" />
+              <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-3">Cost Engine Locked</p>
+              <Link href={costEngine.upgradePath} className="text-[10px] bg-primary text-primary-foreground px-3 py-1.5 rounded font-black uppercase tracking-widest hover:bg-primary/90 transition-colors block w-full">
+                View Pricing
+              </Link>
+            </div>
+          )}
         </div>
       </div>
 

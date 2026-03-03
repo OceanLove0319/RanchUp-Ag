@@ -43,22 +43,53 @@ export type ChemicalApp = {
   notes?: string;
 };
 
+export type BillingState = {
+  planId: "STARTER" | "PRO" | "OPS";
+  isAnnual: boolean;
+  addOns: Record<string, boolean | number>;
+  onboardingPurchased: boolean;
+};
+
 type AppState = {
   user: { name: string; org: string } | null;
   blocks: Block[];
   logs: FieldLog[];
   chemicals: Chemical[];
   chemicalApps: ChemicalApp[];
+  billing: BillingState;
+  
   login: () => void;
   logout: () => void;
   addBlock: (block: Block) => void;
   addLog: (log: FieldLog) => void;
   addChemicalApp: (app: ChemicalApp) => void;
   setOnboarded: (data: any) => void;
+  
+  // Billing Actions
+  setPlan: (planId: "STARTER" | "PRO" | "OPS", isAnnual: boolean) => void;
+  toggleAnnual: (isAnnual: boolean) => void;
+  setAddOn: (addOnId: string, value: boolean | number) => void;
+  purchaseOnboarding: () => void;
+};
+
+const getInitialBilling = (): BillingState => {
+  try {
+    const saved = localStorage.getItem('kebb_billing');
+    if (saved) return JSON.parse(saved);
+  } catch (e) {}
+  
+  return {
+    planId: "STARTER",
+    isAnnual: false,
+    addOns: {},
+    onboardingPurchased: false
+  };
 };
 
 export const useStore = create<AppState>((set) => ({
   user: null,
+  billing: getInitialBilling(),
+  
   blocks: [
     {
       id: '1',
@@ -126,4 +157,31 @@ export const useStore = create<AppState>((set) => ({
   addLog: (log) => set((state) => ({ logs: [log, ...state.logs] })),
   addChemicalApp: (app) => set((state) => ({ chemicalApps: [app, ...state.chemicalApps] })),
   setOnboarded: (data) => set({ user: { name: 'Grower', org: data.operationName } }),
+  
+  setPlan: (planId, isAnnual) => set(state => {
+    const newBilling = { ...state.billing, planId, isAnnual };
+    localStorage.setItem('kebb_billing', JSON.stringify(newBilling));
+    return { billing: newBilling };
+  }),
+  
+  toggleAnnual: (isAnnual) => set(state => {
+    const newBilling = { ...state.billing, isAnnual };
+    localStorage.setItem('kebb_billing', JSON.stringify(newBilling));
+    return { billing: newBilling };
+  }),
+  
+  setAddOn: (addOnId, value) => set(state => {
+    const newBilling = { 
+      ...state.billing, 
+      addOns: { ...state.billing.addOns, [addOnId]: value } 
+    };
+    localStorage.setItem('kebb_billing', JSON.stringify(newBilling));
+    return { billing: newBilling };
+  }),
+  
+  purchaseOnboarding: () => set(state => {
+    const newBilling = { ...state.billing, onboardingPurchased: true };
+    localStorage.setItem('kebb_billing', JSON.stringify(newBilling));
+    return { billing: newBilling };
+  })
 }));

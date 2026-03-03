@@ -1,9 +1,10 @@
 import { useStore } from "@/lib/store";
-import { FileText, Download, Filter, Printer, ChevronDown, ChevronUp } from "lucide-react";
+import { FileText, Download, Filter, Printer, ChevronDown, Lock } from "lucide-react";
 import { useState } from "react";
 import { getActiveSeasonWindow } from "@/utils/season";
 import { isWithin } from "@/utils/dates";
 import { Link, useLocation } from "wouter";
+import { useGating } from "@/utils/gating";
 
 // Deterministic Sort
 const sortLogsDeterministic = (logs: any[]) => {
@@ -20,6 +21,7 @@ export default function Vault() {
   const chemApps = useStore(s => s.chemicalApps);
   const [, setLocation] = useLocation();
   const [expandedNotes, setExpandedNotes] = useState<Record<string, boolean>>({});
+  const { requirePro } = useGating();
 
   // Default to first block if none selected
   const [selectedBlockId, setSelectedBlockId] = useState<string>(blocks[0]?.id || "");
@@ -108,12 +110,19 @@ export default function Vault() {
           </p>
         </div>
         
-        <button 
-          onClick={handleExportClick}
-          className="flex items-center gap-2 bg-primary text-primary-foreground px-4 py-3 rounded font-black uppercase tracking-widest text-sm transition-colors hover:bg-primary/90 shadow-[0_0_15px_rgba(212,175,55,0.2)]"
-        >
-          <Printer className="w-4 h-4" /> Export Season Packet
-        </button>
+        <div className="flex flex-col items-end gap-2">
+          <button 
+            onClick={handleExportClick}
+            className="flex items-center gap-2 bg-primary text-primary-foreground px-4 py-3 rounded font-black uppercase tracking-widest text-sm transition-colors hover:bg-primary/90 shadow-[0_0_15px_rgba(212,175,55,0.2)]"
+          >
+            <Printer className="w-4 h-4" /> Export Season Packet
+          </button>
+          {!requirePro("Advanced Export").allowed && (
+            <Link href="/app/pricing" className="text-[10px] uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors flex items-center gap-1">
+              <Lock className="w-3 h-3" /> Upgrade to Pro for Audit Bundles
+            </Link>
+          )}
+        </div>
       </div>
 
       {/* Summary Bar */}

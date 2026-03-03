@@ -1,0 +1,182 @@
+# REPLIT BUILD PROMPT — Embed Monetization Into KEBB Ag™ (Pricing, Upgrade CTAs, Plan Gating, Billing Stub)
+
+You are editing the existing KEBB Ag™ React + TypeScript prototype (wouter routing + Zustand mock state). Keep the Nike-style dark forest green + gold aesthetic. Do NOT break existing pages (Home, Blocks, Log, Vault, VaultPrint). This is a prototype monetization embed: UI, plan selection, gating, and a billing “stub” (no real payments required yet). If Stripe is already installed, wire it; if not, create clean placeholders.
+
+## Objective
+Embed a monetization layer that matches Central Valley buying behavior:
+- Core SaaS tiers (Starter / Pro / Ops)
+- Optional add-ons (Cost Engine, PCA Seats, Extra Ranch/Users)
+- Onboarding fee (one-time)
+- Upgrade CTAs throughout the product (Vault export, templates, cost rollups)
+- Plan gating (show premium features locked with upgrade prompt)
+- Admin/Settings “Billing” screen with current plan and upgrade controls
+- Persist plan selection using localStorage (prototype) and Zustand.
+
+---
+
+## 1) Add Pricing Configuration (Single Source of Truth)
+Create file:
+- `client/src/config/pricing.ts`
+
+Add these types:
+- PlanId: "STARTER" | "PRO" | "OPS"
+- AddOnId: "COST_ENGINE" | "PCA_SEAT" | "EXTRA_USER" | "EXTRA_RANCH" | "PACKET_BUNDLE"
+
+Define:
+- `PLANS` with name, monthlyPrice, annualPrice (optional), headline value props.
+  - Starter: $249/mo (example)
+  - Pro: $499/mo
+  - Ops: $1,199/mo
+- Add-ons with prices:
+  - Cost Engine: +$149/mo
+  - PCA Seat: +$99/mo per seat
+  - Extra User: +$25/mo per user
+  - Extra Ranch: +$99/mo per ranch
+  - Packet Bundle: $99/mo (or per packet later; keep monthly for prototype)
+- One-time onboarding fee options:
+  - “Onboarding Setup”: $1,500 (one-time)
+  - “Season Start Setup”: $750 (one-time)
+
+Keep values easy to edit.
+
+---
+
+## 2) Add Monetization State (Zustand + localStorage persistence)
+In the Zustand store (where blocks/logs live), add:
+- `billing: { planId: PlanId; addOns: Record<AddOnId, any>; isAnnual: boolean; onboardingPurchased: boolean }`
+
+Actions:
+- `setPlan(planId, isAnnual)`
+- `toggleAnnual(isAnnual)`
+- `setAddOn(addOnId, value)` (boolean or number for seat counts)
+- `purchaseOnboarding(flag)`
+- `resetBilling()` (optional)
+
+Persist to localStorage:
+- If your store already uses persist middleware, add `billing` to persisted keys.
+- If not, implement a minimal localStorage save/load just for billing.
+
+Default:
+- STARTER monthly, no add-ons.
+
+---
+
+## 3) Add New Routes/Pages (wouter)
+Add these pages:
+- `client/src/pages/Pricing.tsx`
+- `client/src/pages/Billing.tsx`
+
+Add routes:
+- `/pricing` → Pricing page
+- `/settings/billing` (or `/billing`) → Billing page
+
+Add a simple nav entry:
+- “Billing” in the existing sidebar/header (small, not dominant)
+
+---
+
+## 4) Pricing Page UI (Central Valley tone, clean layout)
+Pricing page must include:
+
+### 4.1 Tier cards (Starter / Pro / Ops)
+Each card shows:
+- Plan name
+- Monthly price (and annual toggle to show discounted annual pricing if desired)
+- 4–6 bullet “outcomes” phrased for growers/PCAs:
+  - Starter: Quick Log + Vault + PDF Season Packet
+  - Pro: Unlimited blocks + pinned/recent templates + multi-user + exports
+  - Ops: Multi-ranch + roles/permissions + audit bundles + advanced export formats
+
+Buttons:
+- If current plan: “Current Plan”
+- Else: “Upgrade to Pro”, etc.
+
+### 4.2 Add-ons section
+Show add-ons as toggles with price:
+- Cost Engine (locked until Pro)
+- PCA Seat count (Ops recommended; allow on Pro too if you want)
+- Extra users/ranches (Ops)
+- Packet bundle (Pro+)
+
+### 4.3 Onboarding (one-time)
+Card with:
+- “Onboarding Setup (one-time)”
+- What they get: block setup, templates, packet formatting
+- Toggle “Add Onboarding”
+
+### 4.4 Prototype checkout
+No real payments required:
+- Clicking “Upgrade” sets Zustand billing state and shows a toast:
+  - “Plan updated (prototype). Billing will be wired to Stripe in production.”
+
+Keep it honest: label as “Demo billing.”
+
+---
+
+## 5) Billing Page UI (Settings)
+Billing page shows:
+- Current plan + monthly/annual
+- Add-ons enabled
+- Estimated total (computed)
+- Buttons:
+  - “Change Plan” → takes to /pricing
+  - “Reset Demo Billing” (optional) resets to Starter
+- (Optional) “Download Invoice (Demo)” link that generates a simple printable receipt-like view
+
+Compute totals:
+- plan base price + add-ons + seat counts
+- show “Onboarding (one-time)” as separate line item
+
+---
+
+## 6) Feature Gating + Upgrade CTAs (Embed in existing pages)
+Add a small gating utility:
+- `client/src/utils/gating.ts`
+Functions:
+- `hasPlanAtLeast(planId)` (Starter < Pro < Ops)
+- `hasAddOn(addOnId)`
+- `requirePro(featureName)` returns { allowed, reason, upgradePath }
+
+### Gate these features (prototype gating)
+- Cost Engine screens/fields → require add-on COST_ENGINE + Pro plan
+- Multi-ranch / role permissions UI → require Ops
+- “Export Season Packet (PDF)” remains available on Starter, BUT:
+  - Starter export includes small footer “Starter Packet”
+  - Pro/Ops export includes “Audit-Ready Packet” badge
+- Quick Templates:
+  - Starter: 3 templates
+  - Pro+: unlimited templates (if you don’t have unlimited yet, show “Pro unlocks custom templates”)
+
+### Upgrade CTAs placement (must be subtle, not spammy)
+- Vault page: if user clicks “Export Season Packet” and they’re on Starter, allow export but show:
+  - “Upgrade to Pro for Audit Bundle formats + cost rollups”
+- Log page: if user tries to “Save as Template” (if implemented) on Starter, show lock card:
+  - “Pro unlocks custom templates + team logging”
+- Block Detail: if Cost Engine not enabled, show locked card:
+  - “Enable Cost Engine to compute $/ac from rates × acreage × unit price”
+
+Lock pattern:
+- Use a consistent “LOCKED” dark card with gold border + a single “View Pricing” button.
+
+---
+
+## 7) Optional (Recommended): Cost Engine Placeholder Module
+If cost math isn’t implemented yet, add a “Cost Engine” card that:
+- Shows the formula you will support:
+  - “Estimated Cost = rate × acreage × unit price”
+- Allows a demo unit price input on Pro+ to show a live computed estimate (even if it’s not persisted)
+- This ties monetization to real value.
+
+---
+
+## 8) Acceptance Checks
+1) /pricing renders tier cards, annual toggle, add-ons, onboarding, and updates billing state.
+2) /billing shows correct current plan + computed totals and reflects changes instantly.
+3) Gating works:
+   - Starter sees locks where appropriate and can navigate to pricing.
+   - Pro unlocks add-ons and advanced CTAs.
+4) No regressions:
+   - Vault, VaultPrint, Log, Blocks still operate normally.
+5) Billing state persists across refresh (localStorage).
+
+Proceed to implement now.

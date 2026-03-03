@@ -35,9 +35,9 @@ export default function Shell({ children }: { children: React.ReactNode }) {
         </div>
         
         <div className="hidden md:flex flex-col gap-2 mt-auto">
-          <button className="flex items-center gap-3 p-3 rounded-md text-muted-foreground hover:text-white transition-colors text-sm font-semibold tracking-wider uppercase">
+          <Link href="/app/settings/billing" className={`flex items-center gap-3 p-3 rounded-md transition-colors text-sm font-semibold tracking-wider uppercase ${location.includes('/billing') ? 'text-primary' : 'text-muted-foreground hover:text-white hover:bg-white/5'}`}>
             <Settings className="w-5 h-5" /> Settings
-          </button>
+          </Link>
           <Link href="/" onClick={logout} className="flex items-center gap-3 p-3 rounded-md text-muted-foreground hover:text-white transition-colors text-sm font-semibold tracking-wider uppercase">
             <LogOut className="w-5 h-5" /> Exit
           </Link>

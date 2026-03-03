@@ -17,6 +17,8 @@ import Vault from "@/pages/Vault";
 import VaultPrint from "@/pages/VaultPrint";
 import Chemicals from "@/pages/Chemicals";
 import ChemicalNew from "@/pages/ChemicalNew";
+import Pricing from "@/pages/Pricing";
+import Billing from "@/pages/Billing";
 
 function Router() {
   return (
@@ -50,6 +52,12 @@ function Router() {
       </Route>
       <Route path="/app/vault">
         <Shell><Vault /></Shell>
+      </Route>
+      <Route path="/app/pricing">
+        <Shell><Pricing /></Shell>
+      </Route>
+      <Route path="/app/settings/billing">
+        <Shell><Billing /></Shell>
       </Route>
 
       <Route component={NotFound} />
