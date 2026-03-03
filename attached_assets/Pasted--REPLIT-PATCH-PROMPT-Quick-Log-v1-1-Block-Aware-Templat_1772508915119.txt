@@ -1,0 +1,65 @@
+# REPLIT PATCH PROMPT — Quick Log v1.1 (Block-Aware Templates + Unit Sanity + Auto-Recent + Pin)
+
+You are editing the existing KEBB Ag™ React + TypeScript prototype. Keep the Nike-style dark forest green + gold aesthetic. Do NOT break routing or Vault/ChemicalApp flows. Make minimal, surgical changes inside:
+
+- `client/src/pages/Log.tsx`
+
+## Context (Current State)
+`QUICK_TEMPLATES` is a hardcoded local constant in `Log.tsx`:
+
+- Keys: SPRAY, FERT, IRRIGATE
+- Each template: `{ name, material, amount, unit }`
+- Clicking a template pre-fills the basic FieldLog form inputs (material/amount/unit).
+- No Zustand persistence; no user-created templates yet.
+
+## Objective
+Tighten Quick Log so it feels Central Valley-real in stone fruit/nut/citrus operations:
+
+1) Make templates BLOCK-AWARE:
+   - Templates shown should adapt to the selected block’s inferred crop type, seasonGroup, and irrigationType.
+2) Fix unit credibility:
+   - Normalize unit labels and ensure each action uses plausible default units (avoid trust-killers).
+3) Add “Auto-Recent”:
+   - The first lightning bolt becomes “Recent” (the last-used template for that action + block).
+4) Add “Pin”:
+   - Allow pinning one template per action (per user session) so it stays as the #1 choice.
+
+Keep this as a prototype: in-memory only, no Zustand required. Use local React state + localStorage OPTIONAL (recommended).
+
+---
+
+## Step 1 — Add Crop/Block Inference Helpers (Local to Log.tsx)
+Inside `Log.tsx`, implement tiny helpers:
+
+### 1.1 inferCropType(variety: string)
+Return: "STONE_FRUIT" | "CITRUS" | "NUT" | "OTHER"
+Use substring matching:
+- STONE_FRUIT: peach, nectarine, plum
+- CITRUS: citrus, orange, mandarin, lemon, lime, grapefruit
+- NUT: almond, pistachio, walnut
+
+### 1.2 getTemplateContext(selectedBlock)
+Compute:
+- cropType (from variety)
+- seasonGroup ("Early" | "Mid" | "Late")
+- irrigationType ("Flood" | "Drip" | "Fanjet" | "Sprinkler")
+
+---
+
+## Step 2 — Upgrade QUICK_TEMPLATES Structure (Still Hardcoded, But Tagged)
+Replace the current QUICK_TEMPLATES entries with a richer type (still local constant):
+
+```ts
+type ActionKey = "SPRAY" | "FERT" | "IRRIGATE";
+
+type QuickTemplate = {
+  id: string;            // stable id like "spray-bloom-brownrot"
+  name: string;
+  material: string;
+  amount: string;
+  unit: string;          // must match unit dropdown options
+  // Optional targeting rules:
+  cropTypes?: Array<"STONE_FRUIT" | "CITRUS" | "NUT" | "OTHER">;
+  seasonGroups?: Array<"Early" | "Mid" | "Late">;
+  irrigationTypes?: Array<"Flood" | "Drip" | "Fanjet" | "Sprinkler">;
+};

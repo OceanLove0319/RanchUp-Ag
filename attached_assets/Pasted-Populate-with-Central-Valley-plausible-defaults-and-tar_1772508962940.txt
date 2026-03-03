@@ -1,0 +1,173 @@
+Populate with Central Valley-plausible defaults and targeting:
+
+SPRAY templates (example set)
+
+Bloom — Brown Rot Window (STONE_FRUIT, all seasonGroups)
+
+material: "Pristine (finish)" OR "Rovral (alt)"
+
+amount: "1"
+
+unit: "lb/ac" (or "oz/ac" if your units support; choose one that exists)
+
+Summer — Mites (STONE_FRUIT, Mid/Late)
+
+material: "Acramite"
+
+amount: "16"
+
+unit: "oz/ac"
+
+Pre-harvest — Finish Fungicide (STONE_FRUIT, Late)
+
+material: "Pristine"
+
+amount: "1"
+
+unit: "lb/ac"
+
+FERT templates (split by irrigationType)
+
+Flood (granular bias):
+
+Spring N Push — Granular (STONE_FRUIT, Flood)
+
+material: "CAN-17 (granular)"
+
+amount: "200"
+
+unit: "lb/ac"
+Drip/Fanjet (fertigation bias):
+
+Spring N Push — Fertigation (STONE_FRUIT/CITRUS/NUT, Drip/Fanjet)
+
+material: "UN-32 (UAN32)"
+
+amount: "10"
+
+unit: "gal/ac"
+
+Foliar Zinc (STONE_FRUIT, all irrigationTypes)
+
+material: "Zinc Sulfate 36%"
+
+amount: "5"
+
+unit: "lb/ac"
+
+IRRIGATE templates (hours are safest in MVP)
+
+Standard Set (all crops, Flood)
+
+amount: "24"
+
+unit: "hrs"
+
+Standard Runtime (all crops, Drip/Fanjet)
+
+amount: "12"
+
+unit: "hrs"
+
+Heat Week Bump (all crops, all)
+
+amount: "6"
+
+unit: "hrs"
+
+IMPORTANT:
+
+Update units to be consistent with your dropdown. If your dropdown does not include "lb/ac", add it to the unit options (only in Log page) OR choose the closest available that won’t look wrong.
+
+Avoid raw "gal" or "oz" without "/ac" unless your UI explicitly implies per-acre. Prefer "/ac" where possible.
+
+Step 3 — Template Filtering (Show Only 3, Context-Aware)
+
+When an action is selected (SPRAY/FERT/IRRIGATE):
+
+Determine context from selected block (cropType, seasonGroup, irrigationType).
+
+Filter templates:
+
+If template has cropTypes, must include current cropType
+
+If seasonGroups, must include current seasonGroup
+
+If irrigationTypes, must include current irrigationType
+
+Choose the final 3 buttons in this priority order:
+A) Pinned template (if exists for this action) → slot 1
+B) Recent template (last used for this action+block) → slot 1 if no pinned
+C) Two best matching defaults (remaining highest relevance)
+
+If fewer than 3 match, fill from generic templates (cropTypes omitted) as fallback.
+
+Step 4 — Auto-Recent + Pin (Lightweight Persistence)
+
+Implement localStorage-backed state (recommended) so it survives refresh:
+
+Storage keys
+
+kebb_quicklog_pins = JSON map { [actionKey]: templateId }
+
+kebb_quicklog_recent = JSON map { [blockId]: { [actionKey]: templateId } }
+
+On template click:
+
+Apply template to the form inputs (material/amount/unit)
+
+Save as recent for that blockId + actionKey
+
+Pin behavior:
+
+Add a small star icon on each template button (or long-press menu if easier).
+
+Clicking star sets pinned template for that actionKey.
+
+Pin is global per action (not per block) to keep it simple.
+
+Step 5 — Unit Sanity Guardrail (Prevent Bad Defaults)
+
+Before applying a template, validate unit against allowed units for that action:
+
+Allowed units (example; adapt to your dropdown):
+
+SPRAY: ["oz/ac","pt/ac","qt/ac","gal/ac","lb/ac"]
+
+FERT: ["lb/ac","gal/ac"]
+
+IRRIGATE: ["hrs"]
+
+If unit invalid:
+
+fallback to a safe default for that action (e.g., "lb/ac" or "hrs")
+
+show a small toast: “Adjusted unit to match this action.”
+
+If your UI currently only supports ["oz","gal","lbs","hrs"], then:
+
+keep those, BUT change labels in UI to clarify “per acre” via helper text:
+
+Under Amount/Unit show: “Rates are entered per acre (typical).”
+
+This avoids mismatched meaning.
+
+Step 6 — Microcopy (Trust + Liability)
+
+Under the lightning bolt row add a single helper line:
+
+“Templates are starting points — adjust rate and notes as needed.”
+
+Acceptance Checks
+
+Selecting a block changes the 3 templates shown (stone fruit vs citrus/nut; Flood vs Drip).
+
+Selecting SPRAY vs FERT vs IRRIGATE shows different, plausible units.
+
+Clicking a template pre-fills material/amount/unit correctly.
+
+“Recent” appears after using a template, per block.
+
+Pinning a template keeps it as the first option for that action (even after refresh, if localStorage enabled).
+
+Proceed to implement now in client/src/pages/Log.tsx.
