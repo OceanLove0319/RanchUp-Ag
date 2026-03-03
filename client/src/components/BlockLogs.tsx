@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { Link, useLocation } from "wouter";
 import { useStore } from "@/lib/store";
 import { Copy, PlusCircle } from "lucide-react";
@@ -5,11 +6,14 @@ import { format } from "date-fns";
 
 export default function BlockLogs({ blockId }: { blockId: string }) {
   const [, setLocation] = useLocation();
-  const logs = useStore(s => 
-    s.logs
+  const allLogs = useStore(s => s.logs);
+  
+  const logs = useMemo(() => 
+    allLogs
       .filter(l => l.blockId === blockId)
       .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-      .slice(0, 5) // Last 5 logs
+      .slice(0, 5),
+    [allLogs, blockId]
   );
   
   const handleLogAgain = (log: any) => {

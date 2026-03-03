@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useStore } from "@/lib/store";
 import { Link } from "wouter";
 import { ArrowLeft, AlertTriangle, TrendingUp, DollarSign } from "lucide-react";
@@ -7,14 +7,15 @@ import { format, subMonths, startOfMonth, endOfMonth } from "date-fns";
 export default function VarianceFlags() {
   const activeRanchId = useStore(s => s.activeRanchId);
   const activeRanch = useStore(s => s.ranches.find(r => r.id === activeRanchId));
-  const blocks = useStore(s => s.blocks.filter(b => b.ranchId === activeRanchId));
+  const allBlocks = useStore(s => s.blocks);
+  const blocks = useMemo(() => allBlocks.filter(b => b.ranchId === activeRanchId), [allBlocks, activeRanchId]);
   
   const today = new Date();
   const currentMonthPrefix = format(today, 'yyyy-MM');
   const lastMonthPrefix = format(subMonths(today, 1), 'yyyy-MM');
 
-  // Filter apps by ranch
-  const ranchApps = useStore(s => s.chemicalApps.filter(a => a.ranchId === activeRanchId));
+  const allApps = useStore(s => s.chemicalApps);
+  const ranchApps = useMemo(() => allApps.filter(a => a.ranchId === activeRanchId), [allApps, activeRanchId]);
 
   // 1. Calculate Month-over-Month Cost Spikes per Block
   const blockVariances = blocks.map(block => {

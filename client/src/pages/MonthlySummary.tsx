@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useStore } from "@/lib/store";
 import { Link } from "wouter";
-import { ArrowLeft, BarChart, DollarSign, Activity } from "lucide-react";
+import { ArrowLeft, BarChart, DollarSign, Activity, AlertTriangle } from "lucide-react";
 import { format } from "date-fns";
 
 export default function MonthlySummary() {
@@ -9,16 +9,17 @@ export default function MonthlySummary() {
   
   const activeRanchId = useStore(s => s.activeRanchId);
   const activeRanch = useStore(s => s.ranches.find(r => r.id === activeRanchId));
-  const blocks = useStore(s => s.blocks.filter(b => b.ranchId === activeRanchId));
+  const allBlocks = useStore(s => s.blocks);
+  const allApps = useStore(s => s.chemicalApps);
+  
+  const blocks = useMemo(() => allBlocks.filter(b => b.ranchId === activeRanchId), [allBlocks, activeRanchId]);
   
   const monthPrefix = selectedMonth; // "YYYY-MM"
   
-  const apps = useStore(s => 
-    s.chemicalApps.filter(a => 
+  const apps = useMemo(() => allApps.filter(a => 
       a.ranchId === activeRanchId && 
       a.dateApplied.startsWith(monthPrefix)
-    )
-  );
+    ), [allApps, activeRanchId, monthPrefix]);
 
   const totalLogs = apps.length;
   const totalSpend = apps.reduce((sum, app) => sum + (app.estimatedCost || 0), 0);

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useStore } from "@/lib/store";
 import { Link } from "wouter";
 import { ArrowLeft, Printer, FileText, AlertTriangle } from "lucide-react";
@@ -10,16 +10,20 @@ export default function WeeklyPacket() {
   
   const activeRanchId = useStore(s => s.activeRanchId);
   const activeRanch = useStore(s => s.ranches.find(r => r.id === activeRanchId));
-  const blocks = useStore(s => s.blocks.filter(b => b.ranchId === activeRanchId));
+  const allBlocks = useStore(s => s.blocks);
+  const allApps = useStore(s => s.chemicalApps);
+  
+  const blocks = useMemo(() => allBlocks.filter(b => b.ranchId === activeRanchId), [allBlocks, activeRanchId]);
   
   // Combine logs and chem apps for a full picture (or just use chem apps for cost, logs for generic)
   // For the pilot, let's use Chemical Apps since they have the computed cost and status.
-  const apps = useStore(s => 
-    s.chemicalApps.filter(a => 
+  const apps = useMemo(() => 
+    allApps.filter(a => 
       a.ranchId === activeRanchId && 
       a.dateApplied >= startDate && 
       a.dateApplied <= endDate
-    ).sort((a, b) => new Date(b.dateApplied).getTime() - new Date(a.dateApplied).getTime())
+    ).sort((a, b) => new Date(b.dateApplied).getTime() - new Date(a.dateApplied).getTime()),
+    [allApps, activeRanchId, startDate, endDate]
   );
 
   const groupedByBlock = blocks.reduce((acc, block) => {

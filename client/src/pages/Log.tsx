@@ -65,7 +65,9 @@ const getFallbackUnit = (action: ActionType) => {
 };
 
 export default function Log() {
-  const blocks = useStore(s => s.blocks);
+  const activeRanchId = useStore(s => s.activeRanchId);
+  const allBlocks = useStore(s => s.blocks);
+  const blocks = allBlocks.filter(b => b.ranchId === activeRanchId);
   const addLog = useStore(s => s.addLog);
   const { toast } = useToast();
 
@@ -267,6 +269,7 @@ export default function Log() {
     // 1. Save standard Field Log
     addLog({
       id: newLogId,
+      ranchId: activeRanchId || "", // Add this
       blockId: selectedBlock,
       date: formData.date,
       actionType: action,
@@ -280,6 +283,7 @@ export default function Log() {
     if (action === 'SPRAY' || action === 'FERT') {
       useStore.getState().addChemicalApp({
         id: `app-${newLogId}`,
+        ranchId: activeRanchId || "", // Add this
         blockId: selectedBlock,
         chemicalId: activeChemicalId || `custom-${Date.now()}`,
         chemicalName: activeChemicalName,
