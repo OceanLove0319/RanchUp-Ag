@@ -1,12 +1,19 @@
 import { Link } from "wouter";
 import { useStore } from "@/lib/store";
-import { FlaskConical, Plus, TrendingUp, AlertTriangle } from "lucide-react";
+import { FlaskConical, Plus, TrendingUp, AlertTriangle, Info } from "lucide-react";
+import { getActiveSeasonWindow } from "@/utils/season";
+import { getSeasonSpendForBlock } from "@/utils/rollups";
+import { isWithin } from "@/utils/dates";
 
 export default function Chemicals() {
   const blocks = useStore(s => s.blocks);
   const chemicalApps = useStore(s => s.chemicalApps);
 
-  const totalSpend = chemicalApps.reduce((sum, app) => sum + (app.estimatedCost || 0), 0);
+  // Calculate active spend across all blocks
+  const totalSpend = blocks.reduce((sum, block) => {
+    const window = getActiveSeasonWindow(block);
+    return sum + getSeasonSpendForBlock(block.id, chemicalApps, window);
+  }, 0);
   
   return (
     <div className="animate-in fade-in duration-500">
@@ -22,11 +29,12 @@ export default function Chemicals() {
 
       <div className="grid md:grid-cols-3 gap-4 mb-10">
         <div className="bg-card border border-border p-6 rounded-lg">
-          <h3 className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2">Season Spend (Est)</h3>
+          <h3 className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2">Active Season Spend (Est)</h3>
           <p className="text-3xl font-black text-foreground">${totalSpend.toFixed(2)}</p>
           <div className="flex items-center gap-2 mt-4 text-xs font-bold uppercase tracking-widest text-primary">
             <TrendingUp className="w-4 h-4" /> +12% vs Last 30 Days
           </div>
+          <p className="text-[10px] text-muted-foreground mt-2 flex items-center gap-1"><Info className="w-3 h-3" /> Totals reflect active season windows.</p>
         </div>
         <div className="bg-card border border-border p-6 rounded-lg">
           <h3 className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2">Total Applications</h3>
@@ -45,38 +53,44 @@ export default function Chemicals() {
 
       <div className="space-y-6">
         {blocks.map(block => {
+          const window = getActiveSeasonWindow(block);
           const apps = chemicalApps.filter(a => a.blockId === block.id);
+          const activeApps = apps.filter(a => isWithin(a.dateApplied, window.startISO, window.endISO));
+          
           if (apps.length === 0) return null;
           
           return (
             <div key={block.id} className="bg-card border border-border rounded-lg overflow-hidden">
               <div className="px-6 py-4 bg-background border-b border-border flex justify-between items-center">
                 <h3 className="font-black text-foreground text-lg">{block.name}</h3>
-                <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">{apps.length} Apps</span>
+                <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">{activeApps.length} Active Apps</span>
               </div>
               <div className="divide-y divide-border">
-                {apps.map(app => (
-                  <div key={app.id} className="p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 hover:bg-background/50 transition-colors">
-                    <div className="flex gap-4 items-center">
-                      <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-                        <FlaskConical className="w-5 h-5" />
-                      </div>
-                      <div>
-                        <h4 className="font-bold text-foreground text-lg">{app.chemicalName}</h4>
-                        <div className="flex gap-2 items-center mt-1">
-                          <span className="text-[10px] font-black uppercase tracking-widest bg-background border border-border text-muted-foreground px-2 py-0.5 rounded">
-                            {app.category}
-                          </span>
-                          <span className="text-xs font-medium text-muted-foreground">{app.dateApplied} • {app.method}</span>
+                {apps.map(app => {
+                  const isActive = isWithin(app.dateApplied, window.startISO, window.endISO);
+                  return (
+                    <div key={app.id} className={`p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 hover:bg-background/50 transition-colors ${!isActive ? 'opacity-50' : ''}`}>
+                      <div className="flex gap-4 items-center">
+                        <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                          <FlaskConical className="w-5 h-5" />
+                        </div>
+                        <div>
+                          <h4 className="font-bold text-foreground text-lg">{app.chemicalName}</h4>
+                          <div className="flex gap-2 items-center mt-1">
+                            <span className="text-[10px] font-black uppercase tracking-widest bg-background border border-border text-muted-foreground px-2 py-0.5 rounded">
+                              {app.category}
+                            </span>
+                            <span className="text-xs font-medium text-muted-foreground">{app.dateApplied} • {app.method} {!isActive && '(Out of Season)'}</span>
+                          </div>
                         </div>
                       </div>
+                      <div className="text-right">
+                        <p className="font-black text-foreground text-lg">${app.estimatedCost?.toFixed(2) || '0.00'}</p>
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mt-1">Estimated</p>
+                      </div>
                     </div>
-                    <div className="text-right">
-                      <p className="font-black text-foreground text-lg">${app.estimatedCost?.toFixed(2) || '0.00'}</p>
-                      <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mt-1">Estimated</p>
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           );

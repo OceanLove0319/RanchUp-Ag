@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useStore } from "@/lib/store";
 import { Droplets, Sprout, ShieldAlert, Check } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { todayPacificISO } from "@/utils/dates";
 
 type ActionType = 'SPRAY' | 'FERT' | 'IRRIGATE';
 
@@ -14,7 +15,7 @@ export default function Log() {
   const [action, setAction] = useState<ActionType | null>(null);
   
   const [formData, setFormData] = useState({
-    date: new Date().toISOString().split('T')[0],
+    date: todayPacificISO(),
     material: "",
     amount: "",
     unit: ""

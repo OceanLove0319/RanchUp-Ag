@@ -1,17 +1,26 @@
 import { useRoute } from "wouter";
 import { useStore } from "@/lib/store";
-import { Droplets, Sprout, ShieldAlert, ArrowLeft } from "lucide-react";
+import { Droplets, Sprout, ShieldAlert, ArrowLeft, Info } from "lucide-react";
 import { Link } from "wouter";
+import { getActiveSeasonWindow } from "@/utils/season";
+import { getSeasonSpendForBlock } from "@/utils/rollups";
+import { isWithin } from "@/utils/dates";
 
 export default function BlockDetail() {
   const [, params] = useRoute("/app/blocks/:id");
   const block = useStore(s => s.blocks.find(b => b.id === params?.id));
+  const chemicalApps = useStore(s => s.chemicalApps);
 
   if (!block) return <div>Block not found</div>;
 
+  const activeWindow = getActiveSeasonWindow(block);
+  const activeSpend = getSeasonSpendForBlock(block.id, chemicalApps, activeWindow);
+  
+  const formattedSpend = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(activeSpend);
+
   return (
     <div className="animate-in fade-in duration-500">
-      <Link href="/app/blocks" className="inline-flex items-center text-xs font-bold uppercase tracking-widest text-gray-500 hover:text-white mb-6">
+      <Link href="/app/blocks" className="inline-flex items-center text-xs font-bold uppercase tracking-widest text-muted-foreground hover:text-foreground mb-6">
         <ArrowLeft className="w-4 h-4 mr-2" /> Back to Blocks
       </Link>
 
@@ -63,11 +72,12 @@ export default function BlockDetail() {
       <div className="bg-[#111113] border border-white/10 p-6 md:p-8 rounded-lg flex flex-col md:flex-row items-center justify-between gap-6 mb-6">
         <div>
           <h3 className="text-xl font-black uppercase tracking-tight text-white mb-1">Season Spend</h3>
-          <p className="text-gray-400 font-medium">Estimated cost per bin based on target yield ({block.yieldTargetBins} b/ac).</p>
+          <p className="text-gray-400 font-medium mb-1">Total estimated cost based on active season window logs.</p>
+          <p className="text-xs text-muted-foreground flex items-center gap-1"><Info className="w-3 h-3" /> Totals reflect this block's active season window based on Early/Mid/Late timing.</p>
         </div>
         <div className="text-right">
-          <p className="text-4xl font-black text-white">$0.00</p>
-          <p className="text-xs font-bold uppercase tracking-widest text-primary mt-1">Cost / Bin Target</p>
+          <p className="text-4xl font-black text-white">{formattedSpend}</p>
+          <p className="text-xs font-bold uppercase tracking-widest text-primary mt-1">Total Spend</p>
         </div>
       </div>
 
@@ -77,8 +87,10 @@ export default function BlockDetail() {
           <h3 className="text-xl font-black uppercase tracking-tight text-foreground mb-2 flex items-center gap-2">
             <Droplets className="w-5 h-5 text-primary" /> Chemical Plan & Spend
           </h3>
-          <p className="text-muted-foreground font-medium mb-1">This season: {useStore(s => s.chemicalApps.filter(a => a.blockId === block.id).length)} applications • Est. ${useStore(s => s.chemicalApps.filter(a => a.blockId === block.id).reduce((sum, app) => sum + (app.estimatedCost || 0), 0)).toFixed(2)}</p>
-          <p className="text-sm font-bold uppercase tracking-widest text-primary">Trending: +12% vs last 30 days</p>
+          <p className="text-muted-foreground font-medium mb-1">
+            This season window: {chemicalApps.filter(a => a.blockId === block.id && isWithin(a.dateApplied, activeWindow.startISO, activeWindow.endISO)).length} applications
+          </p>
+          <p className="text-xs text-muted-foreground flex items-center gap-1"><Info className="w-3 h-3" /> Dates and season totals are computed in Pacific time (CA).</p>
         </div>
         <div className="flex gap-3 w-full md:w-auto">
           <Link href={`/app/chemicals?blockId=${block.id}`} className="flex-1 md:flex-none text-center px-6 py-3 border border-border rounded font-bold uppercase tracking-wide text-sm hover:bg-white/5 transition-colors">

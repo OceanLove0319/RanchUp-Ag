@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { todayPacificISO } from '@/utils/dates';
 
 export type Block = {
   id: string;
@@ -84,7 +85,7 @@ export const useStore = create<AppState>((set) => ({
     {
       id: '1',
       blockId: '1',
-      date: new Date().toISOString().split('T')[0],
+      date: todayPacificISO(),
       actionType: 'IRRIGATE',
       material: 'Water',
       amount: 1.5,
@@ -103,7 +104,7 @@ export const useStore = create<AppState>((set) => ({
       chemicalId: 'c1',
       chemicalName: 'Nitrogen 32%',
       category: 'FERTILIZER',
-      dateApplied: new Date().toISOString().split('T')[0],
+      dateApplied: todayPacificISO(),
       method: 'FERTIGATION',
       estimatedCost: 250,
       notes: 'Early season push'
@@ -114,7 +115,7 @@ export const useStore = create<AppState>((set) => ({
       chemicalId: 'c2',
       chemicalName: 'Copper Sulfate',
       category: 'FUNGICIDE',
-      dateApplied: new Date().toISOString().split('T')[0],
+      dateApplied: todayPacificISO(),
       method: 'SPRAY',
       estimatedCost: 120,
     }

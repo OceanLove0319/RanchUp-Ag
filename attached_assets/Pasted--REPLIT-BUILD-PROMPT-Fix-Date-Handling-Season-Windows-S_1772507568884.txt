@@ -1,0 +1,168 @@
+# REPLIT BUILD PROMPT — Fix Date Handling + Season Windows + Spend Rollups (Central Valley Ag Prototype)
+
+You are editing an existing React/TypeScript prototype (SPA UI) with a simple in-memory/demo state and/or lightweight API calls. Do NOT break existing backend routes. Keep changes minimal, scoped, and safe. Goal: fix UTC date rollover bug, standardize date handling in Pacific time, and wire “Active Season” filtering + Season Spend rollups using existing schemas.
+
+## Core Problem
+The prototype currently sets default dates using:
+`new Date().toISOString().split('T')[0]`
+This generates a UTC date string. In California (America/Los_Angeles), evening logging (e.g., 5:00 PM) can roll over to the next UTC day, causing spray logs to default to tomorrow’s date. This breaks trust and compliance accuracy.
+
+## Existing Data Structures (DO NOT REMOVE)
+### Block (stored fields)
+- name: string
+- acreage: number
+- variety: string (e.g., “Yellow Peach” or “Citrus”)
+- seasonGroup: "Early" | "Mid" | "Late"
+- irrigationType: "Flood" | "Drip" | "Fanjet" | "Sprinkler"
+- yieldTargetBins: number  // bins per acre, displayed as `{block.yieldTargetBins} b/ac`
+- waterTargetAcreFeet: number
+
+### Chemical Log (ChemicalApp)
+- blockId: string
+- chemicalId: string
+- chemicalName: string
+- category: "FERTILIZER" | "FUNGICIDE" | "HERBICIDE" | "INSECTICIDE" | "ADJUVANT" | "OTHER" | string
+- dateApplied: string  // "YYYY-MM-DD"
+- method: "SPRAY" | "FERTIGATION" | "SOIL" | "FOLIAR"
+- estimatedCost?: number
+- notes?: string
+
+## High-Level Requirements
+1) Replace ALL uses of `toISOString().split('T')[0]` for default dates with a Pacific-time safe helper.
+2) Standardize date-only handling across the UI and any server-side defaulting used by the prototype.
+3) Implement “Active Season” filtering (no seasonYear field exists) using a computed window derived from block.seasonGroup and crop type inference.
+4) Update “Season Spend” header to reflect real totals by summing estimatedCost across all ChemicalApp logs for the block within the active season window.
+5) Keep the UI clean, fast, and farmer-friendly. No heavy data tables. No new complex dependencies required.
+
+---
+
+# Step 1 — Create a Date Utility (Pacific Date-Only ISO)
+Add a utility file:
+`src/utils/dates.ts`
+
+Implement:
+
+- `todayPacificISO(): string`
+  - Returns today’s date in America/Los_Angeles as "YYYY-MM-DD"
+  - Must NOT use toISOString()
+  - Use Intl.DateTimeFormat with timeZone "America/Los_Angeles" and formatToParts to guarantee zero-padded Y-M-D.
+
+- `isWithin(dateISO: string, startISO: string, endISO: string): boolean`
+  - Since all strings are "YYYY-MM-DD", allow lexicographic comparison.
+  - Inclusive bounds.
+
+Example implementation pattern:
+- Intl.DateTimeFormat("en-CA", { timeZone: "America/Los_Angeles", year:"numeric", month:"2-digit", day:"2-digit" }).formatToParts(new Date())
+
+---
+
+# Step 2 — Replace Default Date Generation Everywhere
+Search for all occurrences of:
+- `toISOString().split('T')[0]`
+- any default date logic that assumes UTC.
+
+Replace them with `todayPacificISO()`.
+
+Places to check (likely):
+- Chemical log form initialization
+- “Add Log” button handlers
+- Demo seed data generation
+- Any reducers / stores / Zustand state defaults
+- Any server-side mock creation logic (if present)
+
+Ensure that if a user opens a “New Chemical Log” form at 5–10 PM PT, the default dateApplied is TODAY in PT, not tomorrow.
+
+---
+
+# Step 3 — Compute an “Active Season Window” Without seasonYear
+There is no seasonYear field; the prototype treats all data as “current active season.”
+
+Implement in `src/utils/season.ts`:
+
+## 3.1 Crop Type Inference (No Schema Changes)
+Create `inferCropType(variety: string): "STONE_FRUIT" | "CITRUS" | "NUT" | "OTHER"`
+Use simple keyword heuristics:
+- If variety includes "peach", "nectarine", "plum" → STONE_FRUIT
+- If includes "citrus", "orange", "mandarin", "lemon", "grapefruit" → CITRUS
+- If includes "almond", "pistachio", "walnut" → NUT
+- Else OTHER
+
+NOTE: Keep this simple; it’s a prototype. Do not attempt ML or external APIs.
+
+## 3.2 Active Season Window Definition (Central Valley Stone Fruit)
+Implement `getActiveSeasonWindow(block): { startISO: string; endISO: string }`
+
+- Determine current Pacific year using todayPacificISO().slice(0,4)
+- For STONE_FRUIT:
+  - Early: Feb 01 – Jun 30
+  - Mid: Feb 01 – Aug 31
+  - Late: Feb 01 – Oct 31
+- For CITRUS/NUT/OTHER:
+  - Jan 01 – Dec 31 (v1; later refine)
+
+Return start/end for the current year.
+
+---
+
+# Step 4 — Wire Season Spend Rollups (Real Numbers)
+Implement in `src/utils/rollups.ts`:
+
+- `getSeasonSpendForBlock(blockId: string, logs: ChemicalLog[], window): number`
+  - Filter logs by:
+    - log.blockId === blockId
+    - isWithin(log.dateApplied, window.startISO, window.endISO)
+    - estimatedCost is a finite number
+  - Sum estimatedCost
+  - Return 0 if none
+  - Round to 2 decimals for display
+
+- `getSeasonSpendByCategory(blockId, logs, window): Record<string, number>`
+  - Same filter rules
+  - Group by category
+
+Display updates:
+- Replace the “Season Spend” hardcoded $0.00 header with the computed total.
+- Keep the existing “Chemical Plan & Spend” box behavior, but ensure it is consistent with the same window filter so numbers match.
+
+UI format:
+- Use Intl.NumberFormat("en-US", { style:"currency", currency:"USD" })
+
+---
+
+# Step 5 — Update UI Copy + Trust Indicators
+Where relevant, add a small note (subtle, not noisy):
+- “Dates and season totals are computed in Pacific time (CA).”
+- On Season Spend tooltip/info: “Totals reflect this block’s active season window based on Early/Mid/Late timing.”
+
+Do NOT add heavy modals. Use a small info icon or helper text.
+
+---
+
+# Step 6 — Acceptance Tests (Manual)
+After implementing, verify:
+1) At 5–11 PM Pacific, clicking “New Chemical Log” defaults dateApplied to today’s PT date.
+2) Logs with dateApplied outside the active season window do not count toward Season Spend.
+3) Season Spend header equals sum of all estimatedCost for that block within window.
+4) No regressions: block list loads, block detail loads, chemical log list still works.
+
+---
+
+# Non-Goals / Constraints
+- Do NOT introduce large new dependencies unless absolutely necessary.
+- Do NOT add seasonYear right now.
+- Do NOT refactor the entire data model.
+- Keep changes minimal and safe.
+- Maintain existing styling and UI layout.
+
+---
+
+# Deliverables
+- New utility files:
+  - `src/utils/dates.ts`
+  - `src/utils/season.ts`
+  - `src/utils/rollups.ts`
+- Updated default date usage across the app
+- Updated BlockDetail Season Spend header to dynamic computed value
+- Consistent season-window filtering for spend calculations
+
+Proceed to implement now.

@@ -3,6 +3,7 @@ import { useLocation, Link } from "wouter";
 import { useStore } from "@/lib/store";
 import { ArrowLeft, Check } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { todayPacificISO } from "@/utils/dates";
 
 export default function ChemicalNew() {
   const [, setLocation] = useLocation();
@@ -16,7 +17,7 @@ export default function ChemicalNew() {
     chemicalId: "",
     category: "FERTILIZER",
     method: "SPRAY",
-    dateApplied: new Date().toISOString().split('T')[0],
+    dateApplied: todayPacificISO(),
     estimatedCost: "",
     notes: ""
   });
