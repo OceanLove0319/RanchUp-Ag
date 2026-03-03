@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { todayPacificISO } from '@/utils/dates';
+import { CHEMICALS_SEED } from '@/data/chemicalsSeed';
 
 export type Block = {
   id: string;
@@ -135,11 +136,7 @@ export const useStore = create<AppState>((set) => ({
       unit: 'acre-feet'
     }
   ],
-  chemicals: [
-    { id: 'c1', name: 'Nitrogen 32%', category: 'FERTILIZER', unit: 'GAL' },
-    { id: 'c2', name: 'Copper Sulfate', category: 'FUNGICIDE', unit: 'LB' },
-    { id: 'c3', name: 'Glyphosate 41%', category: 'HERBICIDE', unit: 'GAL' },
-  ],
+  chemicals: CHEMICALS_SEED,
   chemicalApps: [
     {
       id: 'a1',

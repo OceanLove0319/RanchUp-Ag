@@ -216,15 +216,67 @@ export default function Log() {
   const handleSave = () => {
     if (!action || !formData.amount) return;
     
+    let activeChemicalId: string | undefined;
+    let activeChemicalName = formData.material || action;
+    let estimatedCost: number | undefined;
+
+    // Try to match material to the new Chemical Library seed
+    if (action === 'SPRAY' || action === 'FERT') {
+      const allChemicals = useStore.getState().chemicals;
+      const matchedChem = allChemicals.find(c => 
+        c.name.toLowerCase() === activeChemicalName.toLowerCase() || 
+        c.aliases?.some(alias => activeChemicalName.toLowerCase().includes(alias.toLowerCase()))
+      );
+
+      if (matchedChem) {
+        activeChemicalId = matchedChem.id;
+        activeChemicalName = matchedChem.name; // Normalize name to library
+
+        // Compute cost if possible
+        if (matchedChem.unitCostLow && matchedChem.unitCostHigh) {
+          const midCost = (matchedChem.unitCostLow + matchedChem.unitCostHigh) / 2;
+          
+          if (isPerAcreUnit(formData.unit) && block?.acreage) {
+            const totalUnits = Number(formData.amount) * block.acreage;
+            estimatedCost = Math.round(totalUnits * midCost);
+          } else {
+            // Assume the amount is total units
+            estimatedCost = Math.round(Number(formData.amount) * midCost);
+          }
+        }
+      }
+    }
+
+    const newLogId = Date.now().toString();
+
+    // 1. Save standard Field Log
     addLog({
-      id: Date.now().toString(),
+      id: newLogId,
       blockId: selectedBlock,
       date: formData.date,
       actionType: action,
-      material: formData.material || action,
+      material: activeChemicalName,
       amount: Number(formData.amount),
-      unit: formData.unit || (action === 'IRRIGATE' ? 'hrs' : 'lbs')
+      unit: formData.unit || (action === 'IRRIGATE' ? 'hrs' : 'lbs'),
+      cost: estimatedCost
     });
+
+    // 2. If it's a Spray or Fert, auto-generate a ChemicalApp for the Vault
+    if (action === 'SPRAY' || action === 'FERT') {
+      useStore.getState().addChemicalApp({
+        id: `app-${newLogId}`,
+        blockId: selectedBlock,
+        chemicalId: activeChemicalId || `custom-${Date.now()}`,
+        chemicalName: activeChemicalName,
+        category: action === 'FERT' ? 'FERTILIZER' : 'OTHER', // Default fallback category
+        dateApplied: formData.date,
+        method: action,
+        estimatedCost: estimatedCost,
+        notes: isPerAcreUnit(formData.unit) 
+          ? `Logged via Quick Log: ${formData.amount} ${formData.unit}` 
+          : `Logged via Quick Log`
+      });
+    }
 
     toast({
       title: "Log Saved",
