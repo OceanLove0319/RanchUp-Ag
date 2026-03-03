@@ -1,21 +1,51 @@
-import { useRoute } from "wouter";
+import { useRoute, useLocation } from "wouter";
 import { useStore } from "@/lib/store";
-import { Droplets, Sprout, ShieldAlert, ArrowLeft, Info, Lock } from "lucide-react";
+import { Droplets, Sprout, ShieldAlert, ArrowLeft, Info, Lock, Edit2, Trash2 } from "lucide-react";
 import { Link } from "wouter";
+import { useState } from "react";
 import { getActiveSeasonWindow } from "@/utils/season";
 import { getSeasonSpendForBlock } from "@/utils/rollups";
 import { isWithin } from "@/utils/dates";
 import { computeStoneFruitFertTarget } from "@/utils/fertTargets";
 import { getSprayChartWindows } from "@/utils/sprayTemplates";
 import { useGating } from "@/utils/gating";
+import { useToast } from "@/hooks/use-toast";
 
 export default function BlockDetail() {
   const [, params] = useRoute("/app/blocks/:id");
+  const [, setLocation] = useLocation();
+  const { toast } = useToast();
+  
   const block = useStore(s => s.blocks.find(b => b.id === params?.id));
+  const updateBlock = useStore(s => s.updateBlock);
+  const deleteBlock = useStore(s => s.deleteBlock);
   const chemicalApps = useStore(s => s.chemicalApps);
   const { requireCostEngine } = useGating();
 
+  const [isEditing, setIsEditing] = useState(false);
+  const [editForm, setEditForm] = useState<Partial<typeof block>>(block || {});
+
   if (!block) return <div>Block not found</div>;
+
+  const handleSaveEdit = () => {
+    updateBlock(block.id, editForm);
+    setIsEditing(false);
+    toast({
+      title: "Block Updated",
+      description: "Your changes have been saved.",
+    });
+  };
+
+  const handleDelete = () => {
+    if (window.confirm("Are you sure you want to delete this block and all its records? This cannot be undone.")) {
+      deleteBlock(block.id);
+      toast({
+        title: "Block Deleted",
+        description: "The block has been removed.",
+      });
+      setLocation("/app/blocks");
+    }
+  };
 
   const activeWindow = getActiveSeasonWindow(block);
   const activeSpend = getSeasonSpendForBlock(block.id, chemicalApps, activeWindow);
@@ -26,11 +56,128 @@ export default function BlockDetail() {
   const sprayWindows = getSprayChartWindows(block);
   const costEngine = requireCostEngine();
 
+  if (isEditing) {
+    return (
+      <div className="animate-in fade-in duration-300 max-w-2xl mx-auto pb-20">
+        <div className="flex items-center justify-between mb-8">
+          <button onClick={() => setIsEditing(false)} className="flex items-center text-xs font-bold uppercase tracking-widest text-muted-foreground hover:text-foreground transition-colors">
+            <ArrowLeft className="w-4 h-4 mr-2" /> Cancel Edit
+          </button>
+          <button onClick={handleDelete} className="flex items-center text-xs font-bold uppercase tracking-widest text-red-500 hover:text-red-400 transition-colors">
+            <Trash2 className="w-4 h-4 mr-1" /> Delete Block
+          </button>
+        </div>
+
+        <div className="bg-card border border-border p-6 rounded-lg">
+          <h2 className="text-xl font-black uppercase tracking-tight text-foreground mb-6">Edit Block</h2>
+          
+          <div className="space-y-4">
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2">Block Name</label>
+              <input 
+                type="text" 
+                value={editForm.name || ""}
+                onChange={e => setEditForm({...editForm, name: e.target.value})}
+                className="w-full bg-background border border-border rounded px-3 py-2 text-foreground focus:outline-none focus:border-primary"
+              />
+            </div>
+            
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2">Acreage</label>
+                <input 
+                  type="number" 
+                  value={editForm.acreage || ""}
+                  onChange={e => setEditForm({...editForm, acreage: Number(e.target.value)})}
+                  className="w-full bg-background border border-border rounded px-3 py-2 text-foreground focus:outline-none focus:border-primary"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2">Variety</label>
+                <input 
+                  type="text" 
+                  value={editForm.variety || ""}
+                  onChange={e => setEditForm({...editForm, variety: e.target.value})}
+                  className="w-full bg-background border border-border rounded px-3 py-2 text-foreground focus:outline-none focus:border-primary"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2">Season Group</label>
+                <select 
+                  value={editForm.seasonGroup || ""}
+                  onChange={e => setEditForm({...editForm, seasonGroup: e.target.value})}
+                  className="w-full bg-background border border-border rounded px-3 py-2 text-foreground focus:outline-none focus:border-primary appearance-none"
+                >
+                  <option value="Early">Early</option>
+                  <option value="Mid">Mid</option>
+                  <option value="Late">Late</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2">Irrigation Type</label>
+                <select 
+                  value={editForm.irrigationType || ""}
+                  onChange={e => setEditForm({...editForm, irrigationType: e.target.value})}
+                  className="w-full bg-background border border-border rounded px-3 py-2 text-foreground focus:outline-none focus:border-primary appearance-none"
+                >
+                  <option value="Drip">Drip</option>
+                  <option value="Fanjet">Fanjet</option>
+                  <option value="Flood">Flood</option>
+                  <option value="Sprinkler">Sprinkler</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2">Yield Target (bins/ac)</label>
+                <input 
+                  type="number" 
+                  value={editForm.yieldTargetBins || ""}
+                  onChange={e => setEditForm({...editForm, yieldTargetBins: Number(e.target.value)})}
+                  className="w-full bg-background border border-border rounded px-3 py-2 text-foreground focus:outline-none focus:border-primary"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2">Water Target (ac-ft)</label>
+                <input 
+                  type="number" 
+                  step="0.1"
+                  value={editForm.waterTargetAcreFeet || ""}
+                  onChange={e => setEditForm({...editForm, waterTargetAcreFeet: Number(e.target.value)})}
+                  className="w-full bg-background border border-border rounded px-3 py-2 text-foreground focus:outline-none focus:border-primary"
+                />
+              </div>
+            </div>
+          </div>
+
+          <button 
+            onClick={handleSaveEdit}
+            className="w-full mt-8 bg-primary text-primary-foreground font-black uppercase tracking-widest py-3 rounded hover:bg-primary/90 transition-colors shadow-[0_0_15px_rgba(212,175,55,0.3)]"
+          >
+            Save Changes
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="animate-in fade-in duration-500">
-      <Link href="/app/blocks" className="inline-flex items-center text-xs font-bold uppercase tracking-widest text-muted-foreground hover:text-foreground mb-6">
-        <ArrowLeft className="w-4 h-4 mr-2" /> Back to Blocks
-      </Link>
+      <div className="flex justify-between items-center mb-6">
+        <Link href="/app/blocks" className="inline-flex items-center text-xs font-bold uppercase tracking-widest text-muted-foreground hover:text-foreground">
+          <ArrowLeft className="w-4 h-4 mr-2" /> Back to Blocks
+        </Link>
+        <button 
+          onClick={() => setIsEditing(true)}
+          className="flex items-center text-xs font-bold uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors"
+        >
+          <Edit2 className="w-3 h-3 mr-1" /> Edit Block
+        </button>
+      </div>
 
       <header className="mb-10">
         <div className="flex items-center gap-4 mb-2">

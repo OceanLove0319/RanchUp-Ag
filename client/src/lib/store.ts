@@ -61,8 +61,13 @@ type AppState = {
   login: () => void;
   logout: () => void;
   addBlock: (block: Block) => void;
+  updateBlock: (id: string, block: Partial<Block>) => void;
+  deleteBlock: (id: string) => void;
+  
   addLog: (log: FieldLog) => void;
+  deleteLog: (id: string) => void;
   addChemicalApp: (app: ChemicalApp) => void;
+  deleteChemicalApp: (id: string) => void;
   setOnboarded: (data: any) => void;
   
   // Billing Actions
@@ -154,8 +159,20 @@ export const useStore = create<AppState>((set) => ({
   login: () => set({ user: { name: 'Demo User', org: 'KEBB Farms' } }),
   logout: () => set({ user: null }),
   addBlock: (block) => set((state) => ({ blocks: [...state.blocks, block] })),
+  updateBlock: (id, updatedFields) => set((state) => ({
+    blocks: state.blocks.map(b => b.id === id ? { ...b, ...updatedFields } : b)
+  })),
+  deleteBlock: (id) => set((state) => ({
+    blocks: state.blocks.filter(b => b.id !== id),
+    // Also clean up associated logs
+    logs: state.logs.filter(l => l.blockId !== id),
+    chemicalApps: state.chemicalApps.filter(c => c.blockId !== id)
+  })),
+  
   addLog: (log) => set((state) => ({ logs: [log, ...state.logs] })),
+  deleteLog: (id) => set((state) => ({ logs: state.logs.filter(l => l.id !== id) })),
   addChemicalApp: (app) => set((state) => ({ chemicalApps: [app, ...state.chemicalApps] })),
+  deleteChemicalApp: (id) => set((state) => ({ chemicalApps: state.chemicalApps.filter(c => c.id !== id) })),
   setOnboarded: (data) => set({ user: { name: 'Grower', org: data.operationName } }),
   
   setPlan: (planId, isAnnual) => set(state => {

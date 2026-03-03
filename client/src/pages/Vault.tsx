@@ -1,10 +1,11 @@
 import { useStore } from "@/lib/store";
-import { FileText, Download, Filter, Printer, ChevronDown, Lock } from "lucide-react";
+import { FileText, Download, Filter, Printer, ChevronDown, Lock, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { getActiveSeasonWindow } from "@/utils/season";
 import { isWithin } from "@/utils/dates";
 import { Link, useLocation } from "wouter";
 import { useGating } from "@/utils/gating";
+import { useToast } from "@/hooks/use-toast";
 
 // Deterministic Sort
 const sortLogsDeterministic = (logs: any[]) => {
@@ -19,7 +20,9 @@ export default function Vault() {
   const logs = useStore(s => s.logs);
   const blocks = useStore(s => s.blocks);
   const chemApps = useStore(s => s.chemicalApps);
+  const deleteChemicalApp = useStore(s => s.deleteChemicalApp);
   const [, setLocation] = useLocation();
+  const { toast } = useToast();
   const [expandedNotes, setExpandedNotes] = useState<Record<string, boolean>>({});
   const { requirePro } = useGating();
 
