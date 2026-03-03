@@ -1,16 +1,13 @@
 import { Link } from "wouter";
 import { ArrowLeft, CheckCircle2, ShieldAlert, Sprout, Map, Calculator, Printer, DollarSign } from "lucide-react";
+import MarketingNav from "@/components/layout/MarketingNav";
 
 export default function HowItWorks() {
   return (
     <div className="min-h-screen bg-background text-foreground selection:bg-primary selection:text-primary-foreground">
-      <nav className="p-6 max-w-6xl mx-auto w-full">
-        <Link href="/" className="inline-flex items-center text-xs font-bold uppercase tracking-widest text-muted-foreground hover:text-foreground transition-colors">
-          <ArrowLeft className="w-4 h-4 mr-2" /> Back to Home
-        </Link>
-      </nav>
+      <MarketingNav />
 
-      <main className="max-w-4xl mx-auto p-6 pb-24 animate-in fade-in duration-500">
+      <main className="max-w-4xl mx-auto p-6 pt-32 pb-24 animate-in fade-in duration-500">
         <header className="mb-16 text-center">
           <h1 className="text-5xl md:text-7xl font-black uppercase tracking-tighter mb-4">How It Works</h1>
           <p className="text-xl text-muted-foreground font-medium max-w-2xl mx-auto">
