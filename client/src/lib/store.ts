@@ -29,6 +29,13 @@ export type Chemical = {
   name: string;
   category: string;
   unit: string;
+  
+  // Optional planning & meta fields
+  unitCostLow?: number;
+  unitCostHigh?: number;
+  cropTags?: string[];
+  aliases?: string[];
+  notes?: string;
 };
 
 export type ChemicalApp = {
