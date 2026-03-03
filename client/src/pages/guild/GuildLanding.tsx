@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { Check, ChevronDown, ChevronUp, FileText, Lock, ArrowRight, Menu, X, Leaf, Target, Shield, Users, Clock, LayoutDashboard, Zap, Sprout, ShieldAlert, Award } from "lucide-react";
+import MarketingNav from "@/components/layout/MarketingNav";
 
 export default function GuildLanding() {
   const [, setLocation] = useLocation();
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -102,42 +102,7 @@ export default function GuildLanding() {
 
   return (
     <div className="min-h-screen bg-black text-white font-sans selection:bg-[#E85D04] selection:text-white">
-      {/* Navbar */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-md border-b border-white/10">
-        <div className="max-w-6xl mx-auto px-6 h-20 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-[#E85D04] rounded flex items-center justify-center font-black text-white text-xl">K</div>
-            <span className="font-black tracking-tighter text-xl uppercase">KEBB Ag™</span>
-          </div>
-          
-          <div className="hidden md:flex items-center gap-8">
-            <button onClick={() => document.getElementById("reality")?.scrollIntoView({ behavior: "smooth" })} className="text-sm font-bold uppercase tracking-widest text-gray-400 hover:text-white transition-colors">The Reality</button>
-            <button onClick={scrollToKickbacks} className="text-sm font-bold uppercase tracking-widest text-gray-400 hover:text-white transition-colors">Kickbacks</button>
-            <button onClick={() => document.getElementById("proof")?.scrollIntoView({ behavior: "smooth" })} className="text-sm font-bold uppercase tracking-widest text-gray-400 hover:text-white transition-colors">Proof</button>
-            <button onClick={scrollToApply} className="bg-[#E85D04] hover:bg-[#ff6a00] text-white px-6 py-2.5 rounded font-black uppercase tracking-widest text-xs transition-colors">
-              Request Invite
-            </button>
-          </div>
-
-          <button className="md:hidden text-white" onClick={() => setIsMenuOpen(!isMenuOpen)}>
-            {isMenuOpen ? <X /> : <Menu />}
-          </button>
-        </div>
-      </nav>
-
-      {/* Mobile Menu */}
-      {isMenuOpen && (
-        <div className="fixed inset-0 z-40 bg-black pt-24 px-6">
-          <div className="flex flex-col gap-6">
-            <button onClick={() => { setIsMenuOpen(false); document.getElementById("reality")?.scrollIntoView({ behavior: "smooth" }); }} className="text-xl font-black uppercase tracking-tighter text-left">The Reality</button>
-            <button onClick={() => { setIsMenuOpen(false); scrollToKickbacks(); }} className="text-xl font-black uppercase tracking-tighter text-left">Kickbacks</button>
-            <button onClick={() => { setIsMenuOpen(false); document.getElementById("proof")?.scrollIntoView({ behavior: "smooth" }); }} className="text-xl font-black uppercase tracking-tighter text-left">Proof</button>
-            <button onClick={() => { setIsMenuOpen(false); scrollToApply(); }} className="bg-[#E85D04] text-white px-6 py-4 rounded font-black uppercase tracking-widest text-sm text-center mt-4">
-              Request Invite
-            </button>
-          </div>
-        </div>
-      )}
+      <MarketingNav />
 
       {/* 1) Hero */}
       <section className="pt-40 pb-20 px-6 max-w-6xl mx-auto min-h-[90vh] flex flex-col justify-center">
