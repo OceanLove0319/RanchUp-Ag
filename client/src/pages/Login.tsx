@@ -20,10 +20,14 @@ export default function Login() {
     e.preventDefault();
     if (email === "demo@kebbfarms.com" && password === "peaches") {
       login();
+      // Activate the PRO plan and Cost Engine for the demo
+      useStore.getState().setPlan("PRO", false);
+      useStore.getState().setAddOn("COST_ENGINE", true);
+      
       setLocation("/app");
       toast({
         title: "Welcome back",
-        description: "Logged into KEBB Farms demo account."
+        description: "Logged into KEBB Farms demo account (Pro + Cost Engine active)."
       });
     } else {
       toast({
