@@ -1,0 +1,187 @@
+You are working inside the existing KEBB Ag React (Vite) frontend-only prototype. DO NOT change routing architecture, DO NOT add a backend, DO NOT break existing pages. Implement a new “Materials & Products” module that lets growers select and log products they use in operations. This module must integrate into Quick Log and Templates.
+
+GOAL
+Add a Simplot-aligned product taxonomy (Seed, Crop Nutrition, Crop Protection, Adjuvants, Innvictis®) and a “grower-friendly master list” of loggable product types. Provide a Library UI, a picker component, and wire it into existing log creation flow.
+
+CONSTRAINTS
+- Frontend-only (Mockup Mode): store in zustand and localStorage (like existing patterns).
+- Preserve existing log object shape; only add optional fields (do not delete/rename fields).
+- Keep mobile-first UI. Fast to use with minimal taps.
+- No new dependencies unless absolutely necessary.
+- Add feature under Dashboard nav: Operations → Materials & Products.
+- Also surface under Community & Help as “Product Logging Guide”.
+
+DATA MODEL (add to zustand store)
+Create types:
+- ProductCategory = "SEED" | "NUTRITION" | "PROTECTION" | "ADJUVANT" | "INNVICTIS"
+- ProductType = string (e.g., "Fungicide", "Nitrogen Fertilizer", "Surfactant")
+
+Create ProductLibraryItem:
+{
+  id: string,
+  name: string,              // user-friendly product name
+  category: ProductCategory,  // taxonomy bucket
+  type: string,              // product type (see master list)
+  unitDefault?: string,       // optional, e.g. "GAL", "LB", "QT", "OZ"
+  notes?: string,
+  aliases?: string[],         // matching typed search
+  brandFamily?: "INNVICTIS" | "GENERIC",
+}
+
+Store shape additions:
+- productLibrary: ProductLibraryItem[]
+- addProductLibraryItem(item)
+- updateProductLibraryItem(id, patch)
+- removeProductLibraryItem(id)
+- seedDefaultProductLibrary() // one-time seeding if empty
+- productPickerState (optional) for UI
+
+LOG INTEGRATION (do not break existing logs)
+Extend existing Log record with OPTIONAL fields:
+- productIds?: string[]              // library ids used in this operation
+- productEntries?: Array<{
+    productId?: string,
+    nameSnapshot: string,            // store name at time of log
+    category: ProductCategory,
+    type: string,
+    rate?: number,
+    rateUnit?: string,               // e.g. "GAL/AC", "LB/AC"
+    totalApplied?: number,           // computed if acres known
+    totalUnit?: string,              // e.g. "GAL", "LB"
+    notes?: string
+  }>
+
+UI REQUIREMENTS
+1) New page: Operations → Materials & Products
+- Tabs: (A) Library (B) Categories (C) Import/Seed
+- Library tab:
+  - Search box (name/alias)
+  - Filters: Category, Type
+  - List cards with: Name, Category badge, Type, Default Unit
+  - Actions: Add, Edit, Delete
+- Add/Edit modal:
+  - Name (required)
+  - Category (required dropdown)
+  - Type (required dropdown, populated by master list)
+  - Default unit (optional)
+  - Aliases (comma-separated)
+  - Notes (optional)
+  - Brand family toggle: Innvictis / Generic
+
+2) Picker component for Quick Log and Templates
+Create <ProductPicker />:
+- Multi-select
+- Search-as-you-type
+- Shows recent selections (store last 10 used in localStorage)
+- Category grouping (accordion): Seed / Nutrition / Protection / Adjuvant / Innvictis
+- On selection, user can optionally add rate + unit (GAL/AC, LB/AC, OZ/AC)
+- If block acres are known, show “Total Needed” auto-calc:
+  totalApplied = rate * acres (for /AC units)
+- Must reuse existing unit mismatch guardrails if present; if not available for products, implement simple unit normalization:
+  - If rateUnit contains "/AC", treat as area-rate and compute totals
+  - Otherwise store only as provided without computing
+
+3) Product Logging Guide page under Community & Help
+- Simple explainer: categories, why they exist, how to pick types
+- No legal claims. Keep it practical and short.
+
+MASTER LIST (types dropdown values)
+Seed:
+- Seed
+- Variety / Cultivar
+- Treated Seed
+- Untreated Seed
+- Replant Seed
+
+Crop Nutrition:
+- Nitrogen Fertilizer
+- Phosphorus Fertilizer
+- Potassium Fertilizer
+- Dry Fertilizer Blend
+- Liquid Fertilizer
+- Starter Fertilizer
+- Foliar Nutrition
+- Fertigation Material
+- Calcium Product
+- Magnesium Product
+- Sulfur Product
+- Zinc Product
+- Boron Product
+- Iron Product
+- Manganese Product
+- Copper Product
+- Micronutrient Blend
+- Organic Nutrition Product
+- Soil Amendment
+
+Crop Protection:
+- Herbicide (Pre-emerge)
+- Herbicide (Post-emerge)
+- Fungicide
+- Insecticide
+- Miticide
+- Bactericide
+- Nematicide
+- Rodenticide
+- Defoliant
+- Desiccant
+- Dormant Spray Material
+- Soil-applied Pesticide
+- Foliar-applied Pesticide
+
+Adjuvants:
+- Surfactant
+- Spreader
+- Sticker
+- Wetter
+- Crop Oil Concentrate
+- Methylated Seed Oil
+- Drift Control Agent
+- Deposition Aid
+- Water Conditioner
+- Compatibility Agent
+- Buffer / pH Modifier
+- Defoamer
+- Penetrant
+
+Innvictis:
+- Innvictis Product (Protection)
+- Innvictis Product (Nutrition)
+- Innvictis Product (Adjuvant)
+- Innvictis Seed Solution
+
+DEFAULT SEEDING (seedDefaultProductLibrary)
+Seed the library with ~15 generic items (not brand-specific):
+Examples:
+- "Generic Nitrogen Fertilizer" (NUTRITION, Nitrogen Fertilizer, LB)
+- "Generic Foliar Feed" (NUTRITION, Foliar Nutrition, GAL)
+- "Generic Fungicide" (PROTECTION, Fungicide, OZ)
+- "Generic Herbicide Pre" (PROTECTION, Herbicide (Pre-emerge), OZ)
+- "Generic Surfactant" (ADJUVANT, Surfactant, QT)
+- "Innvictis Protection Product" (INNVICTIS, Innvictis Product (Protection), OZ)
+etc.
+
+ENGINEERING TASKS
+- Add routes/nav entry for Materials & Products.
+- Implement store additions in client/src/lib/store.ts (or existing store file) with localStorage persistence.
+- Add components:
+  - client/src/components/products/ProductPicker.tsx
+  - client/src/pages/operations/MaterialsProducts.tsx
+  - client/src/pages/help/ProductLoggingGuide.tsx
+- Wire ProductPicker into:
+  - Quick Log creation flow: add a “Products Used” section
+  - Template editor: allow attaching products to templates
+- Ensure everything compiles and existing functionality remains unchanged.
+
+UX DETAILS
+- Default state: user can log with zero products; this feature is additive.
+- One-tap “Add rate” per selected product; keep it optional.
+- Show totals only when acres are available and unit is /AC.
+- Use existing badge styles (orange accents) and keep cards compact for mobile.
+
+DELIVERABLES
+- Working navigation to Materials & Products page
+- Product library CRUD works and persists
+- ProductPicker works in Quick Log + Templates
+- Logs store selected products as productEntries (snapshot)
+- Product Logging Guide page exists under Community & Help

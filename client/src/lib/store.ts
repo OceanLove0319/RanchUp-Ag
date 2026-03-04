@@ -4,6 +4,19 @@ import { todayPacificISO } from '@/utils/dates';
 import { CHEMICALS_SEED } from '@/data/chemicalsSeed';
 import { TEMPLATES_SEED } from '@/data/templatesSeed';
 
+export type ProductCategory = "SEED" | "NUTRITION" | "PROTECTION" | "ADJUVANT" | "INNVICTIS";
+
+export type ProductLibraryItem = {
+  id: string;
+  name: string;
+  category: ProductCategory;
+  type: string;
+  unitDefault?: string;
+  notes?: string;
+  aliases?: string[];
+  brandFamily?: "INNVICTIS" | "GENERIC";
+};
+
 export type Ranch = {
   id: string;
   name: string;
@@ -33,6 +46,18 @@ export type FieldLog = {
   unit: string;
   notes?: string;
   cost?: number;
+  productIds?: string[];
+  productEntries?: Array<{
+    productId?: string;
+    nameSnapshot: string;
+    category: "SEED" | "NUTRITION" | "PROTECTION" | "ADJUVANT" | "INNVICTIS";
+    type: string;
+    rate?: number;
+    rateUnit?: string;
+    totalApplied?: number;
+    totalUnit?: string;
+    notes?: string;
+  }>;
 };
 
 export type Chemical = {
@@ -58,6 +83,7 @@ export type ProgramLine = {
   rateUnit: string;
   passesPlanned: number;
   monthHint?: number;
+  productIds?: string[];
 };
 
 export type ProgramTemplate = {
@@ -107,6 +133,7 @@ type AppState = {
   templates: ProgramTemplate[];
   projections: BlockProjection[];
   billing: BillingState;
+  productLibrary: ProductLibraryItem[];
   
   login: () => void;
   logout: () => void;
@@ -126,12 +153,19 @@ type AppState = {
   updateProjectionLineOverride: (blockId: string, lineId: string, overrides: { rateValue?: number; passesPlanned?: number; rateUnit?: string }) => void;
   resetProjectionOverrides: (blockId: string) => void;
   addTemplate: (template: ProgramTemplate) => void;
+  updateTemplateLine: (templateId: string, lineId: string, patch: Partial<ProgramLine>) => void;
   
   // Billing Actions
   setPlan: (planId: "STARTER" | "PRO" | "OPS", isAnnual: boolean) => void;
   toggleAnnual: (isAnnual: boolean) => void;
   setAddOn: (addOnId: string, value: boolean | number) => void;
   purchaseOnboarding: () => void;
+
+  // Product Library Actions
+  addProductLibraryItem: (item: ProductLibraryItem) => void;
+  updateProductLibraryItem: (id: string, patch: Partial<ProductLibraryItem>) => void;
+  removeProductLibraryItem: (id: string) => void;
+  seedDefaultProductLibrary: () => void;
 };
 
 const getInitialBilling = (): BillingState => {
@@ -251,6 +285,8 @@ export const useStore = create<AppState>((set) => ({
   templates: TEMPLATES_SEED as ProgramTemplate[],
   projections: [],
   
+  productLibrary: [],
+  
   login: () => set({ 
     user: { name: 'Demo User', org: 'KEBB Farms' },
     ranches: demoRanches,
@@ -328,6 +364,16 @@ export const useStore = create<AppState>((set) => ({
 
   addTemplate: (template) => set((state) => ({ templates: [...state.templates, template] })),
   
+  updateTemplateLine: (templateId, lineId, patch) => set((state) => ({
+    templates: state.templates.map(t => {
+      if (t.id !== templateId) return t;
+      return {
+        ...t,
+        lines: t.lines.map(l => l.id === lineId ? { ...l, ...patch } : l)
+      };
+    })
+  })),
+  
   setPlan: (planId, isAnnual) => set(state => {
     const newBilling = { ...state.billing, planId, isAnnual };
     localStorage.setItem('kebb_billing', JSON.stringify(newBilling));
@@ -353,5 +399,47 @@ export const useStore = create<AppState>((set) => ({
     const newBilling = { ...state.billing, onboardingPurchased: true };
     localStorage.setItem('kebb_billing', JSON.stringify(newBilling));
     return { billing: newBilling };
+  }),
+
+  // Product Library Actions
+  addProductLibraryItem: (item) => set((state) => {
+    const newLib = [...state.productLibrary, item];
+    localStorage.setItem('kebb_product_library', JSON.stringify(newLib));
+    return { productLibrary: newLib };
+  }),
+  
+  updateProductLibraryItem: (id, patch) => set((state) => {
+    const newLib = state.productLibrary.map(p => p.id === id ? { ...p, ...patch } : p);
+    localStorage.setItem('kebb_product_library', JSON.stringify(newLib));
+    return { productLibrary: newLib };
+  }),
+  
+  removeProductLibraryItem: (id) => set((state) => {
+    const newLib = state.productLibrary.filter(p => p.id !== id);
+    localStorage.setItem('kebb_product_library', JSON.stringify(newLib));
+    return { productLibrary: newLib };
+  }),
+  
+  seedDefaultProductLibrary: () => set((state) => {
+    // Only seed if empty
+    if (state.productLibrary.length > 0) return state;
+    import('@/data/productsSeed').then(({ PRODUCTS_SEED }) => {
+      localStorage.setItem('kebb_product_library', JSON.stringify(PRODUCTS_SEED));
+      useStore.setState({ productLibrary: PRODUCTS_SEED as any });
+    });
+    return state;
   })
 }));
+
+// Initialize LocalStorage loaded state
+try {
+  const savedProducts = localStorage.getItem('kebb_product_library');
+  if (savedProducts) {
+    useStore.setState({ productLibrary: JSON.parse(savedProducts) });
+  } else {
+    // Auto-seed on first load
+    setTimeout(() => useStore.getState().seedDefaultProductLibrary(), 500);
+  }
+} catch (e) {
+  console.error("Failed to load product library from localStorage", e);
+}

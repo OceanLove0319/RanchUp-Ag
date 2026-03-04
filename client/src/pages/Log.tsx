@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
 import { useStore } from "@/lib/store";
-import { Droplets, Sprout, ShieldAlert, Check, Zap, Star } from "lucide-react";
+import { Droplets, Sprout, ShieldAlert, Check, Zap, Star, Package } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { todayPacificISO } from "@/utils/dates";
 import { isPerAcreUnit, getBaseUnit, calcTotal, calcLoads, formatNumber, normalizeUnit, areUnitsCompatible } from "@/utils/mathHelpers";
+import ProductPicker from "@/components/products/ProductPicker";
 
 type ActionType = 'SPRAY' | 'FERT' | 'IRRIGATE';
 
@@ -90,6 +91,7 @@ export default function Log() {
     unit: ""
   });
   const [tankSize, setTankSize] = useState<string>("");
+  const [selectedProductIds, setSelectedProductIds] = useState<string[]>([]);
 
   const block = blocks.find(b => b.id === selectedBlock);
   const blockContext = block ? {
@@ -108,6 +110,7 @@ export default function Log() {
     }));
     setActiveTemplate(null);
     setTankSize("");
+    setSelectedProductIds([]);
   }, [action, selectedBlock]);
 
   // Persist pins/recents
@@ -265,6 +268,27 @@ export default function Log() {
     }
 
     const newLogId = Date.now().toString();
+    const productLibrary = useStore.getState().productLibrary;
+    
+    // Create product snapshots if any were selected
+    const productEntries = selectedProductIds.map(id => {
+      const p = productLibrary.find(p => p.id === id);
+      if (!p) return null;
+      
+      let rate = Number(formData.amount);
+      let rateUnit = formData.unit;
+      
+      return {
+        productId: p.id,
+        nameSnapshot: p.name,
+        category: p.category,
+        type: p.type,
+        rate: rate || undefined,
+        rateUnit: rateUnit || p.unitDefault,
+        totalApplied: (isPerAcreUnit(rateUnit || "") && block?.acreage && rate) ? rate * block.acreage : undefined,
+        totalUnit: getBaseUnit(rateUnit || p.unitDefault || "")
+      };
+    }).filter(Boolean) as any[];
 
     // 1. Save standard Field Log
     addLog({
@@ -276,7 +300,9 @@ export default function Log() {
       material: activeChemicalName,
       amount: Number(formData.amount),
       unit: formData.unit || (action === 'IRRIGATE' ? 'hrs' : 'lbs'),
-      cost: estimatedCost
+      cost: estimatedCost,
+      productIds: selectedProductIds,
+      productEntries: productEntries.length > 0 ? productEntries : undefined
     });
 
     // 2. If it's a Spray or Fert, auto-generate a ChemicalApp for the Vault
@@ -521,6 +547,32 @@ export default function Log() {
                     <p className="text-[9px] text-muted-foreground mt-2 italic text-right">Loads = Total ÷ Tank Size</p>
                   </div>
                 )}
+              </div>
+            )}
+
+            {/* Products Used Picker */}
+            {(action === 'SPRAY' || action === 'FERT') && (
+              <div className="pt-4 border-t border-border">
+                <label className="flex items-center gap-2 text-sm font-bold uppercase tracking-widest text-foreground mb-4">
+                  <Package className="w-4 h-4 text-primary" />
+                  Products Used <span className="text-muted-foreground text-xs">(Optional)</span>
+                </label>
+                <div className="bg-card border border-border rounded-lg p-4">
+                  <ProductPicker 
+                    selectedProductIds={selectedProductIds} 
+                    onSelectionChange={setSelectedProductIds} 
+                  />
+                  {selectedProductIds.length > 0 && (
+                    <div className="mt-4 pt-4 border-t border-border">
+                      <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2">
+                        {selectedProductIds.length} Product(s) Selected
+                      </p>
+                      <p className="text-[10px] text-muted-foreground">
+                        Selected products will be saved with this log entry and will use the primary rate of {formData.amount || "0"} {formData.unit || "unit(s)"}.
+                      </p>
+                    </div>
+                  )}
+                </div>
               </div>
             )}
           </div>

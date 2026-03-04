@@ -22,11 +22,13 @@ export default function Shell({ children }: { children: React.ReactNode }) {
 
   const secondaryNavItems = [
     { href: "/app/chemicals", icon: FlaskConical, label: "Chemicals" },
+    { href: "/app/materials-products", icon: Plus, label: "Materials" },
     { href: "/app/projections", icon: LineChart, label: "Budget" },
     { href: "/app/settings/billing", icon: Settings, label: "Settings" },
   ];
 
   const helpNavItems = [
+    { href: "/app/help/product-logging", icon: BookOpen, label: "Log Guide" },
     { href: "/app/glossary", icon: BookOpen, label: "Glossary" },
   ];
 

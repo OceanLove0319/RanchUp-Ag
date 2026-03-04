@@ -1,13 +1,30 @@
 import { useState } from "react";
 import { Link } from "wouter";
 import { useStore, ProgramTemplate, ProgramLine } from "@/lib/store";
-import { ArrowLeft, PlusCircle, Edit2, Copy, Trash2, ShieldAlert, Sprout } from "lucide-react";
+import { ArrowLeft, PlusCircle, Edit2, Copy, Trash2, ShieldAlert, Sprout, Package, Check, X } from "lucide-react";
+import ProductPicker from "@/components/products/ProductPicker";
 
 export default function TemplatesManager() {
   const templates = useStore(s => s.templates);
   const [activeTemplateId, setActiveTemplateId] = useState<string | null>(null);
+  const [editingLineId, setEditingLineId] = useState<string | null>(null);
+  const [lineProducts, setLineProducts] = useState<string[]>([]);
 
   const activeTemplate = templates.find(t => t.id === activeTemplateId);
+
+  const updateTemplateLine = useStore(s => s.updateTemplateLine);
+
+  const startEditingLine = (line: ProgramLine) => {
+    setEditingLineId(line.id);
+    setLineProducts(line.productIds || []);
+  };
+
+  const saveLineProducts = () => {
+    if (activeTemplateId && editingLineId) {
+      updateTemplateLine(activeTemplateId, editingLineId, { productIds: lineProducts });
+    }
+    setEditingLineId(null);
+  };
 
   return (
     <div className="animate-in fade-in duration-500 max-w-4xl mx-auto pb-20">
@@ -83,19 +100,64 @@ export default function TemplatesManager() {
 
                 <div className="space-y-3">
                   {activeTemplate.lines.map((line, i) => (
-                    <div key={i} className="bg-card border border-border p-4 rounded flex items-center gap-4">
-                      <div className="flex-shrink-0">
-                        {line.type === 'SPRAY' ? <ShieldAlert className="w-5 h-5 text-purple-400" /> : <Sprout className="w-5 h-5 text-orange-400" />}
+                    <div key={i} className="bg-card border border-border rounded overflow-hidden">
+                      <div className="p-4 flex items-center gap-4">
+                        <div className="flex-shrink-0">
+                          {line.type === 'SPRAY' ? <ShieldAlert className="w-5 h-5 text-purple-400" /> : <Sprout className="w-5 h-5 text-orange-400" />}
+                        </div>
+                        <div className="flex-1">
+                          <h4 className="font-bold text-white text-sm flex items-center gap-2">
+                            {line.materialName}
+                            {line.productIds && line.productIds.length > 0 && (
+                              <span className="bg-primary/20 text-primary text-[9px] px-1.5 py-0.5 rounded font-bold uppercase tracking-widest flex items-center">
+                                <Package className="w-3 h-3 mr-1" /> {line.productIds.length}
+                              </span>
+                            )}
+                          </h4>
+                          <p className="text-xs text-muted-foreground">
+                            {line.rateValue} {line.rateUnit} • {line.passesPlanned} Passes
+                          </p>
+                        </div>
+                        <button 
+                          className="p-2 text-muted-foreground hover:text-white transition-colors"
+                          onClick={() => startEditingLine(line)}
+                        >
+                          <Edit2 className="w-4 h-4" />
+                        </button>
                       </div>
-                      <div className="flex-1">
-                        <h4 className="font-bold text-white text-sm">{line.materialName}</h4>
-                        <p className="text-xs text-muted-foreground">
-                          {line.rateValue} {line.rateUnit} • {line.passesPlanned} Passes
-                        </p>
-                      </div>
-                      <button className="p-2 text-muted-foreground hover:text-white transition-colors">
-                        <Edit2 className="w-4 h-4" />
-                      </button>
+                      
+                      {editingLineId === line.id && (
+                        <div className="border-t border-border p-4 bg-[#111113]">
+                          <div className="flex justify-between items-center mb-4">
+                            <h5 className="text-xs font-bold uppercase tracking-widest text-muted-foreground flex items-center">
+                              <Package className="w-3 h-3 mr-2 text-primary" /> Edit Attached Products
+                            </h5>
+                            <button onClick={() => setEditingLineId(null)} className="text-muted-foreground hover:text-white">
+                              <X className="w-4 h-4" />
+                            </button>
+                          </div>
+                          <div className="bg-background rounded-lg border border-border p-3 mb-4">
+                            <ProductPicker 
+                              selectedProductIds={lineProducts} 
+                              onSelectionChange={setLineProducts} 
+                            />
+                          </div>
+                          <div className="flex justify-end gap-2">
+                            <button 
+                              onClick={() => setEditingLineId(null)}
+                              className="px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-muted-foreground hover:text-white border border-border rounded"
+                            >
+                              Cancel
+                            </button>
+                            <button 
+                              onClick={saveLineProducts}
+                              className="px-3 py-1.5 text-xs font-bold uppercase tracking-wider bg-primary text-primary-foreground rounded flex items-center gap-1"
+                            >
+                              <Check className="w-3 h-3" /> Save Line
+                            </button>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>

@@ -32,6 +32,9 @@ import BlockProjectionDetail from "@/pages/BlockProjectionDetail";
 import TemplatesManager from "@/pages/TemplatesManager";
 import Glossary from "@/pages/Glossary";
 
+import MaterialsProducts from "@/pages/operations/MaterialsProducts";
+import ProductLoggingGuide from "@/pages/help/ProductLoggingGuide";
+
 function ScrollToTop() {
   const [pathname] = useLocation();
 
@@ -109,6 +112,12 @@ function Router() {
       </Route>
       <Route path="/app/glossary">
         <Shell><Glossary /></Shell>
+      </Route>
+      <Route path="/app/materials-products">
+        <Shell><MaterialsProducts /></Shell>
+      </Route>
+      <Route path="/app/help/product-logging">
+        <Shell><ProductLoggingGuide /></Shell>
       </Route>
 
       <Route component={NotFound} />
