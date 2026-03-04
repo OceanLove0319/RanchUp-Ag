@@ -88,6 +88,36 @@ function Router() {
       <Route path="/app/chemicals">
         <Shell><InputsLibrary /></Shell>
       </Route>
+      <Route path="/app/vault">
+        <Shell><Vault /></Shell>
+      </Route>
+      <Route path="/app/projections">
+        <Shell><ProjectionsDashboard /></Shell>
+      </Route>
+      <Route path="/app/projections/templates">
+        <Shell><TemplatesManager /></Shell>
+      </Route>
+      <Route path="/app/projections/block/:id">
+        <Shell><BlockProjectionDetail /></Shell>
+      </Route>
+      <Route path="/app/pricing">
+        <Shell><Pricing /></Shell>
+      </Route>
+      <Route path="/app/settings/billing">
+        <Shell><Billing /></Shell>
+      </Route>
+      <Route path="/app/reports/weekly">
+        <Shell><WeeklyPacket /></Shell>
+      </Route>
+      <Route path="/app/reports/monthly">
+        <Shell><MonthlySummary /></Shell>
+      </Route>
+      <Route path="/app/reports/variance">
+        <Shell><VarianceFlags /></Shell>
+      </Route>
+      <Route path="/app/glossary">
+        <Shell><Glossary /></Shell>
+      </Route>
       <Route path="/app/help/product-logging">
         <Shell><ProductLoggingGuide /></Shell>
       </Route>
