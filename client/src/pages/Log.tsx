@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useLocation } from "wouter";
 import { useStore } from "@/lib/store";
 import { Droplets, Sprout, ShieldAlert, Check, Zap, Star, Package } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
@@ -58,6 +59,13 @@ const getFallbackUnit = (action: ActionType) => {
 };
 
 export default function Log() {
+  const [location] = useLocation();
+  
+  // Extract query params for pre-filling input
+  const queryParams = new URLSearchParams(window.location.search);
+  const initialInputId = queryParams.get("input");
+  const initialInputType = queryParams.get("type"); // "CHEMICAL" or "MATERIAL"
+  
   const activeRanchId = useStore(s => s.activeRanchId);
   const allBlocks = useStore(s => s.blocks);
   const blocks = allBlocks.filter(b => b.ranchId === activeRanchId);
@@ -65,7 +73,7 @@ export default function Log() {
   const { toast } = useToast();
 
   const [selectedBlock, setSelectedBlock] = useState(blocks[0]?.id || "");
-  const [action, setAction] = useState<ActionType | null>(null);
+  const [action, setAction] = useState<ActionType | null>(initialInputId ? (initialInputType === "CHEMICAL" ? "SPRAY" : "FERT") : null);
   const [activeTemplate, setActiveTemplate] = useState<string | null>(null);
   
   // LocalStorage state
@@ -83,7 +91,31 @@ export default function Log() {
     unit: ""
   });
   const [tankSize, setTankSize] = useState<string>("");
-  const [selectedIds, setSelectedProductIds] = useState<string[]>([]);
+  const [selectedIds, setSelectedProductIds] = useState<string[]>(initialInputId ? [initialInputId] : []);
+
+  // If a specific chemical was passed instead of a material, pre-fill the string name since quick log natively handles chemical names there
+  useEffect(() => {
+    if (initialInputId && initialInputType === "CHEMICAL") {
+      const chem = useStore.getState().chemicals.find(c => c.id === initialInputId);
+      if (chem) {
+        setFormData(prev => ({ ...prev, material: chem.name, unit: chem.unit }));
+        // Ensure action matches chemical category
+        if (chem.category === "FERTILIZER" || chem.category === "NUTRITION") {
+          setAction("FERT");
+        } else {
+          setAction("SPRAY");
+        }
+      }
+    } else if (initialInputId && initialInputType === "MATERIAL") {
+       const mat = useStore.getState().productLibrary.find(m => m.id === initialInputId);
+       if (mat) {
+         setFormData(prev => ({ ...prev, material: mat.name, unit: mat.unitDefault || "" }));
+         
+         const isFert = ["NUTRITION", "AMENDMENT", "BIOLOGICAL"].includes(mat.category);
+         setAction(isFert ? "FERT" : "SPRAY");
+       }
+    }
+  }, [initialInputId, initialInputType]);
 
   const block = blocks.find(b => b.id === selectedBlock);
   const blockContext = block ? {
@@ -92,8 +124,13 @@ export default function Log() {
     irrigationType: block.irrigationType
   } : null;
 
-  // Reset form when action changes
+  // Reset form when action changes unless we are pre-filling from an input
   useEffect(() => {
+    // Only reset if we didn't just prefill from query params
+    if (initialInputId && action === (initialInputType === "CHEMICAL" ? "SPRAY" : "FERT") && formData.material !== "") {
+      return;
+    }
+    
     setFormData(prev => ({
       ...prev,
       material: "",

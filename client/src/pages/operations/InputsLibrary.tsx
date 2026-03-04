@@ -8,9 +8,12 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { PRODUCT_CATEGORIES, PRODUCT_TYPES_BY_CATEGORY } from "@/data/materialsSeed";
 
+import { useLocation } from "wouter";
+
 type TopTab = "ALL" | "CHEMICALS" | "MATERIALS";
 
 export default function InputsLibrary() {
+  const [, setLocation] = useLocation();
   const { chemicals, productLibrary, addProductLibraryItem, updateProductLibraryItem, removeProductLibraryItem } = useStore();
   const [search, setSearch] = useState("");
   const [activeTab, setActiveTab] = useState<TopTab>("ALL");
@@ -228,7 +231,12 @@ export default function InputsLibrary() {
               </div>
               
               <div className="flex items-center gap-2 justify-end sm:opacity-0 sm:group-hover:opacity-100 transition-opacity mt-2 sm:mt-0">
-                <Button variant="secondary" size="sm" className="h-8 text-xs font-bold uppercase tracking-wider">
+                <Button 
+                  variant="secondary" 
+                  size="sm" 
+                  className="h-8 text-xs font-bold uppercase tracking-wider"
+                  onClick={() => setLocation(`/app/log?input=${encodeURIComponent(item.id)}&type=${item.itemType}`)}
+                >
                   Log Use
                 </Button>
                 <Button variant="outline" size="icon" className="h-8 w-8">
