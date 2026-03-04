@@ -400,9 +400,9 @@ export default function GuildLanding() {
           </div>
           <button 
             onClick={() => setIsModalOpen(true)}
-            className="w-full sm:w-auto bg-white text-black hover:bg-gray-200 px-6 py-4 md:py-3 rounded font-black uppercase tracking-widest text-xs transition-colors flex items-center justify-center gap-2 whitespace-nowrap"
+            className="w-full sm:w-auto bg-white text-white hover:bg-gray-200 px-6 py-4 md:py-3 rounded font-black uppercase tracking-widest text-xs transition-colors flex items-center justify-center gap-2 whitespace-nowrap"
           >
-            <FileText className="w-4 h-4" /> See a Redacted Packet
+            <FileText className="w-4 h-4 text-white" /> See a Redacted Packet
           </button>
         </div>
         
@@ -448,19 +448,19 @@ export default function GuildLanding() {
               <div>
                 <ul className="space-y-4 md:space-y-6 bg-background/10 p-5 md:p-8 rounded-xl border border-border">
                   <li className="flex items-start gap-3 md:gap-4">
-                    <Leaf className="w-5 h-5 md:w-6 md:h-6 text-black shrink-0 mt-0.5" />
+                    <Leaf className="w-5 h-5 md:w-6 md:h-6 text-white shrink-0 mt-0.5" />
                     <p className="text-base md:text-lg font-bold text-primary-foreground">Permanent-crop operations in the Central Valley</p>
                   </li>
                   <li className="flex items-start gap-3 md:gap-4">
-                    <Clock className="w-5 h-5 md:w-6 md:h-6 text-black shrink-0 mt-0.5" />
+                    <Clock className="w-5 h-5 md:w-6 md:h-6 text-white shrink-0 mt-0.5" />
                     <p className="text-base md:text-lg font-bold text-primary-foreground">Pilot one season or 8–12 peak weeks</p>
                   </li>
                   <li className="flex items-start gap-3 md:gap-4">
-                    <Target className="w-5 h-5 md:w-6 md:h-6 text-black shrink-0 mt-0.5" />
+                    <Target className="w-5 h-5 md:w-6 md:h-6 text-white shrink-0 mt-0.5" />
                     <p className="text-base md:text-lg font-bold text-primary-foreground">Provide two measurable proof points</p>
                   </li>
                   <li className="flex items-start gap-3 md:gap-4">
-                    <Users className="w-5 h-5 md:w-6 md:h-6 text-black shrink-0 mt-0.5" />
+                    <Users className="w-5 h-5 md:w-6 md:h-6 text-white shrink-0 mt-0.5" />
                     <p className="text-base md:text-lg font-bold text-primary-foreground">Commit to one intro per month (grower/PCA/retail/QA)</p>
                   </li>
                 </ul>
@@ -468,7 +468,7 @@ export default function GuildLanding() {
             </div>
             
             <div className="mt-10 md:mt-12 pt-6 md:pt-8 border-t border-white/20 text-center">
-              <p className="text-[10px] md:text-xs font-black uppercase tracking-widest text-black/60 mb-3">Target Regions</p>
+              <p className="text-[10px] md:text-xs font-black uppercase tracking-widest text-white/60 mb-3">Target Regions</p>
               <div className="flex flex-wrap justify-center gap-x-3 md:gap-x-4 gap-y-2 text-xs md:text-sm font-bold text-primary-foreground/90">
                 <span>Kingsburg</span><span className="hidden sm:inline">·</span>
                 <span>Reedley</span><span className="hidden sm:inline">·</span>
@@ -698,7 +698,7 @@ export default function GuildLanding() {
                       onClick={() => setFormData({...formData, acresBand: band})}
                       className={`px-3 py-2 rounded text-sm font-bold transition-colors border text-center ${
                         formData.acresBand === band 
-                          ? 'bg-white text-black border-white' 
+                          ? 'bg-white text-white border-white' 
                           : 'bg-background border-white/20 text-muted-foreground hover:border-border0'
                       }`}
                     >
@@ -747,7 +747,7 @@ export default function GuildLanding() {
                       onClick={() => handleMonthToggle(month)}
                       className={`px-3 py-1.5 rounded text-xs font-bold transition-colors border ${
                         formData.peakMonths.includes(month) 
-                          ? 'bg-white text-black border-white' 
+                          ? 'bg-white text-white border-white' 
                           : 'bg-background border-white/20 text-muted-foreground hover:border-border0'
                       }`}
                     >
@@ -864,7 +864,7 @@ export default function GuildLanding() {
               </button>
             </div>
             <div className="flex-1 overflow-y-auto p-2 md:p-6 bg-[#0a0a0a]">
-              <div className="bg-white p-4 md:p-8 rounded shadow-sm min-h-[500px] text-black">
+              <div className="bg-white p-4 md:p-8 rounded shadow-sm min-h-[500px] text-white">
                 <div className="border-b-2 border-black pb-4 mb-6 flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
                   <div>
                     <h1 className="text-xl md:text-3xl font-black uppercase tracking-tighter">Weekly Application Report</h1>

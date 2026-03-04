@@ -72,7 +72,7 @@ export default function VaultPrint() {
 
     return (
       <div className="text-gray-600 text-xs mt-1">
-        Notes: <strong className="text-black">
+        Notes: <strong className="text-white">
           {shouldTruncate && !isExpanded ? `${app.notes.substring(0, 80)}...` : app.notes}
         </strong>
         {shouldTruncate && (
@@ -107,7 +107,7 @@ export default function VaultPrint() {
           }
         }
       `}} />
-      <div className="print-packet min-h-screen bg-white text-black p-8 font-sans pb-24 relative">
+      <div className="print-packet min-h-screen bg-white text-white p-8 font-sans pb-24 relative">
         <div className="no-print mb-8">
           <Link href="/app/vault" className="flex items-center gap-2 text-primary font-bold hover:underline">
             <ArrowLeft className="w-4 h-4" /> Back to Vault
@@ -162,7 +162,7 @@ export default function VaultPrint() {
           </div>
           <div className="flex justify-between items-center text-xs">
             <p className="font-bold text-gray-500 uppercase tracking-widest">
-              Cost Coverage: <strong className="text-black">{logsWithCost}/{totalApps}</strong>
+              Cost Coverage: <strong className="text-white">{logsWithCost}/{totalApps}</strong>
               {totalApps > 0 ? ` (${Math.round((logsWithCost/totalApps)*100)}%)` : ''}
             </p>
             <p className="italic text-gray-500">Some applications may not have costs entered.</p>

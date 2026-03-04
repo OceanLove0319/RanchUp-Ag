@@ -150,7 +150,7 @@ export default function PcaIntakeCard() {
   if (isPrintMode) {
     const data = activeTab === "PACKER_SHIPPER" ? psForm : rmForm;
     return (
-      <div className="fixed inset-0 bg-white z-[9999] p-8 text-black overflow-auto">
+      <div className="fixed inset-0 bg-white z-[9999] p-8 text-white overflow-auto">
         <div className="max-w-4xl mx-auto">
           <div className="flex justify-between items-end border-b-2 border-black pb-4 mb-6">
             <div>

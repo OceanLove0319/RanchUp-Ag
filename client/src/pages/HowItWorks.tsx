@@ -116,7 +116,7 @@ export default function HowItWorks() {
           <section className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-center">
             <div className="bg-card border border-border p-4 md:p-6 rounded-xl shadow-2xl order-1 md:order-1 relative overflow-hidden">
               <div className="absolute top-0 right-0 w-full h-1 bg-gradient-to-l from-white to-transparent"></div>
-              <div className="bg-white text-black p-4 rounded text-xs opacity-90 h-40 md:h-48 overflow-hidden">
+              <div className="bg-white text-white p-4 rounded text-xs opacity-90 h-40 md:h-48 overflow-hidden">
                 <h4 className="font-black border-b-2 border-black pb-2 mb-2 uppercase text-[10px] md:text-xs">KEBB Ag Season Packet</h4>
                 <div className="flex justify-between mb-4 font-bold text-[10px] md:text-xs">
                   <span>North 40 Peaches</span>
