@@ -1,10 +1,19 @@
 import { CalendarClock, FileText, Plus } from "lucide-react";
 import { useStore } from "@/lib/store";
 import { Link } from "wouter";
+import { useToast } from "@/hooks/use-toast";
 
 export function PlanPanel() {
   const templates = useStore(s => s.templates);
   const blocks = useStore(s => s.blocks);
+  const { toast } = useToast();
+
+  const handleApply = (templateName: string) => {
+    toast({
+      title: "Template Prepared",
+      description: `"${templateName}" is ready to be applied. Select blocks to continue.`,
+    });
+  };
 
   return (
     <div className="space-y-8 animate-in fade-in duration-300">
@@ -39,7 +48,10 @@ export function PlanPanel() {
                 <h3 className="font-bold text-sm mb-1">{template.name}</h3>
                 <p className="text-xs text-muted-foreground">{template.lines.length} passes planned</p>
               </div>
-              <button className="text-[10px] font-bold uppercase tracking-widest bg-background border border-border px-3 py-1.5 rounded hover:text-primary transition-colors">
+              <button 
+                onClick={() => handleApply(template.name)}
+                className="text-[10px] font-bold uppercase tracking-widest bg-background border border-border px-3 py-1.5 rounded hover:bg-primary/10 hover:border-primary/50 hover:text-primary transition-colors"
+              >
                 Apply
               </button>
             </div>

@@ -1,7 +1,18 @@
 import { Share2, FileText, Printer, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
+import { Link } from "wouter";
 
 export function SharePanel() {
+  const { toast } = useToast();
+
+  const handleDownload = (format: string) => {
+    toast({
+      title: `Preparing ${format} Export`,
+      description: "Your monthly log export is generating. It will download automatically when ready.",
+    });
+  };
+
   return (
     <div className="space-y-8 animate-in fade-in duration-300">
       
@@ -20,10 +31,10 @@ export function SharePanel() {
               <h3 className="font-bold text-sm mb-1">Monthly Log Export</h3>
               <p className="text-xs text-muted-foreground mb-3">County compliance ready CSV/PDF.</p>
               <div className="flex gap-2">
-                <Button size="sm" variant="outline" className="h-8 text-[10px] font-bold uppercase tracking-widest border-border hover:bg-background">
+                <Button onClick={() => handleDownload("PDF")} size="sm" variant="outline" className="h-8 text-[10px] font-bold uppercase tracking-widest border-border hover:bg-primary/10 hover:text-primary hover:border-primary/30">
                   <Download className="w-3 h-3 mr-1" /> PDF
                 </Button>
-                <Button size="sm" variant="outline" className="h-8 text-[10px] font-bold uppercase tracking-widest border-border hover:bg-background">
+                <Button onClick={() => handleDownload("CSV")} size="sm" variant="outline" className="h-8 text-[10px] font-bold uppercase tracking-widest border-border hover:bg-primary/10 hover:text-primary hover:border-primary/30">
                   <Download className="w-3 h-3 mr-1" /> CSV
                 </Button>
               </div>
@@ -37,9 +48,11 @@ export function SharePanel() {
             <div>
               <h3 className="font-bold text-sm mb-1">Block History Card</h3>
               <p className="text-xs text-muted-foreground mb-3">Printable summary for PCA/Partner review.</p>
-              <Button size="sm" variant="outline" className="h-8 text-[10px] font-bold uppercase tracking-widest border-border hover:bg-background">
-                Select Block
-              </Button>
+              <Link href="/app/blocks">
+                <Button size="sm" variant="outline" className="h-8 text-[10px] font-bold uppercase tracking-widest border-border hover:bg-blue-500/10 hover:text-blue-400 hover:border-blue-500/30">
+                  Select Block
+                </Button>
+              </Link>
             </div>
           </div>
 

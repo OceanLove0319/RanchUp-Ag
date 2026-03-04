@@ -1,5 +1,6 @@
 import { AlertTriangle, CheckCircle2, ChevronRight, XCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Link } from "wouter";
 
 export function ReviewPanel() {
   return (
@@ -26,9 +27,11 @@ export function ReviewPanel() {
               <p className="text-xs text-muted-foreground mt-1">Logged yesterday without an application rate.</p>
             </div>
           </div>
-          <Button size="sm" variant="outline" className="border-border w-full md:w-auto text-xs uppercase tracking-widest font-bold">
-            Fix Log <ChevronRight className="w-3 h-3 ml-1" />
-          </Button>
+          <Link href="/app/log" className="w-full md:w-auto">
+            <Button size="sm" variant="outline" className="border-border w-full text-xs uppercase tracking-widest font-bold hover:bg-primary/10 hover:text-primary hover:border-primary/30">
+              Fix Log <ChevronRight className="w-3 h-3 ml-1" />
+            </Button>
+          </Link>
         </div>
 
         {/* Mock Review Item 2 */}
@@ -44,9 +47,11 @@ export function ReviewPanel() {
               <p className="text-xs text-muted-foreground mt-1">Planned applications exceed current recorded inventory.</p>
             </div>
           </div>
-          <Button size="sm" variant="outline" className="border-border w-full md:w-auto text-xs uppercase tracking-widest font-bold">
-            Update Stock <ChevronRight className="w-3 h-3 ml-1" />
-          </Button>
+          <Link href="/app/inputs" className="w-full md:w-auto">
+            <Button size="sm" variant="outline" className="border-border w-full text-xs uppercase tracking-widest font-bold hover:bg-orange-500/10 hover:text-orange-400 hover:border-orange-500/30">
+              Update Stock <ChevronRight className="w-3 h-3 ml-1" />
+            </Button>
+          </Link>
         </div>
       </div>
 
