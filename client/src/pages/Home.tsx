@@ -7,7 +7,6 @@ import { LogPanel } from "@/components/dashboard/LogPanel";
 import { ReviewPanel } from "@/components/dashboard/ReviewPanel";
 import { PlanPanel } from "@/components/dashboard/PlanPanel";
 import { SharePanel } from "@/components/dashboard/SharePanel";
-import { ManagementNav } from "@/components/dashboard/ManagementNav";
 
 export default function Home() {
   const user = useStore(s => s.user);
@@ -46,8 +45,6 @@ export default function Home() {
       <div className="mb-12">
         {renderActiveStep()}
       </div>
-
-      <ManagementNav />
     </div>
   );
 }
