@@ -12,7 +12,10 @@ import { ManagementNav } from "@/components/dashboard/ManagementNav";
 export default function Home() {
   const user = useStore(s => s.user);
   const activeRanchId = useStore(s => s.activeRanchId);
-  const activeRanch = useStore(s => s.ranches.find(r => r.id === activeRanchId));
+  const allRanches = useStore(s => s.ranches);
+  
+  // Extract specific ranch to avoid find() in selector
+  const activeRanch = allRanches.find(r => r.id === activeRanchId);
   
   const [activeStep, setActiveStep] = useState<HomeStep>("TODAY");
 

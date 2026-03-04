@@ -5,10 +5,10 @@ import { Lightbulb, Info } from "lucide-react";
 import { useMemo } from "react";
 
 export function BlockSuggestionsCard({ blockId }: { blockId: string }) {
-  const block = useStore(s => s.blocks.find(b => b.id === blockId));
+  const allBlocks = useStore(s => s.blocks);
+  const block = allBlocks.find(b => b.id === blockId);
   const logs = useStore(s => s.logs);
   const templates = useStore(s => s.templates);
-  const allBlocks = useStore(s => s.blocks);
   const library = useStore(s => s.productLibrary);
   
   // Suggestion state management (simulated persistence)

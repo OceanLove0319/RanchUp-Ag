@@ -1,5 +1,6 @@
 import { Check, ClipboardEdit, CalendarClock, Share2, ClipboardList } from "lucide-react";
 import { useIsMobile } from "@/hooks/useIsMobile";
+import React from "react";
 
 export type HomeStep = "TODAY" | "LOG" | "REVIEW" | "PLAN" | "SHARE";
 

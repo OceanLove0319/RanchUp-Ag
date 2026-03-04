@@ -3,24 +3,29 @@ import { Link } from "wouter";
 import { Droplets, Sprout, ShieldAlert, ArrowRight, Play, CheckCircle2 } from "lucide-react";
 import { format, isToday, isYesterday, parseISO } from "date-fns";
 import { BlockSuggestionsCard } from "@/components/blocks/BlockSuggestionsCard";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 
 export function TodayPanel() {
   const activeRanchId = useStore(s => s.activeRanchId);
-  const blocks = useStore(s => s.blocks.filter(b => b.ranchId === activeRanchId));
-  const logs = useStore(s => s.logs);
+  const allBlocks = useStore(s => s.blocks);
+  const allLogs = useStore(s => s.logs);
+  
+  // Memoize filtered arrays to prevent infinite re-renders
+  const blocks = useMemo(() => allBlocks.filter(b => b.ranchId === activeRanchId), [allBlocks, activeRanchId]);
   
   // Find blocks that need attention (e.g. no activity in a while, or specific season tags)
   // For MVP, just show top 3 blocks
-  const priorityBlocks = blocks.slice(0, 3);
+  const priorityBlocks = useMemo(() => blocks.slice(0, 3), [blocks]);
   
   // Get very recent logs
-  const recentLogs = logs
+  const recentLogs = useMemo(() => allLogs
     .filter(l => l.ranchId === activeRanchId)
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-    .slice(0, 3);
+    .slice(0, 3), [allLogs, activeRanchId]);
 
-  const [selectedBlockId, setSelectedBlockId] = useState(priorityBlocks[0]?.id);
+  // Handle selected block safely to avoid loop
+  const defaultBlockId = priorityBlocks.length > 0 ? priorityBlocks[0].id : null;
+  const [selectedBlockId, setSelectedBlockId] = useState<string | null>(defaultBlockId);
 
   const formatLogDate = (dateStr: string) => {
     try {
