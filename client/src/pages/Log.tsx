@@ -4,11 +4,11 @@ import { Droplets, Sprout, ShieldAlert, Check, Zap, Star, Package } from "lucide
 import { useToast } from "@/hooks/use-toast";
 import { todayPacificISO } from "@/utils/dates";
 import { isPerAcreUnit, getBaseUnit, calcTotal, calcLoads, formatNumber, normalizeUnit, areUnitsCompatible } from "@/utils/mathHelpers";
+import { inferCropType, type CropType } from "@/utils/crops";
 import ProductPicker from "@/components/products/ProductPicker";
 
 type ActionType = 'SPRAY' | 'FERT' | 'IRRIGATE';
 
-type CropType = "STONE_FRUIT" | "CITRUS" | "NUT" | "OTHER";
 type SeasonGroup = "Early" | "Mid" | "Late";
 type IrrigationType = "Flood" | "Drip" | "Fanjet" | "Sprinkler" | string;
 
@@ -21,14 +21,6 @@ type QuickTemplate = {
   cropTypes?: CropType[];
   seasonGroups?: SeasonGroup[];
   irrigationTypes?: IrrigationType[];
-};
-
-const inferCropType = (variety: string): CropType => {
-  const v = variety.toLowerCase();
-  if (v.includes('peach') || v.includes('nectarine') || v.includes('plum') || v.includes('apricot') || v.includes('cherry')) return 'STONE_FRUIT';
-  if (v.includes('citrus') || v.includes('orange') || v.includes('mandarin') || v.includes('lemon') || v.includes('lime') || v.includes('grapefruit')) return 'CITRUS';
-  if (v.includes('almond') || v.includes('pistachio') || v.includes('walnut')) return 'NUT';
-  return 'OTHER';
 };
 
 const QUICK_TEMPLATES: Record<ActionType, QuickTemplate[]> = {

@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { PRODUCT_CATEGORIES } from "@/data/productsSeed";
+import { PRODUCT_CATEGORIES } from "@/data/materialsSeed";
 
 export default function ProductPicker({ selectedProductIds = [], onSelectionChange }: { selectedProductIds?: string[], onSelectionChange: (ids: string[]) => void }) {
   const { productLibrary } = useStore();
@@ -42,11 +42,14 @@ export default function ProductPicker({ selectedProductIds = [], onSelectionChan
 
   const getCategoryColor = (cat: string) => {
     switch(cat) {
-      case "SEED": return "bg-green-500/20 text-green-500 border-green-500/30";
-      case "NUTRITION": return "bg-blue-500/20 text-blue-500 border-blue-500/30";
-      case "PROTECTION": return "bg-red-500/20 text-red-500 border-red-500/30";
-      case "ADJUVANT": return "bg-purple-500/20 text-purple-500 border-purple-500/30";
-      case "INNVICTIS": return "bg-orange-500/20 text-orange-500 border-orange-500/30";
+      case "NUTRITION": return "bg-green-500/20 text-green-500 border-green-500/30";
+      case "AMENDMENT": return "bg-orange-500/20 text-orange-500 border-orange-500/30";
+      case "FUNGICIDE": return "bg-purple-500/20 text-purple-500 border-purple-500/30";
+      case "HERBICIDE": return "bg-red-500/20 text-red-500 border-red-500/30";
+      case "INSECTICIDE_MITICIDE": return "bg-amber-500/20 text-amber-500 border-amber-500/30";
+      case "ADJUVANT": return "bg-blue-400/20 text-blue-400 border-blue-400/30";
+      case "WATER_TREATMENT": return "bg-cyan-500/20 text-cyan-500 border-cyan-500/30";
+      case "BIOLOGICAL": return "bg-lime-500/20 text-lime-500 border-lime-500/30";
       default: return "bg-gray-500/20 text-gray-500 border-gray-500/30";
     }
   };

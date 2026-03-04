@@ -1,0 +1,385 @@
+You are working inside the existing KEBB Ag React + Vite frontend-only prototype.
+
+DO NOT:
+- break existing routing
+- break existing backend assumptions
+- remove or rename existing log fields
+- add a backend
+- add unnecessary dependencies
+
+GOAL
+Add and seed a “Top 100 Grower Materials” library into KEBB Ag for Central Valley permanent-crop operations (almonds, pistachios, walnuts, citrus, stone fruit, blueberries). These materials must be usable in:
+1. Quick Log
+2. Templates
+3. Materials & Products library search/filter
+4. Future cost engine / unit matching flows
+
+This is frontend-only and should persist using the existing zustand + localStorage pattern.
+
+==================================================
+FEATURES TO BUILD
+==================================================
+
+1) MATERIAL LIBRARY SEED
+Add a one-time seed function that loads the Top 100 materials below into the product/material library if the library is empty.
+
+2) LIBRARY PAGE
+Create or extend the existing “Materials & Products” page with:
+- search by name / alias
+- filter by category
+- filter by sub-type
+- compact card/list view
+- mobile-friendly design
+- badge for category
+- default unit displayed
+
+3) QUICK LOG INTEGRATION
+In Quick Log, add a “Materials Used” section above Notes.
+User can:
+- add one or more materials
+- optionally enter rate
+- optionally enter rate unit
+- optionally enter total amount
+- optionally enter notes per material
+- preserve this in the log snapshot
+
+4) TEMPLATE INTEGRATION
+Allow templates to include preselected materials and optional default rates/units.
+
+5) SIMPLE TOTALS MATH
+If:
+- block acres are known
+- rate unit contains “/AC”
+then compute:
+totalNeeded = rate * acres
+
+Examples:
+- 15 GAL/AC on 22.5 AC = 337.5 GAL
+- 3 LB/AC on 40 AC = 120 LB
+
+If the unit does not contain /AC, do not compute automatically. Just store as entered.
+
+6) HELP PAGE
+Under Community & Help, add “Grower Materials Guide”
+Include short sections:
+- Nutrition
+- Soil & Water Amendments
+- Fungicides
+- Herbicides
+- Insecticides & Miticides
+- Adjuvants / Oils / Water Helpers
+Keep the copy practical and simple.
+
+==================================================
+DATA MODEL
+==================================================
+
+Use or extend the existing material/product library model.
+
+Preferred shape:
+type MaterialCategory =
+  | "NUTRITION"
+  | "AMENDMENT"
+  | "FUNGICIDE"
+  | "HERBICIDE"
+  | "INSECTICIDE_MITICIDE"
+  | "ADJUVANT"
+  | "BIOLOGICAL"
+  | "WATER_TREATMENT"
+
+type MaterialLibraryItem = {
+  id: string
+  name: string
+  category: MaterialCategory
+  type: string
+  unitDefault?: string
+  aliases?: string[]
+  notes?: string
+}
+
+Extend logs with OPTIONAL fields only:
+materialEntries?: Array<{
+  materialId?: string
+  nameSnapshot: string
+  category: MaterialCategory
+  type: string
+  rate?: number
+  rateUnit?: string
+  totalApplied?: number
+  totalUnit?: string
+  notes?: string
+}>
+
+Add zustand actions:
+- seedDefaultMaterials()
+- addMaterial(item)
+- updateMaterial(id, patch)
+- removeMaterial(id)
+
+Persist via localStorage.
+
+==================================================
+TOP 100 GROWER MATERIALS TO SEED
+==================================================
+
+Use these exact category assignments and default units.
+
+[
+  { "name": "Urea", "category": "NUTRITION", "type": "Nitrogen Fertilizer", "unitDefault": "LB", "aliases": ["46-0-0"] },
+  { "name": "UAN-32", "category": "NUTRITION", "type": "Nitrogen Fertilizer", "unitDefault": "GAL", "aliases": ["UAN 32", "32-0-0"] },
+  { "name": "Ammonium Sulfate", "category": "NUTRITION", "type": "Nitrogen Fertilizer", "unitDefault": "LB", "aliases": ["AMS", "21-0-0-24S"] },
+  { "name": "Calcium Nitrate", "category": "NUTRITION", "type": "Calcium Product", "unitDefault": "LB", "aliases": [] },
+  { "name": "Potassium Nitrate", "category": "NUTRITION", "type": "Potassium Fertilizer", "unitDefault": "LB", "aliases": [] },
+  { "name": "MAP", "category": "NUTRITION", "type": "Phosphorus Fertilizer", "unitDefault": "LB", "aliases": ["Monoammonium Phosphate"] },
+  { "name": "MKP", "category": "NUTRITION", "type": "Phosphorus Fertilizer", "unitDefault": "LB", "aliases": ["Monopotassium Phosphate"] },
+  { "name": "APP", "category": "NUTRITION", "type": "Phosphorus Fertilizer", "unitDefault": "GAL", "aliases": ["Ammonium Polyphosphate"] },
+  { "name": "SOP", "category": "NUTRITION", "type": "Potassium Fertilizer", "unitDefault": "LB", "aliases": ["Sulfate of Potash"] },
+  { "name": "MOP", "category": "NUTRITION", "type": "Potassium Fertilizer", "unitDefault": "LB", "aliases": ["Potassium Chloride"] },
+  { "name": "CAN-17", "category": "NUTRITION", "type": "Calcium Product", "unitDefault": "GAL", "aliases": ["Calcium Ammonium Nitrate"] },
+  { "name": "Calcium Thiosulfate", "category": "NUTRITION", "type": "Calcium Product", "unitDefault": "GAL", "aliases": [] },
+  { "name": "Potassium Thiosulfate", "category": "NUTRITION", "type": "Potassium Fertilizer", "unitDefault": "GAL", "aliases": [] },
+  { "name": "Ammonium Thiosulfate", "category": "NUTRITION", "type": "Nitrogen Fertilizer", "unitDefault": "GAL", "aliases": ["ATS"] },
+  { "name": "Magnesium Sulfate", "category": "NUTRITION", "type": "Magnesium Product", "unitDefault": "LB", "aliases": ["Epsom Salt"] },
+  { "name": "Zinc Sulfate", "category": "NUTRITION", "type": "Zinc Product", "unitDefault": "LB", "aliases": [] },
+  { "name": "Zinc Chelate", "category": "NUTRITION", "type": "Zinc Product", "unitDefault": "GAL", "aliases": [] },
+  { "name": "Boric Acid", "category": "NUTRITION", "type": "Boron Product", "unitDefault": "LB", "aliases": [] },
+  { "name": "Soluble Boron", "category": "NUTRITION", "type": "Boron Product", "unitDefault": "LB", "aliases": ["Solubor"] },
+  { "name": "Iron Chelate", "category": "NUTRITION", "type": "Iron Product", "unitDefault": "LB", "aliases": [] },
+  { "name": "Manganese Sulfate", "category": "NUTRITION", "type": "Manganese Product", "unitDefault": "LB", "aliases": [] },
+  { "name": "Copper Sulfate", "category": "NUTRITION", "type": "Copper Product", "unitDefault": "LB", "aliases": [] },
+  { "name": "Chelated Micronutrient Blend", "category": "NUTRITION", "type": "Micronutrient Blend", "unitDefault": "GAL", "aliases": [] },
+  { "name": "Humic Acid Product", "category": "BIOLOGICAL", "type": "Biostimulant", "unitDefault": "GAL", "aliases": [] },
+  { "name": "Fulvic Acid Product", "category": "BIOLOGICAL", "type": "Biostimulant", "unitDefault": "GAL", "aliases": [] },
+  { "name": "Seaweed / Kelp Product", "category": "BIOLOGICAL", "type": "Biostimulant", "unitDefault": "GAL", "aliases": ["Kelp"] },
+  { "name": "Amino Acid Product", "category": "BIOLOGICAL", "type": "Biostimulant", "unitDefault": "GAL", "aliases": [] },
+  { "name": "Phosphite Product", "category": "NUTRITION", "type": "Phosphite / Phosphonate", "unitDefault": "GAL", "aliases": ["Phosphonate"] },
+  { "name": "Fish-Based Liquid Nutrition", "category": "BIOLOGICAL", "type": "Organic Nutrition Product", "unitDefault": "GAL", "aliases": [] },
+  { "name": "Biological Nutrition Blend", "category": "BIOLOGICAL", "type": "Biological Nutrition", "unitDefault": "GAL", "aliases": [] },
+
+  { "name": "Gypsum", "category": "AMENDMENT", "type": "Calcium / Soil Amendment", "unitDefault": "TON", "aliases": [] },
+  { "name": "Solution-Grade Gypsum", "category": "AMENDMENT", "type": "Calcium / Soil Amendment", "unitDefault": "LB", "aliases": [] },
+  { "name": "Lime", "category": "AMENDMENT", "type": "pH Amendment", "unitDefault": "TON", "aliases": [] },
+  { "name": "Dolomite", "category": "AMENDMENT", "type": "pH Amendment", "unitDefault": "TON", "aliases": [] },
+  { "name": "Elemental Sulfur", "category": "AMENDMENT", "type": "Soil Amendment", "unitDefault": "LB", "aliases": [] },
+  { "name": "Sulfuric Acid", "category": "WATER_TREATMENT", "type": "Acid Injection Product", "unitDefault": "GAL", "aliases": [] },
+  { "name": "Urea-Sulfuric Acid", "category": "WATER_TREATMENT", "type": "Acid Injection Product", "unitDefault": "GAL", "aliases": [] },
+  { "name": "Calcium Chloride", "category": "AMENDMENT", "type": "Calcium Product", "unitDefault": "GAL", "aliases": [] },
+  { "name": "Acid Injection Blend", "category": "WATER_TREATMENT", "type": "Acid Injection Product", "unitDefault": "GAL", "aliases": [] },
+  { "name": "pH Reducer", "category": "WATER_TREATMENT", "type": "pH Modifier", "unitDefault": "GAL", "aliases": [] },
+  { "name": "Water Conditioner", "category": "WATER_TREATMENT", "type": "Water Treatment", "unitDefault": "QT", "aliases": [] },
+  { "name": "Sodium Displacement Amendment", "category": "AMENDMENT", "type": "Soil Amendment", "unitDefault": "TON", "aliases": [] },
+  { "name": "Infiltration Aid", "category": "WATER_TREATMENT", "type": "Infiltration Aid", "unitDefault": "GAL", "aliases": [] },
+  { "name": "Soil Penetrant", "category": "WATER_TREATMENT", "type": "Penetrant", "unitDefault": "GAL", "aliases": [] },
+  { "name": "Irrigation Wetting Agent", "category": "WATER_TREATMENT", "type": "Wetting Agent", "unitDefault": "GAL", "aliases": [] },
+  { "name": "Organic Matter Amendment", "category": "AMENDMENT", "type": "Organic Amendment", "unitDefault": "TON", "aliases": [] },
+  { "name": "Compost", "category": "AMENDMENT", "type": "Organic Amendment", "unitDefault": "TON", "aliases": [] },
+  { "name": "Manure Compost", "category": "AMENDMENT", "type": "Organic Amendment", "unitDefault": "TON", "aliases": [] },
+  { "name": "Biochar", "category": "AMENDMENT", "type": "Organic Amendment", "unitDefault": "LB", "aliases": [] },
+  { "name": "Calcium Carbonate Amendment", "category": "AMENDMENT", "type": "Soil Amendment", "unitDefault": "TON", "aliases": [] },
+
+  { "name": "Copper Fungicide", "category": "FUNGICIDE", "type": "Copper Fungicide", "unitDefault": "LB", "aliases": [] },
+  { "name": "Fixed Copper", "category": "FUNGICIDE", "type": "Copper Fungicide", "unitDefault": "LB", "aliases": [] },
+  { "name": "Copper + Oil Dormant Mix", "category": "FUNGICIDE", "type": "Dormant Spray Material", "unitDefault": "GAL", "aliases": [] },
+  { "name": "Liquid Lime Sulfur", "category": "FUNGICIDE", "type": "Sulfur Fungicide", "unitDefault": "GAL", "aliases": [] },
+  { "name": "Wettable Sulfur", "category": "FUNGICIDE", "type": "Sulfur Fungicide", "unitDefault": "LB", "aliases": [] },
+  { "name": "Chlorothalonil", "category": "FUNGICIDE", "type": "Protectant Fungicide", "unitDefault": "PT", "aliases": [] },
+  { "name": "Captan", "category": "FUNGICIDE", "type": "Protectant Fungicide", "unitDefault": "LB", "aliases": [] },
+  { "name": "Ziram", "category": "FUNGICIDE", "type": "Protectant Fungicide", "unitDefault": "LB", "aliases": [] },
+  { "name": "Dodine", "category": "FUNGICIDE", "type": "Fungicide", "unitDefault": "GAL", "aliases": [] },
+  { "name": "Propiconazole", "category": "FUNGICIDE", "type": "DMI Fungicide", "unitDefault": "OZ", "aliases": [] },
+  { "name": "Tebuconazole", "category": "FUNGICIDE", "type": "DMI Fungicide", "unitDefault": "OZ", "aliases": [] },
+  { "name": "DMI Fungicide", "category": "FUNGICIDE", "type": "DMI Fungicide", "unitDefault": "OZ", "aliases": [] },
+  { "name": "QoI Fungicide", "category": "FUNGICIDE", "type": "Strobilurin Fungicide", "unitDefault": "OZ", "aliases": ["Strobilurin"] },
+  { "name": "SDHI Fungicide", "category": "FUNGICIDE", "type": "SDHI Fungicide", "unitDefault": "OZ", "aliases": [] },
+  { "name": "Fosetyl-Al", "category": "FUNGICIDE", "type": "Systemic Fungicide", "unitDefault": "LB", "aliases": [] },
+  { "name": "Phosphorous Acid Fungicide", "category": "FUNGICIDE", "type": "Phosphonate Fungicide", "unitDefault": "GAL", "aliases": [] },
+  { "name": "Mefenoxam / Metalaxyl", "category": "FUNGICIDE", "type": "Systemic Fungicide", "unitDefault": "PT", "aliases": ["Metalaxyl"] },
+  { "name": "Bacillus Biofungicide", "category": "BIOLOGICAL", "type": "Biofungicide", "unitDefault": "OZ", "aliases": [] },
+  { "name": "Biological Rot / Bloom Product", "category": "BIOLOGICAL", "type": "Biofungicide", "unitDefault": "OZ", "aliases": [] },
+  { "name": "Dormant Fungicide Program Item", "category": "FUNGICIDE", "type": "Dormant Spray Material", "unitDefault": "GAL", "aliases": [] },
+
+  { "name": "Glyphosate", "category": "HERBICIDE", "type": "Post-emergent Herbicide", "unitDefault": "GAL", "aliases": [] },
+  { "name": "Glufosinate", "category": "HERBICIDE", "type": "Post-emergent Herbicide", "unitDefault": "GAL", "aliases": [] },
+  { "name": "Paraquat", "category": "HERBICIDE", "type": "Post-emergent Herbicide", "unitDefault": "GAL", "aliases": [] },
+  { "name": "Oxyfluorfen", "category": "HERBICIDE", "type": "Pre-emergent Herbicide", "unitDefault": "GAL", "aliases": [] },
+  { "name": "Pendimethalin", "category": "HERBICIDE", "type": "Pre-emergent Herbicide", "unitDefault": "GAL", "aliases": [] },
+  { "name": "Flumioxazin", "category": "HERBICIDE", "type": "Pre-emergent Herbicide", "unitDefault": "OZ", "aliases": [] },
+  { "name": "Rimsulfuron", "category": "HERBICIDE", "type": "Post-emergent Herbicide", "unitDefault": "OZ", "aliases": [] },
+  { "name": "Indaziflam", "category": "HERBICIDE", "type": "Pre-emergent Herbicide", "unitDefault": "OZ", "aliases": [] },
+  { "name": "Simazine", "category": "HERBICIDE", "type": "Pre-emergent Herbicide", "unitDefault": "LB", "aliases": [] },
+  { "name": "Diuron", "category": "HERBICIDE", "type": "Pre-emergent Herbicide", "unitDefault": "LB", "aliases": [] },
+  { "name": "2,4-D Orchard Use", "category": "HERBICIDE", "type": "Post-emergent Herbicide", "unitDefault": "GAL", "aliases": ["2,4-D"] },
+  { "name": "Pelargonic Acid", "category": "HERBICIDE", "type": "Organic Burndown Herbicide", "unitDefault": "GAL", "aliases": [] },
+  { "name": "Organic Burndown Herbicide", "category": "HERBICIDE", "type": "Organic Burndown Herbicide", "unitDefault": "GAL", "aliases": [] },
+  { "name": "Pre-emergent Herbicide Blend", "category": "HERBICIDE", "type": "Pre-emergent Herbicide", "unitDefault": "GAL", "aliases": [] },
+  { "name": "Post-emergent Herbicide Blend", "category": "HERBICIDE", "type": "Post-emergent Herbicide", "unitDefault": "GAL", "aliases": [] },
+
+  { "name": "Horticultural Oil", "category": "ADJUVANT", "type": "Spray Oil", "unitDefault": "GAL", "aliases": [] },
+  { "name": "Superior Oil", "category": "ADJUVANT", "type": "Spray Oil", "unitDefault": "GAL", "aliases": [] },
+  { "name": "Neem Oil", "category": "ADJUVANT", "type": "Botanical Oil", "unitDefault": "GAL", "aliases": [] },
+  { "name": "Surfactant", "category": "ADJUVANT", "type": "Surfactant", "unitDefault": "QT", "aliases": [] },
+  { "name": "Spreader", "category": "ADJUVANT", "type": "Spreader", "unitDefault": "QT", "aliases": [] },
+  { "name": "Sticker", "category": "ADJUVANT", "type": "Sticker", "unitDefault": "QT", "aliases": [] },
+  { "name": "Wetter", "category": "ADJUVANT", "type": "Wetter", "unitDefault": "QT", "aliases": [] },
+  { "name": "Crop Oil Concentrate", "category": "ADJUVANT", "type": "Crop Oil Concentrate", "unitDefault": "GAL", "aliases": ["COC"] },
+  { "name": "Methylated Seed Oil", "category": "ADJUVANT", "type": "Methylated Seed Oil", "unitDefault": "GAL", "aliases": ["MSO"] },
+  { "name": "Drift Control Agent", "category": "ADJUVANT", "type": "Drift Control", "unitDefault": "QT", "aliases": [] },
+
+  { "name": "Deposition Aid", "category": "ADJUVANT", "type": "Deposition Aid", "unitDefault": "QT", "aliases": [] },
+  { "name": "Compatibility Agent", "category": "ADJUVANT", "type": "Compatibility Agent", "unitDefault": "QT", "aliases": [] },
+  { "name": "Buffer / pH Modifier", "category": "ADJUVANT", "type": "pH Modifier", "unitDefault": "QT", "aliases": [] },
+  { "name": "Defoamer", "category": "ADJUVANT", "type": "Defoamer", "unitDefault": "PT", "aliases": [] },
+  { "name": "Penetrant", "category": "ADJUVANT", "type": "Penetrant", "unitDefault": "QT", "aliases": [] },
+
+  { "name": "Spinosad", "category": "INSECTICIDE_MITICIDE", "type": "Insecticide", "unitDefault": "OZ", "aliases": [] },
+  { "name": "Abamectin", "category": "INSECTICIDE_MITICIDE", "type": "Miticide / Insecticide", "unitDefault": "OZ", "aliases": [] },
+  { "name": "Bifenthrin", "category": "INSECTICIDE_MITICIDE", "type": "Pyrethroid Insecticide", "unitDefault": "OZ", "aliases": [] },
+  { "name": "Pyrethroid Insecticide", "category": "INSECTICIDE_MITICIDE", "type": "Pyrethroid Insecticide", "unitDefault": "OZ", "aliases": [] },
+  { "name": "Insect Growth Regulator", "category": "INSECTICIDE_MITICIDE", "type": "IGR", "unitDefault": "OZ", "aliases": ["IGR"] },
+  { "name": "Bt Product", "category": "BIOLOGICAL", "type": "Biological Insecticide", "unitDefault": "LB", "aliases": ["Bacillus thuringiensis", "BT"] },
+  { "name": "Imidacloprid", "category": "INSECTICIDE_MITICIDE", "type": "Systemic Insecticide", "unitDefault": "OZ", "aliases": [] },
+  { "name": "Cyantraniliprole", "category": "INSECTICIDE_MITICIDE", "type": "Insecticide", "unitDefault": "OZ", "aliases": [] },
+  { "name": "Chlorantraniliprole", "category": "INSECTICIDE_MITICIDE", "type": "Insecticide", "unitDefault": "OZ", "aliases": [] },
+  { "name": "Clofentezine", "category": "INSECTICIDE_MITICIDE", "type": "Miticide", "unitDefault": "OZ", "aliases": [] },
+  { "name": "Bifenazate", "category": "INSECTICIDE_MITICIDE", "type": "Miticide", "unitDefault": "OZ", "aliases": [] },
+  { "name": "Spiromesifen", "category": "INSECTICIDE_MITICIDE", "type": "Miticide", "unitDefault": "OZ", "aliases": [] },
+  { "name": "Dormant Insect / Mite Material", "category": "INSECTICIDE_MITICIDE", "type": "Dormant Spray Material", "unitDefault": "GAL", "aliases": [] }
+]
+
+IMPORTANT:
+- Preserve the exact names above.
+- If you need unique IDs, slugify the names.
+- Do not remove aliases.
+
+==================================================
+TYPE FILTER GROUPS
+==================================================
+
+Create filter groups in the UI:
+
+Nutrition:
+- Nitrogen Fertilizer
+- Phosphorus Fertilizer
+- Potassium Fertilizer
+- Calcium Product
+- Magnesium Product
+- Zinc Product
+- Boron Product
+- Iron Product
+- Manganese Product
+- Copper Product
+- Micronutrient Blend
+- Organic Nutrition Product
+- Phosphite / Phosphonate
+
+Amendment / Water:
+- Soil Amendment
+- Calcium / Soil Amendment
+- Organic Amendment
+- pH Amendment
+- Acid Injection Product
+- Water Treatment
+- Infiltration Aid
+- Penetrant
+- Wetting Agent
+- pH Modifier
+
+Protection:
+- Copper Fungicide
+- Sulfur Fungicide
+- Protectant Fungicide
+- DMI Fungicide
+- Strobilurin Fungicide
+- SDHI Fungicide
+- Systemic Fungicide
+- Phosphonate Fungicide
+- Pre-emergent Herbicide
+- Post-emergent Herbicide
+- Organic Burndown Herbicide
+- Insecticide
+- Miticide
+- Miticide / Insecticide
+- Pyrethroid Insecticide
+- IGR
+- Systemic Insecticide
+- Dormant Spray Material
+
+Helpers / Biologicals:
+- Spray Oil
+- Botanical Oil
+- Surfactant
+- Spreader
+- Sticker
+- Wetter
+- Crop Oil Concentrate
+- Methylated Seed Oil
+- Drift Control
+- Deposition Aid
+- Compatibility Agent
+- Defoamer
+- Biostimulant
+- Biofungicide
+- Biological Nutrition
+- Biological Insecticide
+
+==================================================
+FILES TO CREATE OR UPDATE
+==================================================
+
+Create/update these files as appropriate:
+
+- client/src/lib/store.ts
+- client/src/data/defaultMaterials.ts
+- client/src/components/materials/MaterialPicker.tsx
+- client/src/components/materials/MaterialCard.tsx
+- client/src/pages/operations/MaterialsProducts.tsx
+- client/src/pages/help/GrowerMaterialsGuide.tsx
+
+==================================================
+UX REQUIREMENTS
+==================================================
+
+- Mobile-first
+- Fast for foremen and growers
+- Keep cards compact
+- Search must be instant
+- Recent materials section at top of picker
+- Category accordions for picker
+- One-tap “add rate”
+- If acres known, show “Total Needed”
+- If no acres known, do not force calculation
+- Logging materials must remain optional
+- Do not make the app feel data-heavy
+
+==================================================
+VISUAL STYLE
+==================================================
+
+Use the existing KEBB Ag style:
+- black / white base
+- SF Giants orange accents
+- clean, modern, Nike-style confidence
+- large touch targets
+- concise labels
+- subtle badges
+
+==================================================
+SUCCESS CRITERIA
+==================================================
+
+The build is successful if:
+1. The app seeds all 100 materials when library is empty
+2. Materials page loads and filters correctly
+3. Quick Log can attach one or more materials
+4. Templates can save preselected materials
+5. Total Needed auto-computes for /AC rates
+6. Data persists in localStorage
+7. Existing functionality remains intact
+8. Grower Materials Guide is visible under Community & Help
+
+When done, summarize:
+- files changed
+- store changes
+- routes added
+- components added
+- any assumptions made

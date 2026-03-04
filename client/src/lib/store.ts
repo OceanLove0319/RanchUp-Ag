@@ -4,7 +4,7 @@ import { todayPacificISO } from '@/utils/dates';
 import { CHEMICALS_SEED } from '@/data/chemicalsSeed';
 import { TEMPLATES_SEED } from '@/data/templatesSeed';
 
-export type ProductCategory = "SEED" | "NUTRITION" | "PROTECTION" | "ADJUVANT" | "INNVICTIS";
+export type ProductCategory = "NUTRITION" | "AMENDMENT" | "FUNGICIDE" | "HERBICIDE" | "INSECTICIDE_MITICIDE" | "ADJUVANT" | "BIOLOGICAL" | "WATER_TREATMENT";
 
 export type ProductLibraryItem = {
   id: string;
@@ -50,7 +50,7 @@ export type FieldLog = {
   productEntries?: Array<{
     productId?: string;
     nameSnapshot: string;
-    category: "SEED" | "NUTRITION" | "PROTECTION" | "ADJUVANT" | "INNVICTIS";
+    category: ProductCategory;
     type: string;
     rate?: number;
     rateUnit?: string;
@@ -423,9 +423,10 @@ export const useStore = create<AppState>((set) => ({
   seedDefaultProductLibrary: () => set((state) => {
     // Only seed if empty
     if (state.productLibrary.length > 0) return state;
-    import('@/data/productsSeed').then(({ PRODUCTS_SEED }) => {
-      localStorage.setItem('kebb_product_library', JSON.stringify(PRODUCTS_SEED));
-      useStore.setState({ productLibrary: PRODUCTS_SEED as any });
+    import('@/data/materialsSeed').then(({ TOP_100_MATERIALS }) => {
+      const seeded = TOP_100_MATERIALS.map((m, i) => ({ ...m, id: `seed-${i}` }));
+      localStorage.setItem('kebb_product_library', JSON.stringify(seeded));
+      useStore.setState({ productLibrary: seeded as any });
     });
     return state;
   })

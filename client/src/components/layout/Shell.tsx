@@ -29,6 +29,7 @@ export default function Shell({ children }: { children: React.ReactNode }) {
 
   const helpNavItems = [
     { href: "/app/help/product-logging", icon: BookOpen, label: "Log Guide" },
+    { href: "/app/help/grower-materials", icon: BookOpen, label: "Materials Guide" },
     { href: "/app/glossary", icon: BookOpen, label: "Glossary" },
   ];
 

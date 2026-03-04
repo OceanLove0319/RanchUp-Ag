@@ -34,6 +34,7 @@ import Glossary from "@/pages/Glossary";
 
 import MaterialsProducts from "@/pages/operations/MaterialsProducts";
 import ProductLoggingGuide from "@/pages/help/ProductLoggingGuide";
+import GrowerMaterialsGuide from "@/pages/help/GrowerMaterialsGuide";
 
 function ScrollToTop() {
   const [pathname] = useLocation();
@@ -118,6 +119,9 @@ function Router() {
       </Route>
       <Route path="/app/help/product-logging">
         <Shell><ProductLoggingGuide /></Shell>
+      </Route>
+      <Route path="/app/help/grower-materials">
+        <Shell><GrowerMaterialsGuide /></Shell>
       </Route>
 
       <Route component={NotFound} />

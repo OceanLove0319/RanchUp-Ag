@@ -1,0 +1,167 @@
+export const TOP_100_MATERIALS = [
+  { "name": "Urea", "category": "NUTRITION", "type": "Nitrogen Fertilizer", "unitDefault": "LB", "aliases": ["46-0-0"] },
+  { "name": "UAN-32", "category": "NUTRITION", "type": "Nitrogen Fertilizer", "unitDefault": "GAL", "aliases": ["UAN 32", "32-0-0"] },
+  { "name": "Ammonium Sulfate", "category": "NUTRITION", "type": "Nitrogen Fertilizer", "unitDefault": "LB", "aliases": ["AMS", "21-0-0-24S"] },
+  { "name": "Calcium Nitrate", "category": "NUTRITION", "type": "Calcium Product", "unitDefault": "LB", "aliases": [] },
+  { "name": "Potassium Nitrate", "category": "NUTRITION", "type": "Potassium Fertilizer", "unitDefault": "LB", "aliases": [] },
+  { "name": "MAP", "category": "NUTRITION", "type": "Phosphorus Fertilizer", "unitDefault": "LB", "aliases": ["Monoammonium Phosphate"] },
+  { "name": "MKP", "category": "NUTRITION", "type": "Phosphorus Fertilizer", "unitDefault": "LB", "aliases": ["Monopotassium Phosphate"] },
+  { "name": "APP", "category": "NUTRITION", "type": "Phosphorus Fertilizer", "unitDefault": "GAL", "aliases": ["Ammonium Polyphosphate"] },
+  { "name": "SOP", "category": "NUTRITION", "type": "Potassium Fertilizer", "unitDefault": "LB", "aliases": ["Sulfate of Potash"] },
+  { "name": "MOP", "category": "NUTRITION", "type": "Potassium Fertilizer", "unitDefault": "LB", "aliases": ["Potassium Chloride"] },
+  { "name": "CAN-17", "category": "NUTRITION", "type": "Calcium Product", "unitDefault": "GAL", "aliases": ["Calcium Ammonium Nitrate"] },
+  { "name": "Calcium Thiosulfate", "category": "NUTRITION", "type": "Calcium Product", "unitDefault": "GAL", "aliases": [] },
+  { "name": "Potassium Thiosulfate", "category": "NUTRITION", "type": "Potassium Fertilizer", "unitDefault": "GAL", "aliases": [] },
+  { "name": "Ammonium Thiosulfate", "category": "NUTRITION", "type": "Nitrogen Fertilizer", "unitDefault": "GAL", "aliases": ["ATS"] },
+  { "name": "Magnesium Sulfate", "category": "NUTRITION", "type": "Magnesium Product", "unitDefault": "LB", "aliases": ["Epsom Salt"] },
+  { "name": "Zinc Sulfate", "category": "NUTRITION", "type": "Zinc Product", "unitDefault": "LB", "aliases": [] },
+  { "name": "Zinc Chelate", "category": "NUTRITION", "type": "Zinc Product", "unitDefault": "GAL", "aliases": [] },
+  { "name": "Boric Acid", "category": "NUTRITION", "type": "Boron Product", "unitDefault": "LB", "aliases": [] },
+  { "name": "Soluble Boron", "category": "NUTRITION", "type": "Boron Product", "unitDefault": "LB", "aliases": ["Solubor"] },
+  { "name": "Iron Chelate", "category": "NUTRITION", "type": "Iron Product", "unitDefault": "LB", "aliases": [] },
+  { "name": "Manganese Sulfate", "category": "NUTRITION", "type": "Manganese Product", "unitDefault": "LB", "aliases": [] },
+  { "name": "Copper Sulfate", "category": "NUTRITION", "type": "Copper Product", "unitDefault": "LB", "aliases": [] },
+  { "name": "Chelated Micronutrient Blend", "category": "NUTRITION", "type": "Micronutrient Blend", "unitDefault": "GAL", "aliases": [] },
+  { "name": "Humic Acid Product", "category": "BIOLOGICAL", "type": "Biostimulant", "unitDefault": "GAL", "aliases": [] },
+  { "name": "Fulvic Acid Product", "category": "BIOLOGICAL", "type": "Biostimulant", "unitDefault": "GAL", "aliases": [] },
+  { "name": "Seaweed / Kelp Product", "category": "BIOLOGICAL", "type": "Biostimulant", "unitDefault": "GAL", "aliases": ["Kelp"] },
+  { "name": "Amino Acid Product", "category": "BIOLOGICAL", "type": "Biostimulant", "unitDefault": "GAL", "aliases": [] },
+  { "name": "Phosphite Product", "category": "NUTRITION", "type": "Phosphite / Phosphonate", "unitDefault": "GAL", "aliases": ["Phosphonate"] },
+  { "name": "Fish-Based Liquid Nutrition", "category": "BIOLOGICAL", "type": "Organic Nutrition Product", "unitDefault": "GAL", "aliases": [] },
+  { "name": "Biological Nutrition Blend", "category": "BIOLOGICAL", "type": "Biological Nutrition", "unitDefault": "GAL", "aliases": [] },
+
+  { "name": "Gypsum", "category": "AMENDMENT", "type": "Calcium / Soil Amendment", "unitDefault": "TON", "aliases": [] },
+  { "name": "Solution-Grade Gypsum", "category": "AMENDMENT", "type": "Calcium / Soil Amendment", "unitDefault": "LB", "aliases": [] },
+  { "name": "Lime", "category": "AMENDMENT", "type": "pH Amendment", "unitDefault": "TON", "aliases": [] },
+  { "name": "Dolomite", "category": "AMENDMENT", "type": "pH Amendment", "unitDefault": "TON", "aliases": [] },
+  { "name": "Elemental Sulfur", "category": "AMENDMENT", "type": "Soil Amendment", "unitDefault": "LB", "aliases": [] },
+  { "name": "Sulfuric Acid", "category": "WATER_TREATMENT", "type": "Acid Injection Product", "unitDefault": "GAL", "aliases": [] },
+  { "name": "Urea-Sulfuric Acid", "category": "WATER_TREATMENT", "type": "Acid Injection Product", "unitDefault": "GAL", "aliases": [] },
+  { "name": "Calcium Chloride", "category": "AMENDMENT", "type": "Calcium Product", "unitDefault": "GAL", "aliases": [] },
+  { "name": "Acid Injection Blend", "category": "WATER_TREATMENT", "type": "Acid Injection Product", "unitDefault": "GAL", "aliases": [] },
+  { "name": "pH Reducer", "category": "WATER_TREATMENT", "type": "pH Modifier", "unitDefault": "GAL", "aliases": [] },
+  { "name": "Water Conditioner", "category": "WATER_TREATMENT", "type": "Water Treatment", "unitDefault": "QT", "aliases": [] },
+  { "name": "Sodium Displacement Amendment", "category": "AMENDMENT", "type": "Soil Amendment", "unitDefault": "TON", "aliases": [] },
+  { "name": "Infiltration Aid", "category": "WATER_TREATMENT", "type": "Infiltration Aid", "unitDefault": "GAL", "aliases": [] },
+  { "name": "Soil Penetrant", "category": "WATER_TREATMENT", "type": "Penetrant", "unitDefault": "GAL", "aliases": [] },
+  { "name": "Irrigation Wetting Agent", "category": "WATER_TREATMENT", "type": "Wetting Agent", "unitDefault": "GAL", "aliases": [] },
+  { "name": "Organic Matter Amendment", "category": "AMENDMENT", "type": "Organic Amendment", "unitDefault": "TON", "aliases": [] },
+  { "name": "Compost", "category": "AMENDMENT", "type": "Organic Amendment", "unitDefault": "TON", "aliases": [] },
+  { "name": "Manure Compost", "category": "AMENDMENT", "type": "Organic Amendment", "unitDefault": "TON", "aliases": [] },
+  { "name": "Biochar", "category": "AMENDMENT", "type": "Organic Amendment", "unitDefault": "LB", "aliases": [] },
+  { "name": "Calcium Carbonate Amendment", "category": "AMENDMENT", "type": "Soil Amendment", "unitDefault": "TON", "aliases": [] },
+
+  { "name": "Copper Fungicide", "category": "FUNGICIDE", "type": "Copper Fungicide", "unitDefault": "LB", "aliases": [] },
+  { "name": "Fixed Copper", "category": "FUNGICIDE", "type": "Copper Fungicide", "unitDefault": "LB", "aliases": [] },
+  { "name": "Copper + Oil Dormant Mix", "category": "FUNGICIDE", "type": "Dormant Spray Material", "unitDefault": "GAL", "aliases": [] },
+  { "name": "Liquid Lime Sulfur", "category": "FUNGICIDE", "type": "Sulfur Fungicide", "unitDefault": "GAL", "aliases": [] },
+  { "name": "Wettable Sulfur", "category": "FUNGICIDE", "type": "Sulfur Fungicide", "unitDefault": "LB", "aliases": [] },
+  { "name": "Chlorothalonil", "category": "FUNGICIDE", "type": "Protectant Fungicide", "unitDefault": "PT", "aliases": [] },
+  { "name": "Captan", "category": "FUNGICIDE", "type": "Protectant Fungicide", "unitDefault": "LB", "aliases": [] },
+  { "name": "Ziram", "category": "FUNGICIDE", "type": "Protectant Fungicide", "unitDefault": "LB", "aliases": [] },
+  { "name": "Dodine", "category": "FUNGICIDE", "type": "Fungicide", "unitDefault": "GAL", "aliases": [] },
+  { "name": "Propiconazole", "category": "FUNGICIDE", "type": "DMI Fungicide", "unitDefault": "OZ", "aliases": [] },
+  { "name": "Tebuconazole", "category": "FUNGICIDE", "type": "DMI Fungicide", "unitDefault": "OZ", "aliases": [] },
+  { "name": "DMI Fungicide", "category": "FUNGICIDE", "type": "DMI Fungicide", "unitDefault": "OZ", "aliases": [] },
+  { "name": "QoI Fungicide", "category": "FUNGICIDE", "type": "Strobilurin Fungicide", "unitDefault": "OZ", "aliases": ["Strobilurin"] },
+  { "name": "SDHI Fungicide", "category": "FUNGICIDE", "type": "SDHI Fungicide", "unitDefault": "OZ", "aliases": [] },
+  { "name": "Fosetyl-Al", "category": "FUNGICIDE", "type": "Systemic Fungicide", "unitDefault": "LB", "aliases": [] },
+  { "name": "Phosphorous Acid Fungicide", "category": "FUNGICIDE", "type": "Phosphonate Fungicide", "unitDefault": "GAL", "aliases": [] },
+  { "name": "Mefenoxam / Metalaxyl", "category": "FUNGICIDE", "type": "Systemic Fungicide", "unitDefault": "PT", "aliases": ["Metalaxyl"] },
+  { "name": "Bacillus Biofungicide", "category": "BIOLOGICAL", "type": "Biofungicide", "unitDefault": "OZ", "aliases": [] },
+  { "name": "Biological Rot / Bloom Product", "category": "BIOLOGICAL", "type": "Biofungicide", "unitDefault": "OZ", "aliases": [] },
+  { "name": "Dormant Fungicide Program Item", "category": "FUNGICIDE", "type": "Dormant Spray Material", "unitDefault": "GAL", "aliases": [] },
+
+  { "name": "Glyphosate", "category": "HERBICIDE", "type": "Post-emergent Herbicide", "unitDefault": "GAL", "aliases": [] },
+  { "name": "Glufosinate", "category": "HERBICIDE", "type": "Post-emergent Herbicide", "unitDefault": "GAL", "aliases": [] },
+  { "name": "Paraquat", "category": "HERBICIDE", "type": "Post-emergent Herbicide", "unitDefault": "GAL", "aliases": [] },
+  { "name": "Oxyfluorfen", "category": "HERBICIDE", "type": "Pre-emergent Herbicide", "unitDefault": "GAL", "aliases": [] },
+  { "name": "Pendimethalin", "category": "HERBICIDE", "type": "Pre-emergent Herbicide", "unitDefault": "QT", "aliases": [] },
+  { "name": "Oryzalin", "category": "HERBICIDE", "type": "Pre-emergent Herbicide", "unitDefault": "QT", "aliases": [] },
+  { "name": "Rimsulfuron", "category": "HERBICIDE", "type": "Pre-emergent Herbicide", "unitDefault": "OZ", "aliases": [] },
+  { "name": "Flumioxazin", "category": "HERBICIDE", "type": "Pre-emergent Herbicide", "unitDefault": "OZ", "aliases": [] },
+  { "name": "Simazine", "category": "HERBICIDE", "type": "Pre-emergent Herbicide", "unitDefault": "QT", "aliases": [] },
+  { "name": "Indaziflam", "category": "HERBICIDE", "type": "Pre-emergent Herbicide", "unitDefault": "OZ", "aliases": [] },
+  { "name": "Saflufenacil", "category": "HERBICIDE", "type": "Pre-emergent Herbicide", "unitDefault": "OZ", "aliases": [] },
+  { "name": "Alion", "category": "HERBICIDE", "type": "Pre-emergent Herbicide", "unitDefault": "OZ", "aliases": [] },
+  { "name": "Sclethodim", "category": "HERBICIDE", "type": "Grass Herbicide", "unitDefault": "OZ", "aliases": [] },
+  { "name": "Fluazifop-p-butyl", "category": "HERBICIDE", "type": "Grass Herbicide", "unitDefault": "OZ", "aliases": [] },
+  { "name": "Haloxyfop", "category": "HERBICIDE", "type": "Grass Herbicide", "unitDefault": "OZ", "aliases": [] },
+  { "name": "2,4-D", "category": "HERBICIDE", "type": "Broadleaf Herbicide", "unitDefault": "PT", "aliases": [] },
+  { "name": "Triclopyr", "category": "HERBICIDE", "type": "Broadleaf Herbicide", "unitDefault": "PT", "aliases": [] },
+  { "name": "Carfentrazone", "category": "HERBICIDE", "type": "Broadleaf Herbicide", "unitDefault": "OZ", "aliases": [] },
+  { "name": "Diquat", "category": "HERBICIDE", "type": "Contact Herbicide", "unitDefault": "PT", "aliases": [] },
+  { "name": "Pelargonic Acid", "category": "HERBICIDE", "type": "Organic Herbicide", "unitDefault": "GAL", "aliases": [] },
+
+  { "name": "Horticultural Oil", "category": "INSECTICIDE_MITICIDE", "type": "Dormant / Summer Oil", "unitDefault": "GAL", "aliases": [] },
+  { "name": "Dormant Oil", "category": "INSECTICIDE_MITICIDE", "type": "Dormant / Summer Oil", "unitDefault": "GAL", "aliases": [] },
+  { "name": "Abamectin", "category": "INSECTICIDE_MITICIDE", "type": "Miticide", "unitDefault": "OZ", "aliases": [] },
+  { "name": "Bifenazate", "category": "INSECTICIDE_MITICIDE", "type": "Miticide", "unitDefault": "OZ", "aliases": [] },
+  { "name": "Etoxazole", "category": "INSECTICIDE_MITICIDE", "type": "Miticide", "unitDefault": "OZ", "aliases": [] },
+  { "name": "Spirodiclofen", "category": "INSECTICIDE_MITICIDE", "type": "Miticide", "unitDefault": "OZ", "aliases": [] },
+  { "name": "Propargite", "category": "INSECTICIDE_MITICIDE", "type": "Miticide", "unitDefault": "OZ", "aliases": [] },
+  { "name": "Chlorpyrifos", "category": "INSECTICIDE_MITICIDE", "type": "Broad Spectrum Insecticide", "unitDefault": "PT", "aliases": [] },
+  { "name": "Bifenthrin", "category": "INSECTICIDE_MITICIDE", "type": "Pyrethroid", "unitDefault": "OZ", "aliases": [] },
+  { "name": "Lambda-cyhalothrin", "category": "INSECTICIDE_MITICIDE", "type": "Pyrethroid", "unitDefault": "OZ", "aliases": [] },
+  { "name": "Imidacloprid", "category": "INSECTICIDE_MITICIDE", "type": "Pyrethroid", "unitDefault": "OZ", "aliases": [] },
+  { "name": "Spinetoram", "category": "INSECTICIDE_MITICIDE", "type": "Spinosyn", "unitDefault": "OZ", "aliases": [] },
+  { "name": "Spinosad", "category": "INSECTICIDE_MITICIDE", "type": "Spinosyn", "unitDefault": "OZ", "aliases": [] },
+  { "name": "Chlorantraniliprole", "category": "INSECTICIDE_MITICIDE", "type": "Diamide", "unitDefault": "OZ", "aliases": [] },
+  { "name": "Methoxyfenozide", "category": "INSECTICIDE_MITICIDE", "type": "IGR", "unitDefault": "OZ", "aliases": [] },
+  { "name": "Pyriproxyfen", "category": "INSECTICIDE_MITICIDE", "type": "IGR", "unitDefault": "OZ", "aliases": [] },
+  { "name": "Acetamiprid", "category": "INSECTICIDE_MITICIDE", "type": "Neonicotinoid", "unitDefault": "OZ", "aliases": [] },
+  { "name": "Imidacloprid (Soil)", "category": "INSECTICIDE_MITICIDE", "type": "Neonicotinoid", "unitDefault": "OZ", "aliases": [] },
+  { "name": "Bacillus thuringiensis (Bt)", "category": "BIOLOGICAL", "type": "Bioinsecticide", "unitDefault": "LB", "aliases": ["Bt"] },
+  { "name": "Mating Disruption Pheromone", "category": "BIOLOGICAL", "type": "Pheromone", "unitDefault": "ACRE", "aliases": [] },
+
+  { "name": "Non-Ionic Surfactant", "category": "ADJUVANT", "type": "Surfactant", "unitDefault": "PT", "aliases": ["NIS"] },
+  { "name": "Crop Oil Concentrate", "category": "ADJUVANT", "type": "Oil Adjuvant", "unitDefault": "PT", "aliases": ["COC"] },
+  { "name": "Methylated Seed Oil", "category": "ADJUVANT", "type": "Oil Adjuvant", "unitDefault": "PT", "aliases": ["MSO"] },
+  { "name": "Silicone Surfactant", "category": "ADJUVANT", "type": "Surfactant", "unitDefault": "OZ", "aliases": [] },
+  { "name": "Spreader Sticker", "category": "ADJUVANT", "type": "Spreader/Sticker", "unitDefault": "PT", "aliases": [] },
+  { "name": "Buffer / Acidifier", "category": "ADJUVANT", "type": "pH Modifier", "unitDefault": "PT", "aliases": [] },
+  { "name": "Water Conditioner (AMS)", "category": "ADJUVANT", "type": "Water Conditioner", "unitDefault": "LB", "aliases": [] },
+  { "name": "Drift Control Agent", "category": "ADJUVANT", "type": "Drift Retardant", "unitDefault": "OZ", "aliases": [] },
+  { "name": "Defoamer", "category": "ADJUVANT", "type": "Defoamer", "unitDefault": "OZ", "aliases": [] },
+  { "name": "Penetrant", "category": "ADJUVANT", "type": "Penetrant", "unitDefault": "PT", "aliases": [] }
+];
+
+export const PRODUCT_CATEGORIES = [
+  "NUTRITION", "AMENDMENT", "FUNGICIDE", "HERBICIDE", "INSECTICIDE_MITICIDE", "ADJUVANT", "BIOLOGICAL", "WATER_TREATMENT"
+] as const;
+
+export const PRODUCT_TYPES_BY_CATEGORY: Record<string, string[]> = {
+  NUTRITION: [
+    "Nitrogen Fertilizer", "Phosphorus Fertilizer", "Potassium Fertilizer", 
+    "Calcium Product", "Magnesium Product", "Zinc Product", "Boron Product", 
+    "Iron Product", "Manganese Product", "Copper Product", "Micronutrient Blend", 
+    "Organic Nutrition Product", "Phosphite / Phosphonate"
+  ],
+  AMENDMENT: [
+    "Soil Amendment", "Calcium / Soil Amendment", "Organic Amendment", "pH Amendment"
+  ],
+  WATER_TREATMENT: [
+    "Acid Injection Product", "Water Treatment", "Infiltration Aid", "Penetrant", 
+    "Wetting Agent", "pH Modifier"
+  ],
+  FUNGICIDE: [
+    "Copper Fungicide", "Sulfur Fungicide", "Protectant Fungicide", "DMI Fungicide", 
+    "Strobilurin Fungicide", "SDHI Fungicide", "Systemic Fungicide", 
+    "Phosphonate Fungicide", "Dormant Spray Material"
+  ],
+  HERBICIDE: [
+    "Pre-emergent Herbicide", "Post-emergent Herbicide", "Organic Burndown Herbicide", "Grass Herbicide", "Broadleaf Herbicide", "Contact Herbicide"
+  ],
+  INSECTICIDE_MITICIDE: [
+    "Insecticide", "Miticide", "Miticide / Insecticide", "Pyrethroid Insecticide", 
+    "IGR", "Systemic Insecticide", "Dormant Spray Material", "Broad Spectrum Insecticide", "Pyrethroid", "Spinosyn", "Diamide", "Neonicotinoid"
+  ],
+  ADJUVANT: [
+    "Spray Oil", "Botanical Oil", "Surfactant", "Spreader", "Sticker", "Wetter", 
+    "Crop Oil Concentrate", "Methylated Seed Oil", "Drift Control", "Deposition Aid", 
+    "Compatibility Agent", "Defoamer", "Spreader/Sticker", "Drift Retardant", "Oil Adjuvant", "Water Conditioner"
+  ],
+  BIOLOGICAL: [
+    "Biostimulant", "Biofungicide", "Biological Nutrition", "Biological Insecticide", "Pheromone", "Bioinsecticide"
+  ]
+};

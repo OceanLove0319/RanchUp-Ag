@@ -1,4 +1,6 @@
-export function inferCropType(variety: string): "STONE_FRUIT" | "CITRUS" | "NUT" | "OTHER" {
+export type CropType = "STONE_FRUIT" | "CITRUS" | "NUT" | "OTHER";
+
+export function inferCropType(variety: string): CropType {
   const v = variety.toLowerCase();
   
   if (v.includes("peach") || v.includes("nectarine") || v.includes("plum") || v.includes("apricot") || v.includes("cherry")) {
