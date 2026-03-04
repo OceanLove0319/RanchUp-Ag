@@ -1,0 +1,189 @@
+You are an expert full-stack engineer working inside an existing Replit-hosted dashboard app.
+
+GOAL
+Add an “Intake” section directly on the Dashboard “Home” page (the first landing view after login).
+This section contains TWO PCA-ready intake forms:
+1) “Packer–Shipper Audited”
+2) “Restricted-Material Heavy”
+
+It must feel native to the Home page (not a separate page), be mobile-first, and not break any existing backend logic.
+
+NON-NEGOTIABLES
+- Do NOT refactor or break existing backend, auth, org scoping, or routing.
+- Keep changes minimal and localized to the Home page + a small component + a data/schema file.
+- Use existing UI primitives (Cards, Tabs, Buttons, Inputs, Textarea, Badges) already in the repo.
+- No external APIs.
+- Store submitted intakes locally in the app’s existing persistence pattern:
+  - If the app already has a generic “notes”, “vault”, or “documents” endpoint/table, use it.
+  - If not, implement v1 as client-side localStorage scoped by orgId/userId (safe fallback).
+- All fields must be fast to fill (checkboxes, selects, short text). Hide advanced fields behind “More” toggles.
+
+PLACEMENT ON HOME (DASHBOARD)
+1) On the Home page, add a new card/section titled:
+   - Title: “PCA Intake”
+   - Subtitle: “Capture the facts PCAs need—fast—then export a clean packet.”
+2) This card sits near the top of Home, below the hero/summary cards (or next logical position in existing layout).
+3) Inside the card:
+   - Tabs: [Packer–Shipper Audited] [Restricted-Material Heavy]
+   - Each tab shows its respective intake form.
+   - Primary actions: “Save Intake” and “Export PDF” (PDF can be print-to-PDF for v1).
+   - Secondary actions: “Reset” and “View Saved” (shows a small list of last 5 intakes).
+
+DATA MODEL (shared)
+Create a TypeScript type and a Zod schema (if Zod exists in repo) for validation:
+- id (uuid)
+- orgId (string; derive from auth context if available; else “local”)
+- createdBy (user id/email if available)
+- createdAt (iso string)
+- type: "PACKER_SHIPPER" | "RESTRICTED_MATERIAL"
+- blockId (string)
+- blockName (string)
+- acresTreated (number)
+- crop (string)
+- variety (string | optional)
+- notes (string | optional)
+- fields: Record<string, any> (stores the rest; keep flexible)
+
+FORM UX RULES
+- REQUIRED fields are enforced with inline error text.
+- “Save Intake” is disabled until required fields are valid.
+- After save, show toast: “Saved to Vault” (or “Saved locally” if localStorage fallback).
+- “View Saved” expands a list; clicking an item loads it into the form (read-only toggle optional).
+- “Export PDF” uses the current form state to render a clean printable layout:
+  - Use a simple printable modal/route-less overlay with window.print()
+  - Include: Operation, Contact, PCA, Block, Acres, Crop/Variety, and all answered sections.
+  - Include timestamp and intake type at top.
+
+BLOCK PICKER INTEGRATION
+- If Home already has access to Blocks list (most apps do), reuse it:
+  - A “Block” select dropdown (searchable if you already have a component)
+  - When selected, auto-fill acres + crop + variety if available
+- If Blocks aren’t available on Home, provide manual entry fields:
+  - Block name/ID, Acres treated, Crop, Variety
+  - Keep it simple and do not add new backend calls.
+
+INTAKE FORM A: PACKER–SHIPPER AUDITED (fields)
+SECTION A1 Operation + Contacts
+Required:
+- operationName
+- primaryContactName
+- primaryContactPhone
+- pcaName
+- packerShipper (multi-select or comma-separated text)
+
+SECTION A2 Block Identity
+Required:
+- block (picker or manual)
+- acresTreated (auto from block but editable with reason)
+- crop
+Optional:
+- variety
+- irrigationType (select: Double-line drip / Micro / Fan-jets / Flood / Other)
+
+SECTION A3 Market & Buyer Constraints
+Required:
+- intendedMarket (select: Domestic / Export / Both)
+- buyerRestrictions (yes/no)
+If yes:
+- restrictionsNotes (textarea)
+- uploadPlaceholder (v1: text “Attach later” or simple file input if supported client-only)
+
+SECTION A4 Harvest & Worker Timing
+Required:
+- estimatedHarvestWindowStart (date)
+- estimatedHarvestWindowEnd (date)
+- crewConstraintsNotes (short textarea)
+
+SECTION A5 Field Activity History (last 60–90 days)
+Required:
+- confirmLogsComplete (checkbox: “Logs are complete for this block”)
+Optional:
+- missingLogsNotes
+
+SECTION A6 Current Issue / Reason
+Required:
+- issueType (select: Pest/Disease/Weed/Nutrition/Irrigation-stress/Other)
+- observations (textarea)
+- locationInBlock (select: Whole block / Edges / Hotspots / Rows / Other)
+
+SECTION A7 Outputs Needed
+Required:
+- outputTypes (checkboxes: QA Packet / Spray Log / Fertigation Log / Block History)
+- cadence (select: Weekly / Monthly / On-demand)
+
+INTAKE FORM B: RESTRICTED-MATERIAL HEAVY (fields)
+SECTION B1 Compliance Profile
+Required:
+- restrictedMaterialsProgram (yes/no)
+If yes:
+- permitHolderName
+- county
+
+SECTION B2 Sensitive Sites & Drift Risk
+Required:
+- sensitiveSitesNearby (yes/no)
+If yes:
+- sensitiveSiteTypes (checkboxes: School/Daycare, Homes, Waterways, Bee yards, Neighboring crops)
+- bufferRequirementsKnown (select: Yes / No / Not sure)
+
+SECTION B3 Application Reality
+Required:
+- applicationMethodsAvailable (checkboxes: Airblast, Tower, Aerial, Chemigation, Spot spray)
+- crewAvailabilityWindow (text or select)
+
+SECTION B4 Product Eligibility Pre-check
+Required:
+- productProhibitionsPresent (yes/no)
+If yes:
+- prohibitionsNotes
+- knownNoGoList (text)
+
+SECTION B5 Timing Controls
+Required:
+- highCrewPresence (yes/no)
+- upcomingOperations (checkboxes: Thinning, Irrigation work, Harvest prep, Other)
+- upcomingOperationsDatesNotes (text)
+Optional:
+- windCutoffMph (number)
+- preferredSprayWindow (text)
+
+SECTION B6 Record Requirements
+Required:
+- mustCapture (checkboxes: Date/Time, Block, Acres, Product, Rate, Method, Applicator)
+- mustAttach (checkboxes: Recommendation PDF, Labels/SDS, Permits, Other)
+
+SECTION B7 Incidents/Exceptions
+Required:
+- driftComplaintHistory (yes/no)
+- stopSprayEvents (yes/no)
+Optional:
+- incidentNotes
+
+IMPLEMENTATION STEPS (DO THESE)
+1) Locate the Home page component (e.g., client/src/pages/DashboardHome.tsx or similar).
+2) Add a new <PcaIntakeCard /> component render within the Home page layout.
+3) Create components:
+   - client/src/components/home/PcaIntakeCard.tsx
+   - client/src/components/home/PcaIntakeFormPacker.tsx
+   - client/src/components/home/PcaIntakeFormRestricted.tsx
+   (or a single component with tabs; keep minimal)
+4) Add schema/types:
+   - client/src/schemas/pcaIntake.ts (Zod + TS types)
+   - client/src/data/pcaIntakeDefaults.ts (optional)
+5) Persistence:
+   - First attempt: reuse existing “Vault/Notes/Docs” save pattern if present.
+   - Fallback: localStorage key `pcaIntakes:{orgId}` storing an array; cap at 50 newest.
+6) Add “View Saved” list (last 5) below the form actions; allow load into form.
+7) Add “Export PDF”:
+   - Create a printable modal component (client-only) that renders a clean summary.
+   - Use window.print(). No external libs required.
+
+DELIVERABLE
+Make code changes and output:
+- Files created/edited
+- Home page insertion snippet
+- The new components code
+- Schema/types code
+- LocalStorage fallback code (if backend storage not available)
+- Print/export implementation code
+- Notes on any path/structure adjustments made to fit the repo

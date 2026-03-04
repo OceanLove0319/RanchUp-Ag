@@ -1,6 +1,7 @@
 import { Link } from "wouter";
 import { ClipboardEdit, Target, Archive, ArrowRight, FileText, BarChart, AlertTriangle } from "lucide-react";
 import { useStore } from "@/lib/store";
+import PcaIntakeCard from "@/components/home/PcaIntakeCard";
 
 export default function Home() {
   const user = useStore(s => s.user);
@@ -20,6 +21,8 @@ export default function Home() {
           </div>
         )}
       </header>
+
+      <PcaIntakeCard />
 
       <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-4">Quick Actions</p>
       
