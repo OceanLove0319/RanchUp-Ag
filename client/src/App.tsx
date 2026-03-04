@@ -31,6 +31,7 @@ import ProjectionsDashboard from "@/pages/ProjectionsDashboard";
 import BlockProjectionDetail from "@/pages/BlockProjectionDetail";
 import TemplatesManager from "@/pages/TemplatesManager";
 import Glossary from "@/pages/Glossary";
+import TodayPacket from "@/pages/TodayPacket";
 
 import MaterialsProducts from "@/pages/operations/MaterialsProducts";
 import InputsLibrary from "@/pages/operations/InputsLibrary";
@@ -114,6 +115,9 @@ function Router() {
       </Route>
       <Route path="/app/reports/variance">
         <Shell><VarianceFlags /></Shell>
+      </Route>
+      <Route path="/app/share/today">
+        <Shell><TodayPacket /></Shell>
       </Route>
       <Route path="/app/glossary">
         <Shell><Glossary /></Shell>

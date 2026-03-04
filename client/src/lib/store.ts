@@ -35,6 +35,8 @@ export type Block = {
   irrigationType: string;
   yieldTargetBins: number;
   waterTargetAcreFeet: number;
+  crop?: string;
+  geometry?: any;
 };
 
 export type FieldLog = {

@@ -1,0 +1,178 @@
+You are working inside an existing React + Vite + TypeScript frontend-only prototype called KEBB Ag™.
+It uses wouter for routing, zustand for state (client/src/lib/store.ts), and localStorage for persistence.
+There is NO backend. Everything must work offline.
+
+GOAL
+Implement “End-of-Day Proof” retention features + 5 MVP tighteners:
+
+A) “Send Today’s Packet” (single muscle-memory action)
+B) Instant “Log Again” (last 3 actions per block)
+C) Acres-aware totals on every log (live total product needed + optional tank loads)
+D) “Today’s Work” widget on Home (blocks touched today + what applied + spend estimate)
+E) PCA View toggle in Vault (inspector-friendly format)
+F) One red badge system (unit mismatch + missing fields + variance spikes → one count + one queue)
+
+HARD RULES
+- No new backend, no API calls required.
+- Everything must be deterministic and unit-safe.
+- PDF/SMS/Email share can be mocked: generate PDF + show “Copy share link” + “Open SMS / Email” using `sms:` and `mailto:` URIs.
+- Must be mobile-first, truck-optimized, thumb-friendly.
+- Must reuse existing models: Ranches, Blocks, Logs, Inputs/Chemicals, Variance Flags, Vault.
+- Must not break existing Guided Flow (Today → Log → Review → Plan → Share).
+
+IMPLEMENTATION PLAN (DO THESE CHANGES)
+
+1) DATA + SELECTORS (Zustand)
+File: client/src/lib/store.ts (or adjacent selectors file if you have one)
+- Add derived selectors (pure functions) to compute “today” boundaries (local time) and pull:
+  - todayLogs: all logs with date in [startOfToday, endOfToday]
+  - todayBlocks: unique blockIds touched today
+  - todayTotals:
+      - byMaterialId: totalAppliedBaseUnits (sum of log total material needed per entry)
+      - totalAcresTouched (sum unique block acres or acres-per-log if that exists)
+      - totalEstimatedSpend (sum estimatedCost for logs, ignoring unit mismatch cost=0)
+  - todayAnomalies:
+      - unitMismatch logs (status/flag already exists)
+      - missingRate logs (rate null/0)
+      - missingUnit logs (unit missing)
+      - varianceFlagsToday (if your variance engine is month-based, include open flags regardless of date)
+- Add “redBadgeCount” selector:
+  redBadgeCount = openVarianceFlags + openUnitMismatch + openMissingFieldCount
+- Add “lastActionsByBlock” selector:
+  For each blockId, return last 3 logs sorted by createdAt descending.
+
+2) “SEND TODAY’S PACKET” UI ENTRY POINTS
+A) Home (Truck View)
+File: client/src/pages/Home.tsx
+- Add a prominent button card at top of Today panel:
+  Label: “Send Today’s Packet”
+  Subtext: “1 tap → PDF summary + share”
+  Right side: red badge bubble if redBadgeCount > 0 (e.g., “3 issues”)
+  On tap → route to /share/today (new route)
+
+B) Guided Flow Return Bar
+Files: client/src/components/GuidedFlowReturnBar.tsx (or wherever the sticky pill lives)
+- When user is on Today/Log/Review steps and there are any todayLogs:
+  show a secondary CTA: “Send Today’s Packet”
+  On tap → /share/today
+
+3) NEW PAGE: Today Packet Composer
+Create: client/src/pages/TodayPacket.tsx
+Route: /share/today
+This page is the frictionless “end-of-day proof” screen.
+
+Layout (mobile-first):
+- Header: “Today’s Packet” + date (local)
+- Section 1: Blocks Worked Today
+  - List each block (name, crop, acres)
+  - Under each: the logs for that block today (time, action type, material, rate/unit, total needed, est cost, flags)
+- Section 2: Totals (big, simple)
+  - “Acres Touched: X”
+  - “Total Estimated Spend: $Y”
+  - “Materials Totals” (by product/material name): “337.5 GAL”, “450 LB”, etc.
+- Section 3: Issues (if any)
+  - Red callout: “Issues to review before sending”
+  - List: unit mismatches + missing rates + open variance flags
+  - Buttons: “Fix Issues” → /review/flags (existing VarianceFlags route) with a filter “today”
+- Section 4: Share Actions (one-tap)
+  - Primary: “Generate PDF”
+  - After generation:
+     - “Download PDF”
+     - “Open SMS” (sms:?&body=...) with short summary + “Open app to view packet”
+     - “Open Email” (mailto:?subject=Today Packet&body=...)
+     - “Copy Summary” button (copies text to clipboard)
+Mock share is acceptable; PDF must actually generate.
+
+4) PDF GENERATION (FRONTEND-ONLY)
+- If you already have PDF export in Share/Vault, reuse that utility.
+- Otherwise implement with one lightweight library:
+  - Preferred: `jspdf` (simple) OR `pdf-lib` (more control)
+- Add a utility:
+  File: client/src/utils/todayPacketPdf.ts
+  Export function: generateTodayPacketPdf({todayLogs, blocks, totals, anomalies}) -> Blob
+- PDF content (1–3 pages max):
+  - Title, date, ranch name (if selected)
+  - Blocks + logs
+  - Totals
+  - Issues summary
+- Store generated PDF Blob URL in state for download button.
+
+5) MVP TIGHTENER #1 — “LOG AGAIN” (last 3 per block)
+Files: client/src/pages/BlockDetail.tsx AND/OR client/src/pages/Log.tsx
+- In BlockDetail:
+  Add “Log Again” section (top, thumb-friendly)
+  Show last 3 actions as big buttons:
+    “SPRAY: Roundup @ 32 oz/ac”
+    “FERT: CAN-17 @ 15 gal/ac”
+  Tap → routes to /log?blockId=...&copyFromLogId=...
+- In Log.tsx:
+  If copyFromLogId exists:
+    prefill all fields from that log (action type, products, rates/units, notes)
+    default date/time = now
+    allow editing rate/date before save
+  Save creates a new log (new id) without overwriting original.
+
+6) MVP TIGHTENER #2 — Acres-aware totals on every log (live)
+File: client/src/pages/Log.tsx
+- Add a live “Totals” panel pinned near the bottom (above save button):
+  - “Block Acres: 22.5”
+  - For each line item/material:
+      “Total Needed: 337.5 GAL” (rate * acres)
+  - “Est Cost: $X” (respect unit mismatch rule: $0 and badge)
+- Optional: “Tank/Load Helper” collapsible:
+  Input: tankSize (number + unit)
+  Output: loads = totalNeeded / tankSize
+  Persist last tank size in localStorage (per user device).
+
+7) MVP TIGHTENER #3 — “Today’s Work” widget on Home
+File: client/src/pages/Home.tsx
+- Add a compact widget card under Today panel:
+  Title: “Today’s Work”
+  Content:
+    - “3 blocks touched • 68.2 acres • $1,240 est”
+    - List up to 3 blocks with last action and time
+  Tap → /share/today (packet screen) OR /vault?filter=today
+
+8) MVP TIGHTENER #4 — “PCA View” toggle in Vault
+File: client/src/pages/Vault.tsx
+- Add toggle (segmented control):
+  [Standard] [PCA View]
+- PCA View formatting:
+  Table columns (prioritize inspector expectations):
+    Date/Time | Ranch | Block | Crop/Variety | Activity | Material | Rate | Unit | Total | Operator Notes | Flags
+- Add filters: date range (default today), block, activity type, flags only
+- Keep it fast and mobile readable (horizontal scroll ok, sticky first columns optional)
+
+9) MVP TIGHTENER #5 — One Red Badge system
+Files: Home.tsx, GuidedFlowReturnBar, VarianceFlags.tsx
+- Create a shared component:
+  client/src/components/RedBadge.tsx
+- Surface redBadgeCount in:
+  - Home: top of Today panel + Send Today’s Packet button
+  - Guided Flow pill: show “Issues: 3” with tap → /review/flags
+  - Review panel: emphasize “Fix Issues” as next deterministic action
+
+10) ROUTING
+File: client/src/App.tsx (or router definition)
+- Add route: /share/today → TodayPacket.tsx
+- Add query param handling in Log.tsx for copyFromLogId
+
+11) STYLING
+- Follow existing dark theme (forest green + gold accents) and keep high contrast.
+- Buttons must be large and thumb-friendly.
+- Empty states:
+  - If no todayLogs: “No work logged today yet. Start with Quick Log.”
+  - If no issues: “All clean. Ready to send.”
+
+12) ACCEPTANCE CHECKLIST (MUST PASS)
+- “Send Today’s Packet” reachable from Home + Guided Flow pill.
+- Packet lists today logs grouped by block and totals compute correctly.
+- PDF generates and downloads successfully offline.
+- SMS/email buttons open device handlers with prefilled text.
+- “Log Again” creates new log with correct prefill and editable fields.
+- Live “Total Needed” matches acres * rate and respects units.
+- Vault PCA View toggle works and shows inspector-friendly columns.
+- Red badge count matches open issues across mismatch/missing/variance.
+- No regressions in existing guided flow step mapping.
+
+Now implement these changes across the codebase with clean TypeScript types, minimal new dependencies, and reuse existing utilities where possible. Keep logic deterministic and unit-safe.
