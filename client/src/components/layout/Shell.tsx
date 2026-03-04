@@ -5,6 +5,7 @@ import { useState } from "react";
 import { useIsMobile } from "@/hooks/useIsMobile";
 import { GuidedFlowReturnBar } from "@/components/navigation/GuidedFlowReturnBar";
 import RanchSwitcher from "@/components/RanchSwitcher";
+import { DemoModeBanner } from "@/components/layout/DemoModeBanner";
 
 export default function Shell({ children }: { children: React.ReactNode }) {
   const [location, setLocation] = useLocation();
@@ -42,6 +43,7 @@ export default function Shell({ children }: { children: React.ReactNode }) {
       {/* Top Nav (Mobile) */}
       {isMobile && (
         <header className="sticky top-0 z-40 bg-background/90 backdrop-blur-md border-b border-border flex flex-col pt-[env(safe-area-inset-top)]">
+          <DemoModeBanner />
           <div className="p-4 flex justify-between items-center">
             <h1 className="text-lg font-black text-white tracking-widest uppercase">KEBB AG™</h1>
             <RanchSwitcher compact />
@@ -93,8 +95,13 @@ export default function Shell({ children }: { children: React.ReactNode }) {
       )}
 
       {/* Main Content Area Container */}
-      <div className="flex-1 flex flex-col min-w-0">
-        {!isMobile && <GuidedFlowReturnBar />}
+      <div className="flex-1 flex flex-col min-w-0 relative">
+        {!isMobile && (
+          <div className="sticky top-0 z-40 w-full flex flex-col bg-background/90 backdrop-blur-md">
+            <DemoModeBanner />
+            <GuidedFlowReturnBar />
+          </div>
+        )}
         
         {/* Main Content */}
         <main className="flex-1 p-4 md:p-8 pb-24 md:pb-8 max-w-5xl mx-auto w-full min-w-0">

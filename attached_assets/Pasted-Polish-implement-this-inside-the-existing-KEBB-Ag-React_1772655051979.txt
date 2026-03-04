@@ -1,0 +1,113 @@
+Polish + implement this inside the existing KEBB Ag™ React/Vite frontend-only prototype (Zustand + LocalStorage, no backend).
+
+GOAL
+Create a fully-loaded, investor-ready DEMO ACCOUNT that is selectable via the existing Login screen:
+
+Demo Grower:
+- Name: Ryan Neufeld
+- Operation: Neufeld Farms
+- Location: Traver, CA (Central Valley)
+- Primary crops: Stone fruit (peaches / nectarines / plums)
+
+This demo must showcase the entire product end-to-end:
+- Every module has relevant, realistic data
+- Guided Flow (Today → Log → Review → Plan → Share) is “complete” and looks alive
+- Vault is populated and filterable
+- Flags queue contains believable issues (unit mismatch, missing rate, variance spike)
+- Templates and Projections are populated (stone-fruit specific)
+- Packets (Today / Monthly / Season) generate PDFs that include ALL content that appears in the UI
+
+HARD RULES
+- Offline-only. No API calls. No backend.
+- Data is seeded deterministically on first login selection and persisted in LocalStorage.
+- If user resets storage, seed can be regenerated identically.
+- Everything must be consistent: acres, rates, units, totals, cost estimates, and packet rollups must reconcile.
+- PDFs must render the same sections as the UI (no “missing” module content).
+
+IMPLEMENTATION TASKS
+
+1) DEMO LOGIN OPTION
+Files: client/src/pages/Login.tsx (or wherever login lives)
+- Add a “Demo Accounts” section with a card/button:
+  “Ryan Neufeld — Neufeld Farms (Traver, CA)”
+- Selecting it should:
+  a) set `activeUser` / `activeRanch` context in Zustand
+  b) seed demo data into Zustand + LocalStorage if not already present
+  c) route user directly to /home
+
+2) DEMO SEED DATA (STONE FRUIT OPERATION)
+Create: client/src/lib/demoSeeds/ryanNeufeldSeed.ts
+Seed must include ALL major models used by the app:
+- Operation profile (grower, ranch metadata, county context)
+- Ranches: at least 1 ranch (e.g., “Traver Ranch”)
+- Blocks: 6–10 blocks with realistic acres, varieties, irrigation types (micro/drip), and yield targets
+  Example block mix:
+  - “Early Peach Block” (22.5 ac)
+  - “Late Peach Block” (35.0 ac)
+  - “Nectarine Block” (18.0 ac)
+  - “Black Plum Block” (28.0 ac)
+  - “Apricot Trial” (10.0 ac)
+- Inputs Library: 100+ items already present; ensure demo uses a subset relevant to stone fruit:
+  bloom fungicide, shuck split, summer disease, mites, aphids, ants, nutritionals, gypsum, UN-32/CAN-17, calcium, boron, zinc, adjuvants.
+- Logs/Vault: 80–150 logs across the season + 8–15 logs “today”
+  Include SPRAY, FERT, IRRIGATE actions with believable timing and rates.
+- Templates: 8–12 templates that match real stone-fruit passes:
+  - “Bloom Fungicide Pass”
+  - “Shuck Split Protection”
+  - “Spring N Push (CAN-17)”
+  - “Summer Mite Program”
+  - “Post-Harvest Rebuild”
+- Projections: apply templates to blocks to generate forecasted season costs and material requirements.
+
+3) MAKE THE DASHBOARD LOOK “FULL” IN EVERY MODULE
+Ensure the following pages render meaningful content for the demo user:
+- Home Truck View: Today panel populated, Today’s Work widget filled, “Send Today’s Packet” available
+- Log: smart prefills work; acres-aware totals show; “Log Again” works
+- Review: variance flags + unit mismatches + missing rate examples exist
+- Plan: upcoming scheduled applications + ready templates visible
+- Share: Today/Monthly/Season packets generate and include all content
+
+4) DEMO ISSUES (MUST EXIST AND BE FIXABLE)
+Seed these issues intentionally:
+- 2 unit mismatches (cost forced to $0 + badge)
+- 2 missing rate/unit logs
+- 1 variance spike (>20%) month-over-month on a fungicide category
+Add a “Fix Issues” path that updates the log/flag state and immediately reflects:
+- red badge count decreases
+- packet “Issues” section updates
+- corrected records appear in Vault
+
+5) PDF / PACKET REQUIREMENT — “ALL FORMATS”
+Implement/confirm these PDF outputs exist and contain all module-relevant content:
+- Today Packet PDF: today logs by block + totals + issues
+- Monthly Packet PDF: selected month logs + totals + issues + signoff page
+- Season Packet PDF: table-of-contents + sections in exact order + rollups + issues + exports appendix
+
+Also provide CSV exports where applicable:
+- Vault export (filtered)
+- PCA View export
+- Block History Cards (PDF per block OR combined)
+
+PDF MUST INCLUDE:
+- Block Register
+- Field History summaries
+- Crop protection detail pages (SPRAY)
+- Fertility/amendment records (FERT)
+- Irrigation logs (IRRIGATE)
+- Issues/corrections section
+- Season rollups (spend by block/month/material)
+
+6) UX POLISH
+- Add a visible “DEMO MODE” badge in the shell header with:
+  - “Reset Demo Data” button (clears demo localStorage keys and re-seeds)
+  - “Switch Account” link back to login
+- Keep everything truck-optimized, thumb-friendly, and fast.
+
+ACCEPTANCE CHECKLIST
+- Ryan Neufeld demo account selectable on login.
+- Demo seeds once, persists offline, and is deterministic on reset.
+- Every module shows stone-fruit relevant content (no empty screens).
+- Packets generate successfully offline and contain ALL displayed information in PDF output (Today/Monthly/Season).
+- Issues are present, visible in red badge count, and fixable with immediate UI + PDF updates.
+
+Now implement this across the codebase with clean TypeScript types, minimal dependencies, and reuse existing utilities/components wherever possible.

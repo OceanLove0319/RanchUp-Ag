@@ -2,6 +2,7 @@ import { useLocation } from "wouter";
 import { useStore } from "@/lib/store";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { seedDemoData } from "@/lib/demoSeeds/ryanNeufeldSeed";
 
 export default function Login() {
   const [, setLocation] = useLocation();
@@ -12,8 +13,12 @@ export default function Login() {
   const [password, setPassword] = useState("");
 
   const handleDemoLogin = () => {
-    login();
-    setLocation("/onboarding");
+    seedDemoData(useStore);
+    setLocation("/app");
+    toast({
+      title: "Demo Mode Active",
+      description: "Logged in as Ryan Neufeld (Neufeld Farms)."
+    });
   };
 
   const handleStandardLogin = (e: React.FormEvent) => {
@@ -80,12 +85,23 @@ export default function Login() {
           </div>
         </div>
 
-        <button 
-          onClick={handleDemoLogin}
-          className="w-full border-2 border-primary text-primary font-bold uppercase tracking-widest py-4 rounded hover:bg-primary/10 transition-colors"
-        >
-          Enter Fresh Demo
-        </button>
+        <div className="space-y-4">
+          <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2">Demo Accounts</p>
+          <button 
+            onClick={handleDemoLogin}
+            className="w-full border-2 border-primary bg-primary/5 text-primary text-left px-6 py-4 rounded hover:bg-primary/10 transition-colors group flex flex-col items-start"
+          >
+            <span className="font-black uppercase tracking-widest group-hover:text-white transition-colors">Ryan Neufeld</span>
+            <span className="text-sm font-medium text-muted-foreground">Neufeld Farms (Traver, CA) - Stone Fruit</span>
+          </button>
+          
+          <button 
+            onClick={() => { login(); setLocation("/onboarding"); }}
+            className="w-full border border-border text-muted-foreground font-bold uppercase tracking-widest py-4 rounded hover:bg-white/5 transition-colors"
+          >
+            Enter Fresh Demo (Empty)
+          </button>
+        </div>
       </div>
     </div>
   );
