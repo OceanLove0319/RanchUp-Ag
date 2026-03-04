@@ -1,5 +1,5 @@
 import { Link, useLocation } from "wouter";
-import { Home, Map, ClipboardEdit, Archive, Settings, LogOut, FlaskConical, LineChart, Plus, Menu, X } from "lucide-react";
+import { Home, Map, ClipboardEdit, Archive, Settings, LogOut, FlaskConical, LineChart, Plus, Menu, X, BookOpen } from "lucide-react";
 import { useStore } from "@/lib/store";
 import { useState } from "react";
 import { useIsMobile } from "@/hooks/useIsMobile";
@@ -24,6 +24,10 @@ export default function Shell({ children }: { children: React.ReactNode }) {
     { href: "/app/chemicals", icon: FlaskConical, label: "Chemicals" },
     { href: "/app/projections", icon: LineChart, label: "Budget" },
     { href: "/app/settings/billing", icon: Settings, label: "Settings" },
+  ];
+
+  const helpNavItems = [
+    { href: "/app/glossary", icon: BookOpen, label: "Glossary" },
   ];
 
   const handleMobileNavClick = (href: string) => {
@@ -51,6 +55,19 @@ export default function Shell({ children }: { children: React.ReactNode }) {
           
           <div className="flex flex-col justify-start w-full gap-2">
             {[...mainNavItems, { href: "/app/log", icon: ClipboardEdit, label: "Log" }, ...secondaryNavItems].map((item) => {
+              const isActive = location === item.href || (location.startsWith(item.href) && item.href !== "/app");
+              return (
+                <Link key={item.href} href={item.href} className={`flex items-center gap-3 p-3 rounded-md transition-colors ${isActive ? 'text-primary bg-primary/10' : 'text-muted-foreground hover:text-white hover:bg-white/5'}`}>
+                  <item.icon className="w-5 h-5" />
+                  <span className="text-sm font-semibold tracking-wider uppercase">{item.label}</span>
+                </Link>
+              );
+            })}
+            
+            <div className="mt-4 mb-2 px-3">
+              <span className="text-[10px] font-black tracking-widest text-muted-foreground uppercase">Community & Help</span>
+            </div>
+            {helpNavItems.map((item) => {
               const isActive = location === item.href || (location.startsWith(item.href) && item.href !== "/app");
               return (
                 <Link key={item.href} href={item.href} className={`flex items-center gap-3 p-3 rounded-md transition-colors ${isActive ? 'text-primary bg-primary/10' : 'text-muted-foreground hover:text-white hover:bg-white/5'}`}>
@@ -118,6 +135,20 @@ export default function Shell({ children }: { children: React.ReactNode }) {
               
               <div className="flex flex-col gap-2">
                 {secondaryNavItems.map((item) => (
+                  <button 
+                    key={item.href} 
+                    onClick={() => handleMobileNavClick(item.href)}
+                    className="flex items-center gap-4 p-4 rounded-lg bg-background border border-border transition-colors hover:border-primary/50 text-left"
+                  >
+                    <item.icon className="w-5 h-5 text-primary" />
+                    <span className="font-bold uppercase tracking-widest text-sm">{item.label}</span>
+                  </button>
+                ))}
+                
+                <div className="mt-4 mb-2">
+                  <span className="text-[10px] font-black tracking-widest text-muted-foreground uppercase">Community & Help</span>
+                </div>
+                {helpNavItems.map((item) => (
                   <button 
                     key={item.href} 
                     onClick={() => handleMobileNavClick(item.href)}

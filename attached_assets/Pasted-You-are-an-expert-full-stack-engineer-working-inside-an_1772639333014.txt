@@ -1,0 +1,146 @@
+You are an expert full-stack engineer working inside an existing Replit-hosted web app.
+
+GOAL
+Add a new dashboard page called “Glossary” under the existing sidebar group “Community & Help”. This page displays an in-app terms & definitions glossary for KEBB Ag™ (Central Valley permanent crops). It must be fast, mobile-responsive, clean, and readable on phones.
+
+NON-NEGOTIABLES
+- Do NOT break or refactor existing backend logic.
+- Do NOT change auth, org scoping, or routing patterns beyond adding the new page route.
+- Reuse existing UI components, layout shell, and styling system (Tailwind / component library already in repo).
+- Keep the implementation minimal: 1 route + 1 page component + 1 data file.
+- Ensure the page works for any logged-in user and respects existing “Dashboard” layout.
+- No external API calls. Glossary data is static in-repo.
+
+WHERE IT LIVES (typical structure; adapt to repo)
+- Add a route: /dashboard/community-help/glossary (or match the app’s existing route convention)
+- Add sidebar item under “Community & Help”: “Glossary”
+- Add a page component file (e.g. client/src/pages/GlossaryPage.tsx)
+- Add a glossary data file (e.g. client/src/data/glossary.ts)
+
+UI REQUIREMENTS
+- Page title: “Glossary”
+- Subtitle: “Field-ready terms for logging, costs, compliance, and projections.”
+- Search bar at top: filters terms live as user types (case-insensitive).
+- Category chips (clickable): Core Ranch Structure, Logging & Execution, Materials & Cost Engine, Templates & Programs, Projections & Variance, Flags & Data Quality, Compliance & Reporting, App Experience.
+  - Clicking a chip filters to that category; “All” chip resets.
+- Glossary list: cards or accordion rows
+  - Each item shows: Term (bold), Definition (plain)
+  - Optional tiny badge for category
+- Mobile first:
+  - Search sticky at top on scroll (optional but nice)
+  - Chips wrap nicely
+  - Cards have comfortable spacing, no dense tables
+- Empty state: “No terms found. Try a different search.”
+- Performance: data is small; use memoized filtering.
+
+DATA REQUIREMENTS
+Create the glossary content exactly as the following categories and entries. Store as an array of:
+{ id, term, definition, category, tags[] }
+
+CATEGORIES + TERMS
+1) Core Ranch Structure
+- Ranch — The overall operation (one business) that contains multiple blocks.
+- Block — A defined planting area (variety + rootstock + year + acres + irrigation system). The core unit for logging and costing.
+- Acres (Block Acres) — The measured size of the block used for “total material needed” and cost math.
+- Crop / Commodity Tag — Labels like Almond / Pistachio / Citrus / Stone Fruit used to filter templates, materials, and reports.
+- Season — The time window you’re tracking (e.g., 2026 season). Logs roll up by season.
+
+2) Logging & Execution
+- Quick Log — Fast entry for what happened today (spray, fertigation, irrigation set, mowing, etc.) tied to a block.
+- Log Entry — One recorded activity (date + block + activity + materials + rates + notes).
+- Activity Type — The category of work: Spray / Fertigation / Irrigation / Soil Amendment / Weed / Pest / Cultural.
+- Application — A spray or injection event where products were applied at a rate.
+- Rate — How much product is applied per acre or per set (e.g., 15 GAL/AC).
+- Total Material Needed — Auto-calculated total product for that block: rate × acres.
+- Tank / Load Helper — Optional calculator: converts total needed into number of loads based on tank size.
+- Copy-Forward (Log Again) — Reuse a prior log’s products/rates for speed; edit only what changed.
+- Crew / Operator — Who performed the work (foreman, irrigator, custom applicator, etc.).
+
+3) Materials & Cost Engine
+- Material — Any input used: chemical, fertilizer, adjuvant, water treatment, surfactant, etc.
+- Material Library — The standardized list of materials with units, pack sizes, and planning prices.
+- Unit — How a material is measured (GAL, LB, OZ, TON, QT, PT).
+- Rate Unit — The “per-acre” format (GAL/AC, LB/AC, OZ/AC).
+- Pack Size — Container size used for pricing (e.g., 2.5 GAL, 50 LB bag).
+- Normalized Unit — The base unit after converting pack size to a per-unit cost (e.g., $/GAL or $/LB).
+- Planning Price Range — Low/high cost estimate used until an invoice replaces it.
+- Estimated Cost — What the engine calculates for a log based on rate × acres × unit price.
+- Actual Cost — Invoice/quote-entered cost that overrides planning estimates.
+- Cost Engine — The math layer that converts logs into spend totals safely and consistently.
+
+4) Templates & Programs
+- Template — A pre-built “recipe” for a common job (e.g., bloom spray, hull-split, N shot, frost set).
+- Template Library — Your saved templates (by crop, timing, or problem).
+- Template Fill — Applying a template to a block/date to generate a ready log entry.
+- Standard Program — A repeatable seasonal plan (e.g., pre-bloom → bloom → post-bloom → summer).
+- Timing Tag — “Bloom,” “Petal fall,” “Hull split,” “Post-harvest,” etc. used to organize templates.
+
+5) Projections & Variance (Money + Materials)
+- Block Projection — What you expect to spend/apply on that block over a period (week/month/season).
+- Season Projection — Expected total spend for the ranch or commodity for the season.
+- Budget (Planned Spend) — A target spend number used to compare against actuals.
+- Variance — The difference between planned and actual spend/use: actual − planned.
+- Variance Flag — A warning when variance crosses a threshold (e.g., +15% over plan).
+- Over/Under Indicator — Simple label showing you’re trending above or below projection.
+- Spend Allocation — Splitting spend by block, commodity, activity type, or material category.
+
+6) Flags & Data Quality
+- Unit Mismatch — Entered unit/rate doesn’t match the library unit, so cost math is blocked (cost set to 0) until fixed.
+- Data Mismatch — The log conflicts with saved reference data (wrong block acres, wrong material unit, missing crop tag, etc.).
+- Missing Data Flag — Required fields aren’t filled (no acres, no unit price, no rate, no date).
+- Outlier Flag — A value is unusually high/low compared to normal ranges (e.g., 80 GAL/AC UN-32).
+- Duplicate Log Warning — Similar logs entered twice for the same block/date/activity.
+- Review Queue — A list of flagged items needing correction (units, prices, acres, duplicates).
+- Locked Fields — Protected values that shouldn’t change casually (block acres, base units) without admin confirmation.
+
+7) Compliance & Reporting (Central Valley reality)
+- Compliance Packet — An organized export of logs for audits, QA, and reporting (sprays, fertigation, irrigation notes).
+- Audit-Ready Record — A log that has required details: date, block, products, rates, acres, operator.
+- Export — Download/share reports (PDF/CSV) for PCA, packer-shipper QA, or internal records.
+- Retention — How long records are kept in the vault (policy-driven).
+- Pesticide Use Reporting (PUR) Support — Reports structured to help monthly reporting (not a replacement for legal requirements, just organized output).
+
+8) App Experience / Navigation
+- Active Apps — The modules currently enabled in your account (e.g., Logging, Templates, Cost Engine, Projections, Vault, Export).
+- Module — A functional area of the product (Templates, Vault, Projections).
+- Role — Permissions level (Owner/Admin, Foreman, Irrigator, PCA view-only, Accounting).
+- Workspace — Your operation’s “home” inside the app (ranches/blocks/users/settings).
+- Vault — The permanent storage area for season logs, exports, and compliance packets.
+
+IMPLEMENTATION STEPS (DO THESE)
+1) Find the dashboard sidebar nav config (likely a list of groups/links). Add a new link under “Community & Help”:
+   - label: Glossary
+   - icon: use an existing icon (e.g., BookOpen or HelpCircle) already used elsewhere
+   - href/route: match the new route
+
+2) Add the new route in the router where other dashboard routes are registered.
+   - Ensure it uses the existing <DashboardLayout /> / auth guard wrapper.
+
+3) Create the glossary data file exporting the array with stable ids (slugify term + category).
+
+4) Create the page component:
+   - local state: searchQuery, activeCategory (“All” default)
+   - derived: filteredTerms via useMemo
+   - render: header, search input, chips, list (accordion or cards)
+   - sorting: alphabetical by term within the current filter
+
+5) Styling:
+   - Use the app’s existing card, input, badge, and button components if they exist.
+   - Otherwise use simple Tailwind utility classes consistent with the rest of the dashboard.
+   - Keep spacing generous (p-4/p-6), max width (e.g., max-w-5xl), and readable typography.
+
+6) QA checklist:
+   - Sidebar shows “Glossary” under Community & Help.
+   - Route loads without refresh errors.
+   - Search works.
+   - Category filter works.
+   - Mobile layout looks good.
+
+DELIVERABLE
+Make the code changes and provide:
+- filenames created/edited
+- the added sidebar item snippet
+- the route registration snippet
+- the new data file content
+- the page component content
+- brief note if you had to adapt paths to match repo conventions

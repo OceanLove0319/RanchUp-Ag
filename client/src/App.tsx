@@ -30,6 +30,7 @@ import VarianceFlags from "@/pages/VarianceFlags";
 import ProjectionsDashboard from "@/pages/ProjectionsDashboard";
 import BlockProjectionDetail from "@/pages/BlockProjectionDetail";
 import TemplatesManager from "@/pages/TemplatesManager";
+import Glossary from "@/pages/Glossary";
 
 function ScrollToTop() {
   const [pathname] = useLocation();
@@ -105,6 +106,9 @@ function Router() {
       </Route>
       <Route path="/app/reports/variance">
         <Shell><VarianceFlags /></Shell>
+      </Route>
+      <Route path="/app/glossary">
+        <Shell><Glossary /></Shell>
       </Route>
 
       <Route component={NotFound} />
