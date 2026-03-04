@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link } from "wouter";
 import { ClipboardEdit, Target, Archive, ArrowRight, FileText, BarChart, AlertTriangle } from "lucide-react";
 import { useStore } from "@/lib/store";
@@ -7,10 +8,11 @@ export default function Home() {
   const user = useStore(s => s.user);
   const activeRanchId = useStore(s => s.activeRanchId);
   const activeRanch = useStore(s => s.ranches.find(r => r.id === activeRanchId));
+  const [activeTab, setActiveTab] = useState<"HOME" | "PCA_INTAKE">("HOME");
 
   return (
     <div className="animate-in fade-in duration-500">
-      <header className="mb-10">
+      <header className="mb-6">
         <p className="text-xs font-bold uppercase tracking-widest text-primary mb-2">Good Morning</p>
         <h1 className="text-4xl md:text-5xl font-black uppercase tracking-tighter text-foreground mb-2">
           {user?.org || "Operation"}
@@ -22,9 +24,37 @@ export default function Home() {
         )}
       </header>
 
-      <PcaIntakeCard />
+      {/* Navigation Tabs */}
+      <div className="flex border-b border-border mb-8">
+        <button 
+          onClick={() => setActiveTab("HOME")}
+          className={`px-6 py-3 text-sm font-black uppercase tracking-widest transition-colors border-b-2 ${
+            activeTab === "HOME" 
+              ? "border-primary text-primary" 
+              : "border-transparent text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          Home
+        </button>
+        <button 
+          onClick={() => setActiveTab("PCA_INTAKE")}
+          className={`px-6 py-3 text-sm font-black uppercase tracking-widest transition-colors border-b-2 ${
+            activeTab === "PCA_INTAKE" 
+              ? "border-primary text-primary" 
+              : "border-transparent text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          PCA Intake
+        </button>
+      </div>
 
-      <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-4">Quick Actions</p>
+      {activeTab === "PCA_INTAKE" ? (
+        <div className="animate-in fade-in duration-300">
+          <PcaIntakeCard />
+        </div>
+      ) : (
+        <div className="animate-in fade-in duration-300">
+          <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-4">Quick Actions</p>
       
       {/* Top row: Core flow */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mb-10">
@@ -88,6 +118,8 @@ export default function Home() {
           </div>
         </Link>
       </div>
+        </div>
+      )}
     </div>
   );
 }
