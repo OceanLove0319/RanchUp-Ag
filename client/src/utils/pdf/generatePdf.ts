@@ -240,5 +240,30 @@ export function generatePdfFromBlocks(blocks: RenderBlock[], filename: string = 
     }
   }
 
-  return doc.output('bloburl') as unknown as string;
+  // Generate Data URL and return it
+  // Using Data URI instead of bloburl as it handles actual file downloads better in iframes/webviews
+  try {
+    const dataUri = doc.output('datauristring');
+    return dataUri;
+  } catch(e) {
+    console.error("Fallback output method:", e);
+    // Ultimate fallback if datauristring fails
+    return doc.output('bloburl') as unknown as string;
+  }
+}
+
+// Global helper to trigger actual download
+export function triggerPdfDownload(dataUri: string, filename: string) {
+  try {
+    const link = document.createElement('a');
+    link.href = dataUri;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    return true;
+  } catch (e) {
+    console.error("Failed to trigger download:", e);
+    return false;
+  }
 }

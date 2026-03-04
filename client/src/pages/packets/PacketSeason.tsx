@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { KEBB_SEASON_TOC_V1, PacketState } from "@/lib/packets/packetSchemas";
 import { buildPacket } from "@/lib/packets/buildPacket";
-import { generatePdfFromBlocks } from "@/utils/pdf/generatePdf";
+import { generatePdfFromBlocks, triggerPdfDownload } from "@/utils/pdf/generatePdf";
 
 export default function PacketSeason() {
   const activeRanchId = useStore(s => s.activeRanchId);
@@ -50,7 +50,11 @@ export default function PacketSeason() {
         const url = generatePdfFromBlocks(renderBlocks, "KEBB_Season_Packet.pdf");
         
         setPdfUrl(url);
-        toast({ title: "PDF Generated", description: "Season Audit Binder is ready." });
+        
+        // Trigger actual download!
+        triggerPdfDownload(url, "KEBB_Season_Packet.pdf");
+        
+        toast({ title: "PDF Generated", description: "Season Audit Binder has been downloaded." });
       } catch (e) {
         console.error(e);
         toast({ title: "Error", description: "Failed to generate PDF.", variant: "destructive" });
@@ -58,6 +62,13 @@ export default function PacketSeason() {
         setIsGenerating(false);
       }
     }, 500);
+  };
+
+  const handleDownloadAgain = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (pdfUrl) {
+      triggerPdfDownload(pdfUrl, "KEBB_Season_Packet.pdf");
+    }
   };
 
   return (
@@ -139,11 +150,12 @@ export default function PacketSeason() {
             {isGenerating ? "Compiling Audit Binder..." : "Generate PDF"}
           </Button>
         ) : (
-          <a href={pdfUrl} target="_blank" rel="noreferrer" className="block">
-            <Button className="w-full h-14 gap-2 text-base font-black uppercase tracking-widest">
-              <Download className="w-5 h-5" /> Download Season Packet
-            </Button>
-          </a>
+          <Button 
+            onClick={handleDownloadAgain}
+            className="w-full h-14 gap-2 text-base font-black uppercase tracking-widest"
+          >
+            <Download className="w-5 h-5" /> Download Season Packet Again
+          </Button>
         )}
       </div>
     </div>

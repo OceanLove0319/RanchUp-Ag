@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { KEBB_SEASON_TOC_V1, PacketState } from "@/lib/packets/packetSchemas";
 import { buildPacket } from "@/lib/packets/buildPacket";
-import { generatePdfFromBlocks } from "@/utils/pdf/generatePdf";
+import { generatePdfFromBlocks, triggerPdfDownload } from "@/utils/pdf/generatePdf";
 
 export default function PacketToday() {
   const activeRanchId = useStore(s => s.activeRanchId);
@@ -47,6 +47,8 @@ export default function PacketToday() {
            logs.filter(l => !l.amount || l.amount <= 0).length;
   }, [apps, logs]);
 
+  const filename = "KEBB_Today_Packet.pdf";
+
   const handleGeneratePdf = () => {
     setIsGenerating(true);
     setTimeout(() => {
@@ -63,10 +65,14 @@ export default function PacketToday() {
         
         // For Today, we'll reuse the Season TOC but filter data down to Today.
         const renderBlocks = buildPacket(KEBB_SEASON_TOC_V1, state);
-        const url = generatePdfFromBlocks(renderBlocks, "KEBB_Today_Packet.pdf");
+        const url = generatePdfFromBlocks(renderBlocks, filename);
         
         setPdfUrl(url);
-        toast({ title: "PDF Generated", description: "Today Packet is ready." });
+        
+        // Automatically trigger actual download
+        triggerPdfDownload(url, filename);
+        
+        toast({ title: "PDF Generated", description: "Today Packet has been downloaded." });
       } catch (e) {
         console.error(e);
         toast({ title: "Error", description: "Failed to generate PDF.", variant: "destructive" });
@@ -74,6 +80,13 @@ export default function PacketToday() {
         setIsGenerating(false);
       }
     }, 500);
+  };
+
+  const handleDownloadAgain = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (pdfUrl) {
+      triggerPdfDownload(pdfUrl, filename);
+    }
   };
 
   return (
@@ -131,11 +144,13 @@ export default function PacketToday() {
           </Button>
         ) : (
           <div className="space-y-4">
-            <a href={pdfUrl} target="_blank" rel="noreferrer" className="flex">
-              <Button variant="outline" className="w-full h-12 gap-2 border-primary/50 text-primary hover:bg-primary/10">
-                <Download className="w-4 h-4" /> Download PDF
-              </Button>
-            </a>
+            <Button 
+              variant="outline" 
+              onClick={handleDownloadAgain}
+              className="w-full h-12 gap-2 border-primary/50 text-primary hover:bg-primary/10"
+            >
+              <Download className="w-4 h-4" /> Download PDF Again
+            </Button>
             <div className="grid grid-cols-2 gap-3">
               <a href={`sms:?&body=${encodeURIComponent("Today's Packet from KEBB Ag is ready.")}`} className="flex">
                 <Button variant="secondary" className="w-full gap-2 text-xs">
