@@ -105,12 +105,32 @@ export function generatePdfFromBlocks(blocks: RenderBlock[], filename: string = 
 
       case "TABLE":
         if (block.columns && block.rows) {
+          if (block.rows.length === 0) {
+             // Handle empty tables gracefully without crashing jspdf-autotable
+             checkPageBreak(10);
+             doc.setFont(PDF_THEME.fonts.main, "italic");
+             doc.setFontSize(PDF_THEME.fonts.sizes.body);
+             doc.setTextColor(120, 120, 120);
+             doc.text("No data available.", margin, y);
+             y += 10;
+             break;
+          }
+
           try {
+            // First pass: sanitize all cell data thoroughly to prevent autotable internal crashes
+            const safeRows = block.rows.map(row => {
+              if (!Array.isArray(row)) return block.columns?.map(() => "—") || [];
+              return row.map(cell => {
+                 if (cell === null || cell === undefined) return "—";
+                 if (typeof cell === 'object') return JSON.stringify(cell);
+                 return String(cell);
+              });
+            });
+
             (doc as any).autoTable({
               startY: y,
               head: [block.columns],
-              // Ensure all rows are arrays of strings to prevent jsPDF errors
-              body: block.rows.map(row => row.map(cell => typeof cell === 'string' ? cell : String(cell || ""))),
+              body: safeRows,
               theme: 'grid',
               headStyles: { 
                 fillColor: [40, 42, 45], // Dark header
@@ -147,6 +167,9 @@ export function generatePdfFromBlocks(blocks: RenderBlock[], filename: string = 
             }
           } catch (e) {
             console.error("AutoTable error:", e);
+            doc.setFont(PDF_THEME.fonts.main, "normal");
+            doc.setFontSize(PDF_THEME.fonts.sizes.body);
+            doc.setTextColor(200, 50, 50);
             doc.text("Error generating table.", margin, y);
             y += 10;
           }

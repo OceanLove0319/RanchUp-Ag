@@ -78,10 +78,10 @@ export const KEBB_SEASON_TOC_V1: PacketSection[] = [
           columns: ["Ranch", "Block", "Crop/Variety", "Acres", "Irrigation Method"],
           rows: state.blocks.map(b => [
             state.ranch?.name || "Unknown", 
-            b.name, 
-            b.variety, 
-            b.acreage.toString(), 
-            b.irrigationType
+            b.name || "—", 
+            b.variety || "—", 
+            b.acreage ? b.acreage.toString() : "0", 
+            b.irrigationType || "—"
           ])
         },
         { type: "PAGE_BREAK" }
@@ -116,11 +116,11 @@ export const KEBB_SEASON_TOC_V1: PacketSection[] = [
               const app = state.apps.find(a => a.id === `app-${l.id}`);
               const costStr = app && app.estimatedCost ? `$${app.estimatedCost.toLocaleString()}` : '—';
               return [
-                new Date(l.date).toLocaleDateString(),
-                l.actionType,
-                l.material,
-                `${l.amount} ${l.unit}`,
-                block.acreage.toString(),
+                new Date(l.date).toLocaleDateString() || "—",
+                l.actionType || "—",
+                l.material || "—",
+                `${l.amount || 0} ${l.unit || ""}`,
+                block.acreage ? block.acreage.toString() : "0",
                 costStr
               ];
             })
@@ -149,10 +149,10 @@ export const KEBB_SEASON_TOC_V1: PacketSection[] = [
            blocks.push({ type: "HEADING", level: 2, text: `App Date: ${new Date(spray.date).toLocaleDateString()}` });
            blocks.push({ type: "KEY_VALUE", items: [
              { key: "Block", value: block?.name || "Unknown" },
-             { key: "Acres Treated", value: block?.acreage.toString() || "0" },
-             { key: "Product", value: spray.material },
-             { key: "Rate", value: `${spray.amount} ${spray.unit}` },
-             { key: "Method", value: app?.method || spray.actionType },
+             { key: "Acres Treated", value: block?.acreage ? block.acreage.toString() : "0" },
+             { key: "Product", value: spray.material || "—" },
+             { key: "Rate", value: `${spray.amount || 0} ${spray.unit || ""}` },
+             { key: "Method", value: app?.method || spray.actionType || "—" },
              { key: "Notes", value: app?.notes || "None" },
            ]});
         });
@@ -188,10 +188,10 @@ export const KEBB_SEASON_TOC_V1: PacketSection[] = [
           rows: ferts.map(f => {
             const block = state.blocks.find(b => b.id === f.blockId);
             return [
-              new Date(f.date).toLocaleDateString(),
+              new Date(f.date).toLocaleDateString() || "—",
               block?.name || "Unknown",
-              f.material,
-              `${f.amount} ${f.unit}`
+              f.material || "—",
+              `${f.amount || 0} ${f.unit || ""}`
             ];
           })
         });
@@ -217,9 +217,9 @@ export const KEBB_SEASON_TOC_V1: PacketSection[] = [
           rows: irrigs.map(i => {
             const block = state.blocks.find(b => b.id === i.blockId);
             return [
-              new Date(i.date).toLocaleDateString(),
+              new Date(i.date).toLocaleDateString() || "—",
               block?.name || "Unknown",
-              `${i.amount} ${i.unit}`,
+              `${i.amount || 0} ${i.unit || ""}`,
               i.notes || "—"
             ];
           })
@@ -247,7 +247,7 @@ export const KEBB_SEASON_TOC_V1: PacketSection[] = [
           blocks.push({ 
             type: "TABLE", 
             columns: ["Date", "Material"],
-            rows: missingRates.map(l => [new Date(l.date).toLocaleDateString(), l.material])
+            rows: missingRates.map(l => [new Date(l.date).toLocaleDateString() || "—", l.material || "—"])
           });
         }
         
@@ -256,7 +256,7 @@ export const KEBB_SEASON_TOC_V1: PacketSection[] = [
           blocks.push({ 
             type: "TABLE", 
             columns: ["Date", "Material", "Method"],
-            rows: unitMismatches.map(a => [new Date(a.dateApplied).toLocaleDateString(), a.chemicalName, a.method])
+            rows: unitMismatches.map(a => [new Date(a.dateApplied).toLocaleDateString() || "—", a.chemicalName || "—", a.method || "—"])
           });
         }
       }
@@ -289,7 +289,7 @@ export const KEBB_SEASON_TOC_V1: PacketSection[] = [
          blocks.push({ 
            type: "TABLE", 
            columns: ["Block", "Estimated Spend"],
-           rows: Object.entries(blockSpend).map(([b, s]) => [b, `$${s.toLocaleString()}`])
+           rows: Object.entries(blockSpend).map(([b, s]) => [b || "Unknown", `$${(s || 0).toLocaleString()}`])
          });
       } else {
          blocks.push({ type: "PARAGRAPH", text: "No cost data available for rollups." });
