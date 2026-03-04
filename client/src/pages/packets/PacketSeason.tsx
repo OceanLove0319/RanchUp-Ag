@@ -12,9 +12,16 @@ import { generatePdfFromBlocks } from "@/utils/pdf/generatePdf";
 export default function PacketSeason() {
   const activeRanchId = useStore(s => s.activeRanchId);
   const activeRanch = useStore(s => s.ranches.find(r => r.id === activeRanchId));
-  const blocks = useStore(s => s.blocks.filter(b => b.ranchId === activeRanchId));
-  const logs = useStore(s => s.logs.filter(l => l.ranchId === activeRanchId));
-  const apps = useStore(s => s.chemicalApps.filter(a => a.ranchId === activeRanchId));
+  
+  // Extract state first, then filter in useMemo to prevent infinite loops
+  const allBlocks = useStore(s => s.blocks);
+  const allLogs = useStore(s => s.logs);
+  const allApps = useStore(s => s.chemicalApps);
+
+  const blocks = useMemo(() => allBlocks.filter(b => b.ranchId === activeRanchId), [allBlocks, activeRanchId]);
+  const logs = useMemo(() => allLogs.filter(l => l.ranchId === activeRanchId), [allLogs, activeRanchId]);
+  const apps = useMemo(() => allApps.filter(a => a.ranchId === activeRanchId), [allApps, activeRanchId]);
+
   const { toast } = useToast();
   
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);

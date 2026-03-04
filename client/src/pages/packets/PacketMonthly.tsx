@@ -12,9 +12,12 @@ import { generatePdfFromBlocks } from "@/utils/pdf/generatePdf";
 export default function PacketMonthly() {
   const activeRanchId = useStore(s => s.activeRanchId);
   const activeRanch = useStore(s => s.ranches.find(r => r.id === activeRanchId));
+  
+  // Extract full arrays first to prevent infinite loop on update
   const allBlocks = useStore(s => s.blocks);
   const allLogs = useStore(s => s.logs);
   const allApps = useStore(s => s.chemicalApps);
+  
   const { toast } = useToast();
   
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
@@ -33,8 +36,10 @@ export default function PacketMonthly() {
     })
   , [allLogs, activeRanchId, monthStart, monthEnd]);
 
-  const blockIds = Array.from(new Set(logs.map(l => l.blockId)));
-  const blocks = allBlocks.filter(b => blockIds.includes(b.id));
+  const blocks = useMemo(() => {
+    const blockIds = Array.from(new Set(logs.map(l => l.blockId)));
+    return allBlocks.filter(b => blockIds.includes(b.id));
+  }, [allBlocks, logs]);
   
   const apps = useMemo(() => 
     allApps.filter(a => {
