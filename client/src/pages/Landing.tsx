@@ -7,8 +7,8 @@ export default function Landing() {
     <div className="min-h-screen bg-background text-foreground selection:bg-primary selection:text-primary-foreground flex flex-col">
       <MarketingNav />
       <main className="flex-1 flex flex-col items-center justify-center p-6 text-center max-w-4xl mx-auto pt-32 pb-20">
-        <h1 className="md:text-8xl font-black uppercase tracking-tighter mb-6 text-foreground text-[42px] leading-tight">
-          Run your orchard.<br/>Not your notebook.
+        <h1 className="md:text-[77px] font-black uppercase tracking-tighter mb-6 text-foreground text-[42px] leading-tight">
+          Track the work.<br/>Protect the profit.
         </h1>
         <p className="md:text-2xl mb-10 max-w-2xl text-[#bababa] font-semibold text-lg md:text-[21px]">
           Block-level plans, fast field logging, and clean season records—built for tree fruit.
