@@ -111,127 +111,214 @@ export const DEMO_TEMPLATES: ProgramTemplate[] = [
   }
 ];
 
-const yesterday = new Date();
+const today = new Date();
+const yesterday = new Date(today);
 yesterday.setDate(yesterday.getDate() - 1);
-const yesterdayISO = yesterday.toISOString();
-
-const lastMonth = new Date();
+const lastWeek = new Date(today);
+lastWeek.setDate(lastWeek.getDate() - 7);
+const lastMonth = new Date(today);
 lastMonth.setMonth(lastMonth.getMonth() - 1);
+const twoMonthsAgo = new Date(today);
+twoMonthsAgo.setMonth(twoMonthsAgo.getMonth() - 2);
+
+const todayISO = todayPacificISO();
+const yesterdayISO = yesterday.toISOString();
+const lastWeekISO = lastWeek.toISOString();
 const lastMonthISO = lastMonth.toISOString();
+const twoMonthsAgoISO = twoMonthsAgo.toISOString();
 
-export const DEMO_LOGS: FieldLog[] = [
-  // Today's Logs
-  {
-    id: "log-today-1",
-    ranchId: "ranch-traver",
-    blockId: "block-early-peach",
-    date: todayPacificISO(),
-    actionType: "IRRIGATE",
-    material: "Water",
-    amount: 12,
-    unit: "hrs"
-  },
-  {
-    id: "log-today-2",
-    ranchId: "ranch-traver",
-    blockId: "block-late-peach",
-    date: todayPacificISO(),
-    actionType: "SPRAY",
-    material: "Acramite 50WS",
-    amount: 0.75,
-    unit: "lb/ac",
-    cost: 45
-  },
-  {
-    id: "log-today-3",
-    ranchId: "ranch-dinuba",
-    blockId: "block-black-plum",
-    date: todayPacificISO(),
-    actionType: "FERT",
-    material: "CAN-17",
-    amount: 15,
-    unit: "gal/ac",
-    cost: 65
-  },
-  
-  // Missing Rate / Unit Issues (Today)
-  {
-    id: "log-issue-1",
-    ranchId: "ranch-dinuba",
-    blockId: "block-apricot",
-    date: todayPacificISO(),
-    actionType: "SPRAY",
-    material: "Pristine",
-    amount: 0, // Missing rate
-    unit: "oz/ac"
-  },
-  
-  // Historical Logs
-  {
-    id: "log-hist-1",
-    ranchId: "ranch-traver",
-    blockId: "block-nectarine",
-    date: yesterdayISO,
-    actionType: "FERT",
-    material: "Zinc Sulfate",
-    amount: 10,
-    unit: "lb/ac",
-    cost: 25
-  },
-  {
-    id: "log-hist-2",
-    ranchId: "ranch-traver",
-    blockId: "block-early-peach",
-    date: lastMonthISO,
-    actionType: "SPRAY",
-    material: "Rovral 4 Flowable",
-    amount: 1,
-    unit: "pt/ac",
-    cost: 35
-  }
-];
+// Helper to generate IDs
+let logIdCounter = 1;
+let appIdCounter = 1;
 
-export const DEMO_CHEMICAL_APPS: ChemicalApp[] = [
-  {
-    id: "app-1",
-    ranchId: "ranch-traver",
-    blockId: "block-late-peach",
-    chemicalId: "cv-022", // Pristine
-    chemicalName: "Boscalid + Pyraclostrobin (Pristine)",
-    category: "FUNGICIDE",
-    dateApplied: lastMonthISO,
-    method: "SPRAY",
-    estimatedCost: 1200,
-    costStatus: "ESTIMATED",
-    notes: "Variance spike > 20% compared to last year" // intentional variance flag
-  },
-  {
-    id: "app-2",
-    ranchId: "ranch-traver",
-    blockId: "block-nectarine",
-    chemicalId: "cv-093", // CAN-17
-    chemicalName: "CAN-17 (calcium ammonium nitrate)",
-    category: "FERTILIZER",
-    dateApplied: yesterdayISO,
-    method: "FERTIGATION",
-    estimatedCost: 0,
-    costStatus: "UNIT_MISMATCH", // Unit mismatch issue
-    notes: "Logged in lbs, but library expects gal"
-  },
-  {
-    id: "app-3",
-    ranchId: "ranch-dinuba",
-    blockId: "block-apricot",
-    chemicalId: "cv-055", // Acramite
-    chemicalName: "Bifenazate (Acramite)",
-    category: "INSECTICIDE_MITICIDE",
-    dateApplied: todayPacificISO(),
-    method: "SPRAY",
-    estimatedCost: 0,
-    costStatus: "UNIT_MISMATCH", // Another unit mismatch
-    notes: "Logged in fl oz, but library expects lbs"
-  }
-];
+function createDemoLogs() {
+  const logs: FieldLog[] = [];
+  const apps: ChemicalApp[] = [];
+
+  DEMO_BLOCKS.forEach(block => {
+    // 1. Two Months Ago: Bloom Fungicide
+    logs.push({
+      id: `log-auto-${logIdCounter++}`,
+      ranchId: block.ranchId,
+      blockId: block.id,
+      date: twoMonthsAgoISO,
+      actionType: "SPRAY",
+      material: "Rovral 4 Flowable",
+      amount: 1,
+      unit: "pt/ac",
+      cost: 35
+    });
+    apps.push({
+      id: `app-auto-${appIdCounter++}`,
+      ranchId: block.ranchId,
+      blockId: block.id,
+      chemicalId: "cv-015", // Mock ID
+      chemicalName: "Iprodione (Rovral)",
+      category: "FUNGICIDE",
+      dateApplied: twoMonthsAgoISO,
+      method: "SPRAY",
+      estimatedCost: 35 * block.acreage,
+      costStatus: "ESTIMATED"
+    });
+
+    logs.push({
+      id: `log-auto-${logIdCounter++}`,
+      ranchId: block.ranchId,
+      blockId: block.id,
+      date: twoMonthsAgoISO,
+      actionType: "SPRAY",
+      material: "Vangard WG",
+      amount: 5,
+      unit: "oz/ac",
+      cost: 15
+    });
+    apps.push({
+      id: `app-auto-${appIdCounter++}`,
+      ranchId: block.ranchId,
+      blockId: block.id,
+      chemicalId: "cv-016", // Mock ID
+      chemicalName: "Cyprodinil (Vangard)",
+      category: "FUNGICIDE",
+      dateApplied: twoMonthsAgoISO,
+      method: "SPRAY",
+      estimatedCost: 15 * 5 * block.acreage,
+      costStatus: "ESTIMATED"
+    });
+
+    // 2. Last Month: Shuck Split & Spring N
+    logs.push({
+      id: `log-auto-${logIdCounter++}`,
+      ranchId: block.ranchId,
+      blockId: block.id,
+      date: lastMonthISO,
+      actionType: "SPRAY",
+      material: "Pristine",
+      amount: 10.5,
+      unit: "oz/ac",
+      cost: 42
+    });
+    apps.push({
+      id: `app-auto-${appIdCounter++}`,
+      ranchId: block.ranchId,
+      blockId: block.id,
+      chemicalId: "cv-022",
+      chemicalName: "Boscalid + Pyraclostrobin (Pristine)",
+      category: "FUNGICIDE",
+      dateApplied: lastMonthISO,
+      method: "SPRAY",
+      estimatedCost: 42 * 10.5 * block.acreage,
+      costStatus: "ESTIMATED"
+    });
+
+    logs.push({
+      id: `log-auto-${logIdCounter++}`,
+      ranchId: block.ranchId,
+      blockId: block.id,
+      date: lastMonthISO,
+      actionType: "FERT",
+      material: "CAN-17",
+      amount: 15,
+      unit: "gal/ac",
+      cost: 2.5
+    });
+    apps.push({
+      id: `app-auto-${appIdCounter++}`,
+      ranchId: block.ranchId,
+      blockId: block.id,
+      chemicalId: "cv-093",
+      chemicalName: "CAN-17 (calcium ammonium nitrate)",
+      category: "FERTILIZER",
+      dateApplied: lastMonthISO,
+      method: "FERTIGATION",
+      estimatedCost: 2.5 * 15 * block.acreage,
+      costStatus: "ESTIMATED"
+    });
+
+    // 3. Last Week: Irrigation
+    logs.push({
+      id: `log-auto-${logIdCounter++}`,
+      ranchId: block.ranchId,
+      blockId: block.id,
+      date: lastWeekISO,
+      actionType: "IRRIGATE",
+      material: "Water",
+      amount: 24,
+      unit: "hrs",
+      cost: 150
+    });
+
+    // 4. Yesterday: Summer Mite Prep (Partial)
+    if (block.id !== "block-apricot") {
+      logs.push({
+        id: `log-auto-${logIdCounter++}`,
+        ranchId: block.ranchId,
+        blockId: block.id,
+        date: yesterdayISO,
+        actionType: "SPRAY",
+        material: "Acramite 50WS",
+        amount: 0.75,
+        unit: "lb/ac",
+        cost: 65
+      });
+      apps.push({
+        id: `app-auto-${appIdCounter++}`,
+        ranchId: block.ranchId,
+        blockId: block.id,
+        chemicalId: "cv-055",
+        chemicalName: "Bifenazate (Acramite)",
+        category: "INSECTICIDE_MITICIDE",
+        dateApplied: yesterdayISO,
+        method: "SPRAY",
+        estimatedCost: 65 * 0.75 * block.acreage,
+        costStatus: "ESTIMATED"
+      });
+    } else {
+      // Intentional error for apricot block
+      logs.push({
+        id: `log-issue-auto-${logIdCounter++}`,
+        ranchId: block.ranchId,
+        blockId: block.id,
+        date: yesterdayISO,
+        actionType: "SPRAY",
+        material: "Acramite 50WS",
+        amount: 0, // Missing rate
+        unit: "lb/ac",
+        cost: 0
+      });
+      apps.push({
+        id: `app-issue-auto-${appIdCounter++}`,
+        ranchId: block.ranchId,
+        blockId: block.id,
+        chemicalId: "cv-055",
+        chemicalName: "Bifenazate (Acramite)",
+        category: "INSECTICIDE_MITICIDE",
+        dateApplied: yesterdayISO,
+        method: "SPRAY",
+        estimatedCost: 0,
+        costStatus: "UNIT_MISMATCH",
+        notes: "Missing applied rate in logs"
+      });
+    }
+
+    // 5. Today: Irrigation or spot spray
+    logs.push({
+      id: `log-auto-${logIdCounter++}`,
+      ranchId: block.ranchId,
+      blockId: block.id,
+      date: todayISO,
+      actionType: "IRRIGATE",
+      material: "Water",
+      amount: 12,
+      unit: "hrs"
+    });
+  });
+
+  return { logs, apps };
+}
+
+const autoData = createDemoLogs();
+export const DEMO_LOGS: FieldLog[] = autoData.logs;
+export const DEMO_CHEMICAL_APPS: ChemicalApp[] = autoData.apps;
 
 export const DEMO_USER = {
   name: "Ryan Neufeld",
@@ -261,12 +348,13 @@ export function seedDemoData(store: any) {
   // but Zustand persist middleware should catch the setState. Just in case, we do billing manually:
   localStorage.setItem('kebb_billing', JSON.stringify(DEMO_BILLING));
   
-  // Also seed projections based on templates
+  // Assign templates to all blocks to fully populate the plan & budget features
   DEMO_BLOCKS.forEach(block => {
-    // Assign a couple templates to each block
+    store.getState().setProjection(block.id, "tpl-bloom-fungicide");
+    store.getState().setProjection(block.id, "tpl-shuck-split");
     store.getState().setProjection(block.id, "tpl-spring-n");
-    if (block.variety.includes("Peach") || block.variety.includes("Nectarine")) {
-        store.getState().setProjection(block.id, "tpl-shuck-split");
-    }
+    store.getState().setProjection(block.id, "tpl-summer-mite");
+    store.getState().setProjection(block.id, "tpl-post-harvest");
   });
 }
+
