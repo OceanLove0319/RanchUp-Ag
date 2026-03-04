@@ -1,0 +1,572 @@
+You are working inside the existing KEBB Ag React + Vite frontend-only prototype.
+
+DO NOT:
+- add a backend
+- break existing routing or current saved data
+- remove current key pages or features
+- rename existing core entities unless you add safe compatibility mapping
+- make the UI feel enterprise-heavy or cluttered
+
+GOAL
+Refactor the dashboard and navigation so KEBB Ag feels:
+- super user-friendly
+- highly intuitive
+- truck optimized
+- mobile friendly
+- fast for foremen in the field
+- still strong for managers who need full control
+
+The product should have TWO CLEAR LAYERS:
+
+1) GUIDED LAYER
+A simple step-by-step experience for daily use:
+- What do I do today?
+- What do I log?
+- What needs review?
+- What is next?
+- What do I share?
+
+2) MANAGEMENT LAYER
+A calmer admin/management area for controlling all data and setup:
+- blocks
+- ranches
+- inputs
+- templates
+- inventory
+- reports
+- settings
+
+This must feel like:
+“simple on top, powerful underneath”
+
+==================================================
+PRIMARY UX STRATEGY
+==================================================
+
+The dashboard should no longer feel like a pile of cards.
+It should feel like a guided workday flow.
+
+Build a new Home dashboard that acts like a step-by-step operating rail.
+
+Top-level guided steps:
+1. Today
+2. Log
+3. Review
+4. Plan
+5. Share
+
+Each step should be easy to understand in seconds.
+Each step should answer one real user question:
+
+- Today = What needs attention right now?
+- Log = What did we do?
+- Review = Anything missing or wrong?
+- Plan = What is coming next?
+- Share = What do I need to send, print, or prove?
+
+==================================================
+TRUCK-OPTIMIZED DESIGN REQUIREMENTS
+==================================================
+
+This is critical.
+
+Design for a user standing in the field or sitting in a truck:
+- one-handed use
+- bright outdoor conditions
+- quick scanning
+- low patience
+- intermittent signal mindset
+- large touch targets
+- simple labels
+- no dense tables on mobile
+- no tiny filters
+- no hidden critical actions
+- reduce taps everywhere
+
+Truck-optimized UI rules:
+- sticky primary actions at bottom on mobile
+- large buttons
+- 16px+ body text minimum
+- strong contrast
+- compact but readable cards
+- top 1–3 actions only
+- use progressive disclosure for advanced details
+- keep data entry short
+- remember recent selections
+- allow “repeat last log”
+- allow “log again” from recent block activity
+
+==================================================
+NEW INFORMATION ARCHITECTURE
+==================================================
+
+Create this nav structure:
+
+PRIMARY NAV
+- Home
+- Blocks
+- Quick Log
+- Inputs Library
+- Vault
+
+SECONDARY / MANAGEMENT NAV
+- Manage
+  - Ranches & Blocks
+  - Templates
+  - Inventory
+  - Costs
+  - People / Partners
+  - Settings
+
+COMMUNITY & HELP
+- Product Logging Guide
+- Grower Materials Guide
+- Help / Definitions
+
+If old nav items exist for Chemicals / Materials separately:
+- merge them into Inputs Library
+- redirect old routes safely
+
+==================================================
+HOME DASHBOARD REBUILD
+==================================================
+
+Create a new guided dashboard home.
+
+TOP SECTION
+- greeting / title:
+  “Run today without losing the season.”
+- one-line subcopy:
+  “What needs attention, what to log, what to review, and what to share.”
+
+Then immediately show:
+
+1) GUIDED STEP RAIL
+Desktop:
+- horizontal segmented control or card rail
+
+Mobile:
+- swipeable pills or stacked step buttons
+
+Steps:
+- Today
+- Log
+- Review
+- Plan
+- Share
+
+The active step should update the main dashboard content below without feeling confusing.
+
+==================================================
+STEP 1 — TODAY
+==================================================
+
+This is the default landing state.
+
+Purpose:
+Show the day in 10 seconds.
+
+Include these modules:
+
+A) Today’s Blocks
+- cards for blocks needing attention
+- each card shows:
+  - block name
+  - crop / variety
+  - acres
+  - last activity
+  - open flags count
+  - next likely move tag if available
+
+B) Suggested for This Block
+- show top 1–3 grounded suggestions for the selected block
+- use the existing or planned suggestion engine
+- each suggestion must explain why it is showing
+
+C) Quick Actions
+- Start Log
+- Log Again
+- Open Block
+- Apply Template
+
+D) Recent Activity
+- last 3–5 logs, compact
+
+TODAY SHOULD FEEL LIKE:
+“I know where to go right now.”
+
+==================================================
+STEP 2 — LOG
+==================================================
+
+Purpose:
+Fastest possible correct log entry.
+
+Build a dashboard-embedded quick log experience.
+
+Flow:
+1. Pick block
+2. Pick operation type
+3. Add inputs
+4. Add rate / unit if needed
+5. Save
+
+Requirements:
+- recent blocks first
+- recent operation types first
+- recent inputs first
+- “repeat last log” shortcut
+- “use suggestion” shortcut
+- “use template” shortcut
+- show acres-aware total needed if applicable
+- sticky Save button on mobile
+- optional notes at end
+- keep advanced details collapsible
+
+Primary CTA:
+- Save Log
+
+This should feel like:
+“fast enough to do from the truck before driving away”
+
+==================================================
+STEP 3 — REVIEW
+==================================================
+
+Purpose:
+Catch mistakes before they cost money.
+
+Create a review queue with simple fix cards.
+
+Include:
+- unit mismatch
+- missing rate
+- missing unit
+- missing product
+- missing required field
+- inventory warning
+- compliance warning
+- flagged logs
+
+Each review card should include:
+- issue title
+- affected block / log
+- why it matters
+- one-tap fix action
+
+Examples:
+- Fix Unit
+- Add Rate
+- Complete Log
+- Resolve Flag
+
+Show priority grouping:
+- Needs Fix Now
+- Should Review
+- Good to Go
+
+This should feel like:
+“clean up today’s loose ends in two minutes”
+
+==================================================
+STEP 4 — PLAN
+==================================================
+
+Purpose:
+See the next few days without spreadsheet pain.
+
+Create a lightweight planning experience:
+- next 7 days view
+- blocks with no recent pass
+- template suggestions
+- program gaps
+- spend/projection snapshot if available
+- upcoming tasks by block
+
+Modules:
+A) Coming Up
+B) Program Gaps
+C) Templates Ready to Apply
+D) Budget / Input Snapshot
+
+Example gap cards:
+- No zinc pass logged this spring
+- No herbicide pass logged recently
+- Dormant material not recorded
+- Inventory may be low for planned pass
+
+Primary CTA:
+- Apply Template
+- Create Planned Log
+- Save for Later
+
+==================================================
+STEP 5 — SHARE
+==================================================
+
+Purpose:
+Make proof and reporting painless.
+
+Include:
+- compliance packet
+- monthly log export
+- block history report
+- PCA / partner-ready summary
+- print / PDF actions
+
+Modules:
+A) Fast Exports
+B) Recent Reports
+C) Vault Access
+
+Primary CTA:
+- Generate PDF
+- Open Vault
+- Share Summary
+
+==================================================
+MANAGEMENT LAYER
+==================================================
+
+Create a clean secondary area called:
+Manage
+
+This should not be the default dashboard.
+This is where users manage the full system.
+
+Include:
+- Ranches & Blocks
+- Inputs Library
+- Templates
+- Inventory
+- Costs
+- People / Partners
+- Settings
+
+This layer should feel calm, organized, and less urgent than Home.
+
+==================================================
+SETUP CHECKLIST EXPERIENCE
+==================================================
+
+To make management feel step-by-step, add a dismissible setup progress card.
+
+Show on Home until completed:
+“Get set up”
+- Add Ranch
+- Add Blocks
+- Add 10 Inputs
+- Create 1 Template
+- Log first pass
+- Export first report
+
+Each checklist item should deep-link to the right screen.
+
+Show progress:
+- 2 of 6 complete
+- progress bar
+- dismiss only after meaningful progress
+
+==================================================
+ROLE EMPHASIS TOGGLE
+==================================================
+
+Add a simple optional view toggle at the top of Home:
+
+View focus:
+- Foreman
+- Manager
+- PCA
+
+This should not require auth or permissions.
+It only changes emphasis/order of widgets.
+
+Foreman focus:
+- Today
+- Log
+- Recent activity
+- Suggestions
+
+Manager focus:
+- Review
+- Plan
+- Costs
+- Gaps
+- Reports
+
+PCA focus:
+- Review
+- Block history
+- Suggestions
+- Share / export
+
+Persist this preference in localStorage.
+
+==================================================
+GLOBAL COMMAND BAR
+==================================================
+
+Add a compact command/search bar near the top of Home and key pages.
+
+It should let users quickly:
+- search block
+- search input
+- start log
+- open vault
+- generate report
+- apply template
+
+Mobile version:
+- simple expandable search / quick action launcher
+
+==================================================
+INPUTS LIBRARY EXPERIENCE
+==================================================
+
+Keep this unified.
+No separate Chemicals and Materials pages.
+
+Inputs Library should include:
+- top-level tabs: All / Chemicals / Materials
+- type tabs below
+- search
+- recent
+- compact cards
+- use in log action
+
+Must be mobile friendly and obvious.
+No hidden long lists.
+
+==================================================
+MOBILE / RESPONSIVE RULES
+==================================================
+
+This section is mandatory.
+
+On mobile:
+- use bottom-safe sticky action bar where useful
+- reduce multi-column layouts into clear vertical sections
+- keep key actions thumb-reachable
+- avoid long horizontal tables
+- turn dense data into cards
+- allow sections to collapse cleanly
+- preserve context when returning from detail pages
+- prioritize fast-entry patterns
+
+Use breakpoints thoughtfully.
+Primary assumption:
+this app is often used on a phone in a truck, ranch road, or field edge.
+
+==================================================
+COMPONENTS TO CREATE / UPDATE
+==================================================
+
+Create or update as appropriate:
+
+- client/src/pages/Home.tsx
+- client/src/components/dashboard/GuidedStepRail.tsx
+- client/src/components/dashboard/TodayPanel.tsx
+- client/src/components/dashboard/LogPanel.tsx
+- client/src/components/dashboard/ReviewPanel.tsx
+- client/src/components/dashboard/PlanPanel.tsx
+- client/src/components/dashboard/SharePanel.tsx
+- client/src/components/dashboard/SetupChecklistCard.tsx
+- client/src/components/dashboard/RoleFocusToggle.tsx
+- client/src/components/dashboard/QuickActionsBar.tsx
+- client/src/components/dashboard/TodayBlockCard.tsx
+- client/src/components/dashboard/ReviewIssueCard.tsx
+- client/src/components/common/CommandBar.tsx
+
+Update as needed:
+- nav / sidebar component
+- quick log form
+- inputs library page
+- routes config
+- store.ts
+
+==================================================
+STORE / STATE CHANGES
+==================================================
+
+Add frontend-only state for:
+- activeHomeStep
+- roleFocus ("FOREMAN" | "MANAGER" | "PCA")
+- setupChecklist progress
+- recent blocks
+- recent operations
+- recent inputs
+- dismissed setup card flag
+- recent exports
+- review queue derived state
+
+Use zustand + localStorage persistence for user preferences and recent activity.
+
+==================================================
+VISUAL STYLE
+==================================================
+
+Keep KEBB Ag visual language:
+- black / white base
+- SF Giants orange accents
+- confident, modern, clean
+- sharp without feeling corporate-heavy
+- slightly premium
+- lots of breathing room
+- clear section headers
+- strong badge system
+
+Mood:
+- operational confidence
+- simple
+- trustworthy
+- quick
+- not cluttered
+
+==================================================
+COPY / LABELING GUIDELINES
+==================================================
+
+Use plain language.
+Avoid jargon unless it is standard grower language.
+
+Good labels:
+- Start Log
+- Log Again
+- Needs Review
+- Coming Up
+- Suggested for This Block
+- Generate PDF
+- Inputs Library
+- Get Set Up
+
+Bad labels:
+- Workflow orchestration
+- Execution control center
+- Compliance intelligence layer
+- Agronomic operations matrix
+
+==================================================
+SUCCESS CRITERIA
+==================================================
+
+The rebuild is successful if:
+
+1. Home feels like a guided daily workflow, not a cluttered dashboard
+2. Users can understand what to do next in under 10 seconds
+3. Quick Log is easier and faster on mobile
+4. The app feels comfortable from a truck or field edge
+5. Full management still exists in a dedicated area
+6. Inputs Library is unified and easy to browse
+7. The nav is cleaner and simpler
+8. Existing data and core flows still work
+9. The UI is clearly mobile friendly and touch friendly
+10. The overall experience feels more intuitive, less fragmented, and more confident
+
+WHEN DONE
+Provide a concise implementation summary:
+- files changed
+- routes updated
+- components added
+- state/store changes
+- mobile-specific improvements
+- any assumptions made
