@@ -54,7 +54,7 @@ export default function Shell({ children }: { children: React.ReactNode }) {
           </div>
           
           <div className="flex flex-col justify-start w-full gap-2">
-            {[...mainNavItems, { href: "/app/log", icon: ClipboardEdit, label: "Log" }, ...secondaryNavItems].map((item) => {
+            {[...mainNavItems, ...secondaryNavItems].map((item) => {
               const isActive = location === item.href || (location.startsWith(item.href) && item.href !== "/app");
               return (
                 <Link key={item.href} href={item.href} className={`flex items-center gap-3 p-3 rounded-md transition-colors ${isActive ? 'text-primary bg-primary/10' : 'text-muted-foreground hover:text-white hover:bg-white/5'}`}>
