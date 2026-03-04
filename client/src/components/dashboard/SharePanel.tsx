@@ -1,15 +1,30 @@
 import { Share2, FileText, Printer, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
+import { useStore } from "@/lib/store";
 
 export function SharePanel() {
   const { toast } = useToast();
+  const [, setLocation] = useLocation();
+  const deriveNextStepFromAction = useStore(s => (s as any).deriveNextStepFromAction);
 
   const handleDownload = (format: string) => {
+    if (deriveNextStepFromAction) {
+      deriveNextStepFromAction("GENERATE_REPORT");
+    }
+    
     toast({
       title: `Preparing ${format} Export`,
       description: "Your monthly log export is generating. It will download automatically when ready.",
+      action: (
+        <button 
+          onClick={() => setLocation("/app")}
+          className="bg-primary text-primary-foreground px-3 py-1.5 rounded text-xs font-bold uppercase tracking-widest whitespace-nowrap"
+        >
+          Return to Today
+        </button>
+      )
     });
   };
 

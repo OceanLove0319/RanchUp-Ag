@@ -1,17 +1,31 @@
 import { CalendarClock, FileText, Plus } from "lucide-react";
 import { useStore } from "@/lib/store";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import { useToast } from "@/hooks/use-toast";
 
 export function PlanPanel() {
   const templates = useStore(s => s.templates);
   const blocks = useStore(s => s.blocks);
+  const deriveNextStepFromAction = useStore(s => (s as any).deriveNextStepFromAction);
   const { toast } = useToast();
+  const [, setLocation] = useLocation();
 
   const handleApply = (templateName: string) => {
+    if (deriveNextStepFromAction) {
+      deriveNextStepFromAction("APPLY_TEMPLATE");
+    }
+    
     toast({
       title: "Template Prepared",
       description: `"${templateName}" is ready to be applied. Select blocks to continue.`,
+      action: (
+        <button 
+          onClick={() => setLocation("/app/log")}
+          className="bg-primary text-primary-foreground px-3 py-1.5 rounded text-xs font-bold uppercase tracking-widest"
+        >
+          Next: Log
+        </button>
+      )
     });
   };
 

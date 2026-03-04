@@ -355,10 +355,24 @@ export default function Log() {
       });
     }
 
+    // 3. Update guided flow state
+    const deriveNextStepFromAction = useStore.getState().deriveNextStepFromAction;
+    if (deriveNextStepFromAction) {
+      deriveNextStepFromAction("SAVE_LOG");
+    }
+
     toast({
       title: "Log Saved",
       description: "Field action recorded successfully.",
       duration: 3000,
+      action: (
+        <button 
+          onClick={() => setLocation("/app/reports/variance")}
+          className="bg-primary text-primary-foreground px-3 py-1.5 rounded text-xs font-bold uppercase tracking-widest"
+        >
+          Next: Review
+        </button>
+      )
     });
 
     // Reset form

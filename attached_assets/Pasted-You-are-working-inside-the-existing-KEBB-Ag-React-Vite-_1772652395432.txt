@@ -1,0 +1,371 @@
+You are working inside the existing KEBB Ag React + Vite frontend-only prototype.
+
+DO NOT:
+- add a backend
+- break existing routes
+- remove the current Guided Step Rail on Home
+- make the UI feel heavy or cluttered
+- introduce complicated enterprise-style workflow language
+
+GOAL
+Add a persistent guided-flow orientation system so users always know:
+- where they are
+- what guided step they are on
+- what step comes next
+- how to get back to the guided dashboard flow
+
+The current Guided Step Rail on Home is good, but it disappears once users go deeper into the app.
+Fix that by creating a lightweight persistent “direct me back” experience across key screens.
+
+==================================================
+FEATURE NAME
+==================================================
+
+Create a new global UI component:
+
+GuidedFlowReturnBar
+
+This component should act like:
+- a persistent orientation layer
+- a return-to-flow control
+- a next-step prompt
+- a progress reminder
+
+==================================================
+CORE UX INTENT
+==================================================
+
+This feature should answer:
+- Where am I in the guided flow?
+- What should I probably do next?
+- How do I get back to the main guided dashboard?
+
+This is not just navigation.
+This is a lightweight guidance system.
+
+==================================================
+GUIDED STEP MODEL
+==================================================
+
+Use these canonical guided steps:
+1. Today
+2. Log
+3. Review
+4. Plan
+5. Share
+
+These are the same steps used on the Home dashboard.
+
+==================================================
+WHEN TO SHOW THE RETURN BAR
+==================================================
+
+Show the GuidedFlowReturnBar on key screens outside the main Home dashboard hero state, especially:
+
+- Block detail
+- Quick Log
+- Inputs Library
+- Vault
+- Templates
+- Review fix screens
+- Reports / Share-related screens
+- Management subpages where it still makes sense
+
+Do not show the compact return bar at the very top of Home when the full Guided Step Rail is already visible.
+Once the Home hero/rail scrolls out of view, you may optionally show a compact sticky version there too.
+
+==================================================
+WHAT THE RETURN BAR SHOULD SHOW
+==================================================
+
+The bar should display:
+
+1) Guided flow label
+- “Guided Flow”
+
+2) Current step
+Examples:
+- “You’re on Review”
+- “You’re on Log”
+
+3) Next recommended step
+Examples:
+- “Next: Plan”
+- “Next: Review”
+
+4) A direct action button
+Examples:
+- Continue
+- Back to Guided Flow
+- Return to Today
+
+5) Optional compact step progress
+Examples:
+- Today ✓
+- Log ✓
+- Review active
+- Plan
+- Share
+
+==================================================
+DESKTOP BEHAVIOR
+==================================================
+
+On desktop:
+- show as a sticky top bar below the app header/nav
+- compact horizontal layout
+- should not take excessive vertical space
+- should remain visible while scrolling long pages
+- allow clicking current/next steps
+
+Suggested layout:
+[Guided Flow] [You’re on: Review] [Next: Plan] [Continue] [Step dots or mini labels]
+
+==================================================
+MOBILE BEHAVIOR
+==================================================
+
+This is critical.
+
+On mobile, the return system must be truck-friendly and not bulky.
+
+Preferred behavior:
+- compact sticky bottom helper bar OR compact sticky top pill
+- thumb-friendly primary action
+- high visibility
+- minimal height
+
+Recommended mobile layout:
+- one compact row:
+  “Guided Flow: Review”   [Continue]
+
+Tapping the bar can open a small drawer/modal/sheet showing:
+- all 5 steps
+- current step
+- next step
+- jump-to-step actions
+
+Do NOT use a giant fixed header that eats vertical space on mobile.
+
+==================================================
+NEXT-STEP LOGIC
+==================================================
+
+Add deterministic next-step logic based on user behavior and current app state.
+
+Track:
+- currentGuidedStep
+- lastMeaningfulAction
+- recommendedNextStep
+
+Examples of action-to-next-step logic:
+
+1) After saving a log
+- current = Log
+- next = Review
+
+2) After fixing a review issue
+- if more review issues remain:
+  next = Review
+- otherwise:
+  next = Plan
+
+3) After applying a template
+- next = Log
+
+4) After generating a report
+- next = Share or Today depending on context
+
+5) If user is inside a block page and no action has been taken
+- current = Today
+- next = Log
+
+6) If sparse data / brand new user
+- default current = Today
+- next = Log
+
+Use practical, deterministic logic only.
+No AI needed.
+
+==================================================
+STEP MAPPING BY PAGE
+==================================================
+
+Map pages to guided steps approximately like this:
+
+- Home / Today panel -> Today
+- Block detail -> Today
+- Quick Log -> Log
+- Review queue / issue fix -> Review
+- Plan page / templates applied planning -> Plan
+- Reports / exports / vault share actions -> Share
+- Inputs Library -> preserve last guided step if possible, otherwise Today
+- Manage pages -> preserve last guided step and show “Back to Guided Flow”
+
+==================================================
+USER ACTION PROMPTS
+==================================================
+
+After key actions, show a subtle inline toast or success panel with next-step guidance.
+
+Examples:
+
+After Save Log:
+- “Log saved”
+- “Next step: Review”
+Buttons:
+- Go to Review
+- Stay Here
+
+After Fix Review Issue:
+- “Issue resolved”
+- “Next step: Plan”
+Buttons:
+- Continue
+- View Next Issue
+
+After Apply Template:
+- “Template applied”
+- “Next step: Log”
+Buttons:
+- Start Log
+- Back to Block
+
+After Generate PDF:
+- “Report ready”
+- “Back to Share”
+Buttons:
+- Open Report
+- Return to Share
+
+==================================================
+STATE / STORE CHANGES
+==================================================
+
+In zustand + localStorage, add lightweight guided flow state:
+
+type GuidedStep = "TODAY" | "LOG" | "REVIEW" | "PLAN" | "SHARE"
+
+Suggested store fields:
+- currentGuidedStep: GuidedStep
+- recommendedNextStep: GuidedStep
+- lastGuidedStep: GuidedStep
+- lastMeaningfulAction?: string
+- guidedFlowDismissed?: boolean (optional, if needed)
+- setCurrentGuidedStep(step)
+- setRecommendedNextStep(step)
+- setLastMeaningfulAction(action)
+- deriveStepFromRoute(pathname)
+- updateNextStepFromAction(action, context)
+
+Persist:
+- currentGuidedStep
+- lastGuidedStep
+- recommendedNextStep
+
+==================================================
+COMPONENTS TO CREATE / UPDATE
+==================================================
+
+Create:
+- client/src/components/navigation/GuidedFlowReturnBar.tsx
+- client/src/components/navigation/GuidedFlowDrawer.tsx (for mobile expanded step view)
+- client/src/lib/guidedFlow.ts
+- client/src/types/guidedFlow.ts
+
+Update as needed:
+- store.ts
+- app layout shell
+- route-aware layout wrapper
+- Quick Log success handling
+- Review resolution handling
+- Template apply flow
+- Report/export success flow
+
+==================================================
+UI DETAILS
+==================================================
+
+Desktop return bar content example:
+- Guided Flow
+- You’re on: Log
+- Next: Review
+- [Continue]
+- mini progress steps
+
+Mobile compact bar example:
+- Guided Flow: Log
+- [Continue]
+
+Expanded mobile drawer:
+- Today
+- Log
+- Review
+- Plan
+- Share
+Show:
+- completed
+- current
+- next
+
+Use:
+- large tap targets
+- simple labels
+- strong contrast
+- minimal visual noise
+
+==================================================
+LABELING
+==================================================
+
+Use plain language.
+
+Good labels:
+- Guided Flow
+- You’re on
+- Next
+- Continue
+- Back to Guided Flow
+- Return to Today
+- Pick up where you left off
+
+Avoid:
+- Resume workflow
+- Orchestration
+- Navigate sequence
+- Continue process chain
+
+==================================================
+VISUAL STYLE
+==================================================
+
+Match existing KEBB Ag design language:
+- black / white base
+- SF Giants orange accents
+- clean, confident, modern
+- truck-friendly contrast
+- mobile-first
+
+Make it feel helpful, not nagging.
+
+==================================================
+SUCCESS CRITERIA
+==================================================
+
+The feature is successful if:
+1. Users can always see what guided step they are on
+2. Users can always get back to the guided dashboard flow
+3. The app suggests a practical next step after key actions
+4. Desktop version is sticky and lightweight
+5. Mobile version is compact and thumb-friendly
+6. The feature improves orientation without cluttering screens
+7. Existing app functionality remains intact
+
+WHEN DONE
+Provide a concise summary:
+- files changed
+- store/state added
+- route mapping logic
+- next-step logic implemented
+- desktop vs mobile behavior
+- any assumptions made

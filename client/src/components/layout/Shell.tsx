@@ -3,7 +3,7 @@ import { Home, Map, ClipboardEdit, Archive, Settings, LogOut, FlaskConical, Line
 import { useStore } from "@/lib/store";
 import { useState } from "react";
 import { useIsMobile } from "@/hooks/useIsMobile";
-
+import { GuidedFlowReturnBar } from "@/components/navigation/GuidedFlowReturnBar";
 import RanchSwitcher from "@/components/RanchSwitcher";
 
 export default function Shell({ children }: { children: React.ReactNode }) {
@@ -67,75 +67,69 @@ export default function Shell({ children }: { children: React.ReactNode }) {
             })}
             
             <div className="mt-4 mb-2 px-3">
-              <span className="text-[10px] font-black tracking-widest text-muted-foreground uppercase">Community & Help</span>
+              <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 mb-2">Help & References</p>
+              {helpNavItems.map((item) => {
+                const isActive = location === item.href;
+                return (
+                  <Link key={item.href} href={item.href} className={`flex items-center gap-3 p-2 rounded-md transition-colors ${isActive ? 'text-primary bg-primary/10' : 'text-muted-foreground hover:text-white hover:bg-white/5'}`}>
+                    <item.icon className="w-4 h-4" />
+                    <span className="text-xs font-semibold tracking-wider uppercase">{item.label}</span>
+                  </Link>
+                );
+              })}
             </div>
-            {helpNavItems.map((item) => {
-              const isActive = location === item.href || (location.startsWith(item.href) && item.href !== "/app");
-              return (
-                <Link key={item.href} href={item.href} className={`flex items-center gap-3 p-3 rounded-md transition-colors ${isActive ? 'text-primary bg-primary/10' : 'text-muted-foreground hover:text-white hover:bg-white/5'}`}>
-                  <item.icon className="w-5 h-5" />
-                  <span className="text-sm font-semibold tracking-wider uppercase">{item.label}</span>
-                </Link>
-              );
-            })}
           </div>
           
-          <div className="flex flex-col gap-2 mt-auto">
-            <Link href="/" onClick={logout} className="flex items-center gap-3 p-3 rounded-md text-muted-foreground hover:text-white transition-colors text-sm font-semibold tracking-wider uppercase">
-              <LogOut className="w-5 h-5" /> Exit
-            </Link>
+          <div className="mt-auto border-t border-border pt-4">
+            <button onClick={logout} className="flex items-center gap-3 p-3 text-muted-foreground hover:text-white transition-colors w-full">
+              <LogOut className="w-5 h-5" />
+              <span className="text-sm font-semibold tracking-wider uppercase">Log Out</span>
+            </button>
           </div>
         </nav>
       )}
 
-      {/* Mobile Bottom Nav */}
+      {/* Bottom Nav (Mobile) */}
       {isMobile && (
         <>
-          <nav className="fixed bottom-0 left-0 right-0 z-50 bg-background border-t border-border pb-[env(safe-area-inset-bottom)]">
-            <div className="flex justify-around items-center h-16 px-2">
-              {mainNavItems.map((item) => {
-                const isActive = location === item.href || (location.startsWith(item.href) && item.href !== "/app");
-                return (
-                  <button 
-                    key={item.href} 
-                    onClick={() => handleMobileNavClick(item.href)}
-                    className={`flex flex-col items-center justify-center w-16 h-full gap-1 transition-colors ${isActive ? 'text-primary' : 'text-muted-foreground hover:text-white'}`}
-                  >
-                    <item.icon className="w-6 h-6" />
-                    <span className="text-[10px] font-bold tracking-wider uppercase">{item.label}</span>
-                  </button>
-                );
-              })}
-              
-              <button 
-                onClick={() => setIsMobileMenuOpen(true)}
-                className={`flex flex-col items-center justify-center w-16 h-full gap-1 transition-colors ${isMobileMenuOpen ? 'text-primary' : 'text-muted-foreground hover:text-white'}`}
-              >
-                <Menu className="w-6 h-6" />
-                <span className="text-[10px] font-bold tracking-wider uppercase">More</span>
-              </button>
-            </div>
-          </nav>
-          
-          {/* Quick Log FAB */}
-          <Link href="/app/log" className="fixed bottom-20 right-4 z-40 bg-primary text-primary-foreground w-14 h-14 rounded-full flex items-center justify-center shadow-[0_0_15px_rgba(212,175,55,0.4)] transition-transform hover:scale-105 active:scale-95">
-            <Plus className="w-8 h-8" />
-          </Link>
-          
-          {/* Mobile Slide-over Menu */}
-          <div className={`fixed inset-0 z-[60] bg-background/80 backdrop-blur-sm transition-opacity duration-300 ${isMobileMenuOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`} onClick={() => setIsMobileMenuOpen(false)}>
-            <div 
-              className={`absolute top-0 right-0 bottom-0 w-3/4 max-w-sm bg-card border-l border-border p-6 flex flex-col transition-transform duration-300 transform ${isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full'}`}
-              onClick={e => e.stopPropagation()}
+          <nav className="fixed bottom-0 w-full bg-background/95 backdrop-blur-sm border-t border-border flex justify-around p-2 pb-[calc(0.5rem+env(safe-area-inset-bottom))] z-50 shadow-[0_-4px_20px_rgba(0,0,0,0.5)]">
+            {mainNavItems.map((item) => {
+              const isActive = location === item.href || (location.startsWith(item.href) && item.href !== "/app");
+              return (
+                <Link key={item.href} href={item.href} className={`flex flex-col items-center p-2 min-w-[64px] ${isActive ? 'text-primary' : 'text-muted-foreground'}`}>
+                  <item.icon className={`w-6 h-6 mb-1 ${isActive ? 'fill-primary/20' : ''}`} />
+                  <span className="text-[10px] font-bold uppercase tracking-widest">{item.label}</span>
+                </Link>
+              );
+            })}
+            
+            {/* Mobile Menu Toggle */}
+            <button 
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} 
+              className={`flex flex-col items-center p-2 min-w-[64px] ${isMobileMenuOpen ? 'text-primary' : 'text-muted-foreground'}`}
             >
-              <div className="flex justify-between items-center mb-8">
-                <h2 className="text-xl font-black uppercase tracking-tighter">More</h2>
-                <button onClick={() => setIsMobileMenuOpen(false)} className="text-muted-foreground p-2 -mr-2">
-                  <X className="w-6 h-6" />
-                </button>
-              </div>
-              
-              <div className="flex flex-col gap-2">
+              {isMobileMenuOpen ? <X className="w-6 h-6 mb-1" /> : <Menu className="w-6 h-6 mb-1" />}
+              <span className="text-[10px] font-bold uppercase tracking-widest">{isMobileMenuOpen ? 'Close' : 'Menu'}</span>
+            </button>
+          </nav>
+
+          {/* Quick Log FAB for Mobile */}
+          <Link 
+            href="/app/log" 
+            className="fixed bottom-24 right-4 bg-primary text-primary-foreground p-4 rounded-full shadow-[0_4px_20px_rgba(212,175,55,0.4)] z-50 active:scale-95 transition-transform"
+          >
+            <Plus className="w-6 h-6" />
+          </Link>
+
+          {/* Mobile Full Menu Overlay */}
+          <div 
+            className={`fixed inset-0 bg-background z-40 transition-transform duration-300 ease-in-out pt-20 pb-24 px-4 overflow-y-auto ${
+              isMobileMenuOpen ? 'translate-y-0' : 'translate-y-full'
+            }`}
+          >
+            <div className="flex flex-col h-full max-w-md mx-auto">
+              <h2 className="text-xs font-black uppercase tracking-widest text-muted-foreground mb-4">Management</h2>
+              <div className="grid gap-3 mb-8">
                 {secondaryNavItems.map((item) => (
                   <button 
                     key={item.href} 
@@ -146,10 +140,10 @@ export default function Shell({ children }: { children: React.ReactNode }) {
                     <span className="font-bold uppercase tracking-widest text-sm">{item.label}</span>
                   </button>
                 ))}
-                
-                <div className="mt-4 mb-2">
-                  <span className="text-[10px] font-black tracking-widest text-muted-foreground uppercase">Community & Help</span>
-                </div>
+              </div>
+              
+              <h2 className="text-xs font-black uppercase tracking-widest text-muted-foreground mb-4">Help & References</h2>
+              <div className="grid gap-3 mb-8">
                 {helpNavItems.map((item) => (
                   <button 
                     key={item.href} 
@@ -181,6 +175,7 @@ export default function Shell({ children }: { children: React.ReactNode }) {
 
       {/* Main Content */}
       <main className="flex-1 p-4 md:p-8 pb-24 md:pb-8 max-w-5xl mx-auto w-full min-w-0">
+        <GuidedFlowReturnBar />
         {children}
       </main>
     </div>

@@ -3,6 +3,8 @@ import { persist } from "zustand/middleware";
 import { todayPacificISO } from '@/utils/dates';
 import { CHEMICALS_SEED } from '@/data/chemicalsSeed';
 import { TEMPLATES_SEED } from '@/data/templatesSeed';
+import { GuidedFlowState, GuidedStep } from '@/types/guidedFlow';
+import { determineNextStep } from '@/lib/guidedFlow';
 
 export type ProductCategory = "NUTRITION" | "AMENDMENT" | "FUNGICIDE" | "HERBICIDE" | "INSECTICIDE_MITICIDE" | "ADJUVANT" | "BIOLOGICAL" | "WATER_TREATMENT";
 
@@ -122,7 +124,7 @@ export type BillingState = {
   onboardingPurchased: boolean;
 };
 
-type AppState = {
+type AppState = GuidedFlowState & {
   user: { name: string; org: string } | null;
   ranches: Ranch[];
   activeRanchId: string | null;
@@ -405,7 +407,35 @@ export const useStore = create<AppState>((set) => ({
     return { billing: newBilling };
   }),
 
+  
+  // Guided Flow State
+  currentGuidedStep: "TODAY" as GuidedStep,
+  recommendedNextStep: "LOG" as GuidedStep,
+  lastGuidedStep: "TODAY" as GuidedStep,
+  lastMeaningfulAction: undefined,
+  guidedFlowDismissed: false,
+  
+  setCurrentGuidedStep: (step) => set(state => ({ 
+    currentGuidedStep: step,
+    lastGuidedStep: state.currentGuidedStep
+  })),
+  
+  setRecommendedNextStep: (step) => set({ recommendedNextStep: step }),
+  
+  setLastMeaningfulAction: (action) => set({ lastMeaningfulAction: action }),
+  
+  setGuidedFlowDismissed: (dismissed) => set({ guidedFlowDismissed: dismissed }),
+  
+  deriveNextStepFromAction: (action) => set(state => {
+    const nextStep = determineNextStep(state.currentGuidedStep, action);
+    return {
+      lastMeaningfulAction: action,
+      recommendedNextStep: nextStep
+    };
+  }),
+
   // Suggestions
+
   dismissedSuggestions: [],
   dismissSuggestion: (id) => set(state => ({ dismissedSuggestions: [...state.dismissedSuggestions, id] })),
 
