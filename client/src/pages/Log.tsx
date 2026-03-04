@@ -61,7 +61,7 @@ const getFallbackUnit = (action: ActionType) => {
 };
 
 export default function Log() {
-  const [location] = useLocation();
+  const [, setLocation] = useLocation();
   
   // Extract query params for pre-filling input
   const queryParams = new URLSearchParams(window.location.search);
