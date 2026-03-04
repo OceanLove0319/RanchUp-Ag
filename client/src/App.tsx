@@ -31,7 +31,11 @@ import ProjectionsDashboard from "@/pages/ProjectionsDashboard";
 import BlockProjectionDetail from "@/pages/BlockProjectionDetail";
 import TemplatesManager from "@/pages/TemplatesManager";
 import Glossary from "@/pages/Glossary";
-import TodayPacket from "@/pages/TodayPacket";
+
+import PacketsHome from "@/pages/packets/PacketsHome";
+import PacketToday from "@/pages/packets/PacketToday";
+import PacketMonthly from "@/pages/packets/PacketMonthly";
+import PacketSeason from "@/pages/packets/PacketSeason";
 
 import MaterialsProducts from "@/pages/operations/MaterialsProducts";
 import InputsLibrary from "@/pages/operations/InputsLibrary";
@@ -107,6 +111,20 @@ function Router() {
       <Route path="/app/settings/billing">
         <Shell><Billing /></Shell>
       </Route>
+      
+      <Route path="/app/packets">
+        <Shell><PacketsHome /></Shell>
+      </Route>
+      <Route path="/app/packets/today">
+        <Shell><PacketToday /></Shell>
+      </Route>
+      <Route path="/app/packets/monthly">
+        <Shell><PacketMonthly /></Shell>
+      </Route>
+      <Route path="/app/packets/season">
+        <Shell><PacketSeason /></Shell>
+      </Route>
+      
       <Route path="/app/reports/weekly">
         <Shell><WeeklyPacket /></Shell>
       </Route>
@@ -116,9 +134,12 @@ function Router() {
       <Route path="/app/reports/variance">
         <Shell><VarianceFlags /></Shell>
       </Route>
+      
+      {/* Legacy today packet, redirecting or keeping for backwards compat for now */}
       <Route path="/app/share/today">
-        <Shell><TodayPacket /></Shell>
+        <Shell><PacketToday /></Shell>
       </Route>
+      
       <Route path="/app/glossary">
         <Shell><Glossary /></Shell>
       </Route>

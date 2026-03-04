@@ -1,0 +1,178 @@
+You are working inside an existing React + Vite + TypeScript frontend-only prototype called KEBB Ag™.
+It uses wouter for routing, zustand for state (client/src/lib/store.ts), and localStorage for persistence.
+There is NO backend. Everything must work offline.
+
+GOAL
+Add a deterministic “Packets” system that the dashboard can produce at 3 levels:
+1) End-of-Day Packet (Today)
+2) Monthly Packet
+3) Season Packet (audit binder)
+and implement a KEBB Season Packet TABLE-OF-CONTENTS (exact page order + section headers) that the PDF generator can render deterministically from existing state: Vault (logs), Blocks, Flags.
+
+HARD RULES
+- Offline-only. No API calls required.
+- Deterministic outputs: same data → same packet sections/pages.
+- No “AI” or random wording. Use strict templates.
+- Reuse existing store models (Ranches, Blocks, Logs/Vault, Inputs Library, VarianceFlags).
+- PDF can be generated via existing export utility; if none exists, add `jspdf` (preferred).
+- Must be mobile-first, truck-optimized, and extremely simple to operate.
+
+WHAT THE DASHBOARD MUST PRODUCE (3 LEVELS)
+A) TODAY PACKET (“End-of-Day Proof”)
+- Purpose: daily artifact a foreman can send in 15 seconds.
+- Includes: today’s logs grouped by block, totals (materials + acres + est spend), issues list, PDF + share buttons.
+B) MONTHLY PACKET (“Monthly Cleanup + Buyer Readiness”)
+- Purpose: monthly review bundle for manager/PCA and packer QA.
+- Includes: month’s logs, month totals, open issues + corrections, signoff page.
+C) SEASON PACKET (“Audit Binder”)
+- Purpose: packer-shipper audited season-long documentation + rollups.
+- Includes: TOC, block register, field history summaries, full application records, PHI/REI summary, exceptions/corrections, rollups, exports appendix.
+
+IMPLEMENTATION TASKS
+
+1) ROUTES + NAV
+- Add a new “Packets” entry under Share (and/or as a top-level tab on mobile):
+  Route: /packets
+- Add 3 packet buttons:
+  - “Today Packet”
+  - “Monthly Packet”
+  - “Season Packet”
+- Each routes to a packet builder screen:
+  /packets/today
+  /packets/monthly
+  /packets/season
+
+2) PACKET CONFIG + DETERMINISTIC TOC
+Create: client/src/lib/packets/packetSchemas.ts
+- Define strict TypeScript types:
+  PacketLevel = "TODAY" | "MONTH"
+  PacketType = "SEASON"
+  PacketSection (id, title, includeIf, buildPages)
+- Implement `KEBB_SEASON_TOC_V1` as an ordered array of PacketSection objects.
+- Each section must have:
+  - `id`: stable string
+  - `title`: exact header text
+  - `description`: one sentence (optional for UI, NOT required in PDF)
+  - `includeIf(state)`: boolean function that is deterministic
+  - `build(state)`: returns a list of “render blocks” for PDF (see step 4)
+
+SEASON PACKET TABLE OF CONTENTS (EXACT ORDER + HEADERS)
+Your Season Packet must follow this exact section order and header text:
+
+0. COVER PAGE
+   - “KEBB Ag™ Season Packet”
+   - Operation / Ranch (if selected) + Season Year + Date Generated
+
+1. PACKET SCOPE & CONTACTS
+   - Operation name
+   - Primary contacts: Owner/Manager, Foreman, PCA, Applicator/QAL
+   - Counties (if stored) + ranch list
+
+2. BLOCK REGISTER (FIELD INDEX)
+   - Table: Ranch → Block → Crop/Variety → Acres → Irrigation Method
+
+3. FIELD HISTORY SUMMARY (BY BLOCK)
+   - One page per block (or multi-page if needed)
+   - Chronological list of all logs for the season for that block
+   - Columns: Date, Activity, Material/Product, Rate+Unit, Acres, Total Used, Est Cost, Flags
+
+4. CROP PROTECTION APPLICATION RECORDS (DETAIL)
+   - Only logs categorized as SPRAY / pesticide (from your existing actionType + category tags)
+   - Event-level detail pages grouped chronologically
+   - Must include: Date/Time, Block, Acres Treated, Product, Rate/Unit, Total Used, Method (if present), Notes, Flags
+
+5. PHI / REI SUMMARY (IF DATA PRESENT)
+   - If you have PHI/REI fields → render a compliance summary.
+   - If you do NOT have PHI/REI in data models yet → render a deterministic placeholder page:
+     “PHI/REI fields not captured in this build. See application records for timing.”
+
+6. FERTILITY & AMENDMENT RECORDS
+   - Fertigation + foliar + amendments logs
+   - Same table style as crop protection, grouped by block then date
+
+7. IRRIGATION & WATER SET LOG (OPTIONAL)
+   - Include only if irrigation logs exist
+   - Table: Date, Block, Duration/Notes, Materials injected (if any), Flags
+
+8. ISSUES, EXCEPTIONS & CORRECTIONS (TRUST SECTION)
+   - Open/closed unit mismatch list
+   - Missing fields list (rate/unit)
+   - Variance flags list (20%+ spikes) with notes (if present)
+   - Correction audit trail: “Fixed by / fixed at” if you track it; if not, deterministic placeholder.
+
+9. SEASON ROLLUPS (OWNER VIEW)
+   - Spend by block (spray vs fert vs irrigation vs other)
+   - Spend by month
+   - Top materials used (qty + est cost)
+   - Projected vs Actual (include only if projections exist)
+
+10. EXPORTS APPENDIX
+   - “PCA View CSV”
+   - “Block History Cards”
+   - “Vault Export (Filtered)”
+   - This section can be a deterministic “what is available” checklist, even if files are generated separately.
+
+IMPORTANT INCLUDE RULES (DETERMINISTIC)
+- Always include Sections 0–3 even if data is sparse (render empty states with clear “No records found”).
+- Sections 4,6,7 only include if at least one matching log exists; otherwise insert a 1-page placeholder stating “No records captured for this section.”
+- Section 8 always included (even if “No issues detected”).
+- Section 9 includes rollups only if at least one log exists; else placeholder.
+- Section 10 always included.
+
+3) PACKET BUILDER UI (3 LEVELS)
+Create:
+- client/src/pages/PacketsHome.tsx (route /packets)
+- client/src/pages/PacketToday.tsx (route /packets/today)
+- client/src/pages/PacketMonthly.tsx (route /packets/monthly)
+- client/src/pages/PacketSeason.tsx (route /packets/season)
+
+UI requirements (mobile-first):
+- Show the TOC for season packet as a preview list with checkmarks (based on includeIf).
+- Show “Data Coverage” counters:
+  - logs count, blocks count, issues count
+- Primary button: “Generate PDF”
+- After generation: “Download PDF”, “Open Email”, “Open SMS”, “Copy Summary”
+- Add “Fix Issues” button if issues exist → routes to existing VarianceFlags page.
+
+4) PDF GENERATION (DETERMINISTIC RENDER)
+Create:
+- client/src/lib/packets/renderModel.ts (defines PDF render primitives)
+- client/src/lib/packets/buildPacket.ts (builds render primitives from state + schema)
+- client/src/utils/pdf/generatePdf.ts (jspdf wrapper or reuse existing)
+
+Define simple deterministic render blocks:
+- Heading(level, text)
+- Paragraph(text)
+- Table(columns, rows)
+- PageBreak()
+- KeyValueGrid(items)
+
+The Season Packet generator must:
+- Render TOC page that lists all sections with page numbers.
+  Deterministic approach: do a two-pass render:
+   1) Build sections → estimate pages
+   2) Render final with TOC page numbers
+  If page estimation is hard, acceptable MVP: render TOC without page numbers (but keep exact order).
+
+5) STATE SELECTORS
+Add selectors (or pure helper functions) to gather:
+- blocksByRanch
+- logsByBlock for season (date range)
+- logsByCategory (SPRAY/FERT/IRRIGATE)
+- openIssues: from Flags + unitMismatch + missingFields
+- rollups: spendByBlock, spendByMonth, totalsByMaterial
+
+6) STYLING
+- Match existing dark theme (forest green + gold accents).
+- Packet screens should look like “print control center,” not data tables overload.
+- Use large, thumb-friendly buttons and simple summary cards.
+
+7) ACCEPTANCE CRITERIA
+- /packets exists and shows 3 packet levels with clear copy.
+- Season packet screen shows TOC preview in the exact order above.
+- “Generate PDF” produces a stable PDF offline.
+- Empty states are deterministic and non-confusing.
+- “Fix Issues” path is connected to your existing VarianceFlags queue.
+- Today Packet and Monthly Packet follow the “3 levels” requirements above.
+
+Now implement this across the codebase with clean TypeScript, minimal dependencies, and reuse any existing PDF/export utilities already present.
