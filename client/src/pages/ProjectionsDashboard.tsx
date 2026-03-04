@@ -62,7 +62,7 @@ export default function ProjectionsDashboard() {
   return (
     <div className="animate-in fade-in duration-500 pb-20">
       <header className="mb-8">
-        <h1 className="text-3xl md:text-4xl font-black uppercase tracking-tighter text-white mb-4">Season Projections</h1>
+        <h1 className="text-3xl md:text-4xl font-black uppercase tracking-tighter text-white mb-4">Season Budget</h1>
         
         <div className="flex flex-wrap gap-4 items-center justify-between">
           <select 
@@ -132,7 +132,7 @@ export default function ProjectionsDashboard() {
       {/* Blocks Table */}
       <div className="bg-card border border-border rounded-lg overflow-hidden">
         <div className="p-4 border-b border-border flex justify-between items-center bg-[#111113]">
-          <h2 className="font-black uppercase tracking-tight text-white">Block Projections</h2>
+          <h2 className="font-black uppercase tracking-tight text-white">Block Budgets</h2>
           <label className="flex items-center gap-2 cursor-pointer">
             <input type="checkbox" checked={needsSetupFilter} onChange={e => setNeedsSetupFilter(e.target.checked)} className="accent-primary" />
             <span className="text-xs font-bold uppercase tracking-widest text-orange-400">Needs Setup ({filteredBlocks.length - setupCount})</span>

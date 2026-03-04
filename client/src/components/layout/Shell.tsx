@@ -23,7 +23,7 @@ export default function Shell({ children }: { children: React.ReactNode }) {
 
   const secondaryNavItems = [
     { href: "/app/inputs", icon: Package, label: "Inputs Library" },
-    { href: "/app/projections", icon: LineChart, label: "Budget" },
+    { href: "/app/projections", icon: LineChart, label: "Season Budget" },
     { href: "/app/settings/billing", icon: Settings, label: "Settings" },
   ];
 

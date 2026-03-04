@@ -1,0 +1,163 @@
+You are working inside the existing KEBB Ag™ React + Vite + TypeScript frontend-only prototype.
+Routing: wouter. State: zustand (client/src/lib/store.ts). Persistence: LocalStorage. No backend. Offline-only.
+
+GOAL
+Make “Plan” and “Season Projections” radically more intuitive by reframing them as:
+- Plan → “Next Pass” (work-order board, not calendar)
+- Season Projections → “Season Budget” (budget + materials + by-block)
+and create a clear mental model: “Queued Passes update the Season Budget forecast.”
+
+This must be truck-optimized and understandable to a Central Valley stone-fruit grower with zero training.
+
+HARD RULES
+- No backend, no API calls.
+- Deterministic logic (same data = same outputs).
+- Use grower language (Pass, Next, Budget, Materials Needed, Issues).
+- Keep UI minimal: big buttons, short labels, no dense tables by default.
+- Reuse existing models: Blocks, Logs/Vault, Templates, Projections, Flags/Variance.
+
+IMPLEMENTATION TASKS
+
+1) RENAME + ROUTE ALIASES (NO BREAKING LINKS)
+- Keep existing routes working, but change user-facing labels:
+  - “Plan” nav label becomes “Next Pass”
+  - “Season Projections” label becomes “Season Budget”
+- If current routes are /plan and /projections, keep them but change headings + nav.
+- Add aliases if needed:
+  - /next-pass -> same page as /plan
+  - /season-budget -> same page as /projections
+Ensure Guided Flow step mapping still routes to these pages correctly.
+
+2) NEXT PASS SCREEN (REPLACE PLAN UX)
+File: client/src/pages/Plan.tsx (or equivalent)
+Refactor into a simple “work-order board” with 3 layers:
+
+A) Top Bar (3 counters only)
+- “Due This Week (N)”
+- “Overdue (N)”
+- “Issues (N)” with red badge bubble
+Tapping Issues routes to /review/flags (existing)
+
+B) “Your Next 3 Actions” (giant buttons)
+Compute deterministically from queued passes + suggestion engine:
+- Show top 3 highest priority actions (overdue first, then due soon).
+Each action button shows:
+  - Action: “Run Bloom Fungicide”
+  - Blocks: “Early Peach, Nectarine”
+  - Due: “Due in 3 days” or “Overdue”
+Button tap -> opens Quick Log prefilled:
+  route: /log?blockId=...&templateId=... (or your existing prefill mechanism)
+If multiple blocks: open a block picker drawer first (mobile sheet).
+
+C) Block Cards List
+For each block:
+- “Last Pass:” last log summary (type + date)
+- “Next Pass:” next queued pass name
+- “When:” due text (Due in X / Overdue)
+- Primary button: “Start Pass” (prefilled Quick Log)
+- Secondary: “Queue Pass” (opens template picker)
+
+NO calendar. NO complex tables. Keep it readable.
+
+3) QUEUE PASS WORKFLOW (TEMPLATES → PASSES)
+Rename “Templates” in this context as “Passes” in UI copy ONLY.
+Implement a lightweight “Queue Pass” modal/bottom sheet:
+- Step 1: Select Pass (template) [search + common passes]
+- Step 2: Select Blocks (multi-select)
+- Step 3: Set “Due” (Today / This Week / Date)
+- Step 4: Confirm “Queue Pass”
+On confirm:
+- Create queued pass entries in zustand (new lightweight model or reuse projections/templates mapping)
+- Update “Season Budget” forecast immediately (see #5)
+
+4) ONE-CLICK BUTTON: “STANDARD STONE FRUIT PLAN”
+Add a button at the top of Next Pass and Season Budget:
+- Label: “Add Standard Stone Fruit Plan”
+- Subtext: “Seeds the common passes for peaches/nectarines/plums.”
+On tap:
+- Create 6–10 standard passes and auto-apply them to blocks based on crop/variety.
+Suggested default passes (names matter; keep simple):
+  - “Bloom Fungicide”
+  - “Shuck Split Protection”
+  - “Spring N Push (CAN-17)”
+  - “Calcium / Sizing Foliar”
+  - “Mite Watch / Miticide”
+  - “Summer Disease Cover”
+  - “Post-Harvest Rebuild”
+  - “Irrigation Flush / Maintenance” (optional)
+Each queued pass must have a deterministic default due window (e.g., Bloom = within 7 days in early spring; if season context exists use it; otherwise set “This Week”).
+After seeding, show a toast: “Standard plan added. Forecast and Materials Needed updated.”
+
+5) SEASON BUDGET SCREEN (REPLACE PROJECTIONS UX)
+File: client/src/pages/ProjectionsDashboard.tsx (or equivalent)
+Refactor into 3 tabs with a simple mental model:
+
+Tab 1: “Budget”
+- Editable field: “Season Budget $____” (stored local)
+- 4 numbers:
+  - “Planned Cost” (forecast from queued passes/templates)
+  - “Actual to Date” (sum estimatedCost from logs; unit mismatch stays $0)
+  - “Remaining” (Budget - Actual)
+  - “At-Risk” (cost tied to passes that include any flagged/missing data)
+- A single simple progress bar is optional; do not over-chart.
+
+Tab 2: “Materials Needed”
+- List of materials totals derived from queued passes/templates:
+  - Material name
+  - Total needed (sum of rate * acres across selected blocks)
+  - Est cost (optional)
+- Sort by highest cost first.
+- Add a toggle: [Planned] [Actual] [Planned vs Actual]
+  - Planned uses queued passes/templates
+  - Actual uses logs
+
+Tab 3: “By Block”
+- Sortable list:
+  - Block name + acres
+  - Actual spend to date
+  - Planned remaining
+  - Over/Under indicator (simple)
+Tapping a block opens Block Detail.
+
+Add a one-line explainer at top of Season Budget:
+- “Queued Passes update Planned Cost and Materials Needed.”
+
+6) SHARED TERMINOLOGY + COPY SWAPS
+Update UI copy strings (not data model names):
+- Templates → Passes (in Next Pass + Budget only)
+- Apply Template → Queue Pass
+- Projections → Season Budget
+- Plan → Next Pass
+- Variance Flags → Issues to Fix (keep route/component name)
+
+7) EMPTY STATES (TRUCK-PROOF)
+- Next Pass empty:
+  “No passes queued yet. Tap ‘Add Standard Stone Fruit Plan’ or ‘Queue Pass’.”
+  Buttons: Add Standard Plan | Queue Pass | Start Quick Log
+- Season Budget empty:
+  “No season plan yet. Add a standard plan to forecast cost and materials.”
+  Buttons: Add Standard Plan | Build My Own
+
+8) SELECTORS / LOGIC (DETERMINISTIC)
+In store selectors or helpers, implement:
+- queuedPassesByBlock
+- nextPassForBlock (earliest due)
+- dueThisWeekCount, overdueCount
+- next3Actions (priority: overdue → due soon → high-cost impact)
+- plannedCost (sum of template rates * acres * unit prices midpoints)
+- materialsNeededPlanned (aggregate quantities by material base unit)
+- actualCostToDate (sum estimatedCost from logs)
+- atRiskCost (sum costs from passes that reference any missing/unit mismatch inputs)
+
+9) ACCEPTANCE CHECKLIST
+- Nav labels read “Next Pass” and “Season Budget.”
+- Both pages are understandable with no training.
+- One-click “Standard Stone Fruit Plan” populates Next Pass and Season Budget instantly.
+- Queuing a pass updates:
+  - Next 3 Actions
+  - Due/Overdue counts
+  - Planned Cost + Materials Needed
+- Starting a pass launches Quick Log prefilled.
+- No regressions to Guided Flow.
+
+Now implement these changes across the codebase with clean TypeScript, minimal dependencies, and reuse existing components/utilities where possible.

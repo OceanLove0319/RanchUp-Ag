@@ -19,7 +19,7 @@ export function GuidedFlowDrawer({ isOpen, onClose, currentStep, nextStep }: Gui
     { id: "TODAY", label: "Today", desc: "View what needs attention", path: "/app" },
     { id: "LOG", label: "Log", desc: "Record field work", path: "/app/log" },
     { id: "REVIEW", label: "Review", desc: "Fix missing data", path: "/app/reports/variance" },
-    { id: "PLAN", label: "Plan", desc: "Apply program templates", path: "/app/projections" },
+    { id: "PLAN", label: "Next Pass", desc: "Queue program passes", path: "/app/projections" },
     { id: "SHARE", label: "Share", desc: "Export compliance reports", path: "/app/vault" },
   ];
 
