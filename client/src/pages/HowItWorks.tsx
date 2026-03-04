@@ -1,5 +1,5 @@
 import { Link } from "wouter";
-import { ArrowLeft, CheckCircle2, ShieldAlert, Sprout, Map, Calculator, Printer, DollarSign } from "lucide-react";
+import { ArrowLeft, CheckCircle2, ShieldAlert, Sprout, Map, Calculator, Printer, DollarSign, FileText, BookOpen } from "lucide-react";
 import MarketingNav from "@/components/layout/MarketingNav";
 
 export default function HowItWorks() {
