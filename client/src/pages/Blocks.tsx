@@ -17,7 +17,7 @@ export default function Blocks() {
         </button>
       </div>
 
-      <div className="grid md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {blocks.map(block => (
           <Link key={block.id} href={`/app/blocks/${block.id}`} className="bg-card border border-border p-6 rounded-lg hover:border-primary/50 transition-colors group block">
             <div className="flex justify-between items-start mb-4">

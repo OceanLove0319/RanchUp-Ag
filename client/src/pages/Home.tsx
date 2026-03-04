@@ -24,7 +24,7 @@ export default function Home() {
       <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-4">Quick Actions</p>
       
       {/* Top row: Core flow */}
-      <div className="grid md:grid-cols-2 gap-4 md:gap-6 mb-10">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mb-10">
         <Link href="/app/log" className="bg-card border border-border p-6 md:p-8 rounded-lg hover:border-primary/50 transition-colors group flex flex-col justify-between min-h-[160px]">
           <div>
             <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center mb-4 text-primary">
@@ -54,7 +54,7 @@ export default function Home() {
 
       <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-4">Reports & Analysis</p>
 
-      <div className="grid md:grid-cols-3 gap-4 md:gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
         <Link href="/app/reports/weekly" className="bg-card border border-border p-6 rounded-lg hover:border-primary/50 transition-colors group flex flex-col justify-between">
           <div>
             <div className="w-10 h-10 bg-white/5 rounded flex items-center justify-center mb-4 text-white">

@@ -1,0 +1,106 @@
+You are building KEBB Ag™ (React + Vite + TypeScript + Tailwind). Upgrade the UI to be highly mobile responsive (phone-first), without breaking existing backend/API behavior.
+
+GOAL
+Make every core workflow feel effortless on iPhone/Android:
+- One-thumb navigation
+- No horizontal scroll
+- Large tap targets
+- Fast “Quick Log” entry
+- Clear totals/costs on small screens
+- Works great from 320px width up to desktop
+
+NON-NEGOTIABLES
+- Do NOT change any server routes, database schema, or API contracts.
+- Keep existing logic for cost engine/unit semantics intact.
+- Only adjust front-end layout/components/styles and small client-side utilities.
+- Maintain accessibility: focus states, labels, ARIA where needed.
+
+TECH STACK
+- React + Vite + TS
+- TailwindCSS
+- React Router (if present)
+- State management already in repo (do not replace)
+- No new heavy UI library; if components exist, reuse them.
+
+IMPLEMENTATION TASKS
+
+1) Add a responsive layout shell
+- Create/upgrade `AppShell`:
+  - Mobile: bottom nav (4–5 items max): Dashboard, Quick Log, Blocks, Vault, More
+  - Desktop: left sidebar + top header
+- Use responsive utilities:
+  - `md:` breakpoint switches nav modes
+  - Sticky header on mobile with title + quick actions
+
+2) Create a mobile-first navigation pattern
+- BottomNav:
+  - fixed bottom, safe-area padding (`pb-[env(safe-area-inset-bottom)]`)
+  - icons + short labels
+  - active state clearly visible
+- “More” opens a slide-over sheet with secondary links (Settings, Exports, Library, Help)
+- Add “+ Quick Log” floating action button (FAB) on mobile that opens Quick Log instantly
+
+3) Refactor key screens to responsive grids
+- Dashboard:
+  - Mobile: single column cards, concise metrics
+  - Tablet/desktop: 2–3 column grid
+- Blocks list:
+  - Mobile: stacked cards with acres + crop tags + last activity
+  - Desktop: table layout ok
+- Season Vault:
+  - Mobile: list cards with badges (UNIT_MISMATCH, etc.)
+  - Detail opens as full-screen modal or route, not cramped panel
+- Chemical/Materials Library:
+  - Mobile: search-first, filters in slide-over, list items as cards
+
+4) Make “Quick Log” a true one-hand form
+- Convert Quick Log into a stepper on mobile:
+  Step 1: Select Block (search + recent blocks)
+  Step 2: Select Activity Type (Spray / Fertigation / Irrigation / Other)
+  Step 3: Materials + Rates (big inputs, unit selectors)
+  Step 4: Review (auto totals, cost estimate, unit mismatch badge)
+- Desktop can remain a single-page form, but share the same underlying component/state.
+- Add “Recent Templates” as horizontal scroll chips on mobile.
+- Ensure keyboard UX:
+  - Inputs use correct types (`inputMode="decimal"`, `type="number"` where safe)
+  - Next/Done actions
+  - Prevent iOS zoom by using `text-base` on inputs (>=16px)
+
+5) Improve touch targets and readability
+- All buttons >= 44px height on mobile
+- Increase spacing: `gap-3`/`gap-4`, `py-3` for list items
+- Use `line-clamp` for long names, show full on detail
+- Add skeleton loaders for lists
+
+6) Prevent layout bugs on small screens
+- Add `min-w-0` to flex children where text truncates
+- Replace fixed widths with responsive:
+  - `w-full`, `max-w-*`, `grid-cols-1 md:grid-cols-2`
+- Ensure modals/sheets use full height on mobile:
+  - `h-[100dvh]` and `overflow-y-auto`
+- Make tables horizontally scrollable only when unavoidable:
+  - wrap in `overflow-x-auto` and provide a “card view” alternative on mobile
+
+7) Add responsive utility helpers
+- Create `useIsMobile()` hook based on matchMedia `(max-width: 767px)`
+- Add `SafeArea` helper class and apply to bottom nav and sheets
+- Standardize page padding:
+  - Mobile: `px-4`
+  - Desktop: `px-6 lg:px-8`
+
+8) QA checklist (must pass)
+- iPhone width 375 and small 320: no horizontal scrolling
+- Android Chrome: bottom nav not covering inputs (safe-area + extra padding)
+- All primary flows doable with one thumb:
+  - Open app → Quick Log → submit log
+  - Find a block → view details
+  - Open Season Vault → export/inspect a record
+- Lighthouse mobile: no major layout shifts
+- Unit mismatch badge is visible and not clipped on mobile
+
+DELIVERABLE
+- Commit changes with a short summary:
+  - “Mobile responsive shell + bottom nav + Quick Log stepper + card views”
+- Provide before/after notes on which components were updated.
+
+Now implement these changes directly in the codebase.

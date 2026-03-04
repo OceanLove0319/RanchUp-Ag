@@ -131,22 +131,22 @@ export default function Vault() {
       {/* Summary Bar */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
         <div className="bg-card border border-border p-4 rounded-lg">
-          <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-1">Season Spend</p>
-          <p className="text-2xl font-black text-foreground">${seasonSpend.toLocaleString()}</p>
+          <p className="text-[10px] md:text-xs font-bold uppercase tracking-widest text-muted-foreground mb-1">Season Spend</p>
+          <p className="text-xl md:text-2xl font-black text-foreground">${seasonSpend.toLocaleString()}</p>
         </div>
         <div className="bg-card border border-border p-4 rounded-lg">
-          <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-1">Total Apps</p>
-          <p className="text-2xl font-black text-foreground">{totalApps}</p>
+          <p className="text-[10px] md:text-xs font-bold uppercase tracking-widest text-muted-foreground mb-1">Total Apps</p>
+          <p className="text-xl md:text-2xl font-black text-foreground">{totalApps}</p>
         </div>
         <div className="bg-card border border-border p-4 rounded-lg">
-          <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-1">Sprays</p>
-          <p className="text-xl font-black text-foreground mb-1">${spraySpend.toLocaleString()}</p>
-          <p className="text-xs font-bold text-muted-foreground">{sprays.length} apps</p>
+          <p className="text-[10px] md:text-xs font-bold uppercase tracking-widest text-muted-foreground mb-1">Sprays</p>
+          <p className="text-lg md:text-xl font-black text-foreground mb-1">${spraySpend.toLocaleString()}</p>
+          <p className="text-[10px] md:text-xs font-bold text-muted-foreground">{sprays.length} apps</p>
         </div>
         <div className="bg-card border border-border p-4 rounded-lg">
-          <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-1">Fertility</p>
-          <p className="text-xl font-black text-foreground mb-1">${fertSpend.toLocaleString()}</p>
-          <p className="text-xs font-bold text-muted-foreground">{fertility.length} apps</p>
+          <p className="text-[10px] md:text-xs font-bold uppercase tracking-widest text-muted-foreground mb-1">Fertility</p>
+          <p className="text-lg md:text-xl font-black text-foreground mb-1">${fertSpend.toLocaleString()}</p>
+          <p className="text-[10px] md:text-xs font-bold text-muted-foreground">{fertility.length} apps</p>
         </div>
       </div>
       
@@ -235,7 +235,7 @@ export default function Vault() {
       )}
 
       <h2 className="text-xl font-black uppercase tracking-tight text-foreground mb-4 border-b border-border pb-2 mt-16">Other Documents</h2>
-      <div className="grid md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="bg-card border border-border p-4 rounded-lg flex items-center justify-between group cursor-pointer hover:border-primary/50 transition-colors">
           <div className="flex items-center gap-4">
             <div className="p-3 bg-background rounded text-muted-foreground group-hover:text-primary transition-colors">

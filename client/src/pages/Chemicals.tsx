@@ -27,7 +27,7 @@ export default function Chemicals() {
         </Link>
       </div>
 
-      <div className="grid md:grid-cols-3 gap-4 mb-10">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10">
         <div className="bg-card border border-border p-6 rounded-lg">
           <h3 className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2">Active Season Spend (Est)</h3>
           <p className="text-3xl font-black text-foreground">${totalSpend.toFixed(2)}</p>

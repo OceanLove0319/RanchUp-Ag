@@ -360,20 +360,20 @@ export default function Log() {
       </div>
 
       {action && (
-        <div className="animate-in slide-in-from-bottom-4 fade-in duration-300 bg-card border border-border p-6 rounded-lg">
+        <div className="animate-in slide-in-from-bottom-4 fade-in duration-300 bg-card border border-border p-4 md:p-6 rounded-lg">
           <div className="flex flex-col mb-6 gap-3 border-b border-border pb-4">
-            <div className="flex justify-between items-center">
+            <div className="flex flex-col md:flex-row justify-between md:items-center gap-3">
               <label className="block text-sm font-bold uppercase tracking-widest text-muted-foreground">3. Details</label>
               {action && getFilteredTemplates().length > 0 && (
-                <div className="flex flex-wrap gap-2 justify-end">
+                <div className="flex overflow-x-auto pb-2 md:pb-0 md:flex-wrap gap-2 md:justify-end no-scrollbar -mx-4 px-4 md:mx-0 md:px-0">
                   {getFilteredTemplates().map(t => {
                     const isPinned = t.labelType === 'Pinned';
                     const isRecent = t.labelType === 'Recent';
                     return (
-                      <div key={t.id} className="relative group">
+                      <div key={t.id} className="relative group flex-shrink-0">
                         <button
                           onClick={() => applyTemplate(t)}
-                          className={`flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-bold uppercase tracking-widest transition-colors ${
+                          className={`flex items-center gap-1.5 px-3 py-2 md:py-1.5 rounded text-[11px] md:text-xs font-bold uppercase tracking-widest transition-colors whitespace-nowrap ${
                             activeTemplate === t.name 
                               ? 'bg-primary text-primary-foreground' 
                               : isPinned
@@ -386,7 +386,7 @@ export default function Log() {
                           {isPinned ? <Star className="w-3 h-3 fill-current" /> : <Zap className="w-3 h-3" />}
                           {t.name}
                           {(isPinned || isRecent) && (
-                            <span className="ml-1 text-[9px] opacity-70">({t.labelType})</span>
+                            <span className="ml-1 text-[9px] opacity-70 hidden md:inline">({t.labelType})</span>
                           )}
                         </button>
                         <button 
@@ -405,7 +405,7 @@ export default function Log() {
               )}
             </div>
             {action && getFilteredTemplates().length > 0 && (
-              <p className="text-[10px] text-muted-foreground italic text-right">Templates are starting points — adjust rate and notes as needed.</p>
+              <p className="text-[10px] text-muted-foreground italic text-left md:text-right hidden md:block">Templates are starting points — adjust rate and notes as needed.</p>
             )}
           </div>
           
@@ -416,7 +416,7 @@ export default function Log() {
                 type="date" 
                 value={formData.date}
                 onChange={e => setFormData({...formData, date: e.target.value})}
-                className="w-full bg-background border border-border rounded px-3 py-3 text-foreground focus:outline-none focus:border-primary"
+                className="w-full bg-background border border-border rounded px-3 py-3 text-base text-foreground focus:outline-none focus:border-primary"
               />
               <p className="text-[10px] uppercase tracking-widest text-muted-foreground mt-2">Default date uses Pacific time.</p>
             </div>
@@ -429,7 +429,7 @@ export default function Log() {
                   value={formData.material}
                   onChange={e => setFormData({...formData, material: e.target.value})}
                   placeholder={action === 'FERT' ? "e.g. CAN 17" : "e.g. Oil"}
-                  className="w-full bg-background border border-border rounded px-3 py-3 text-foreground focus:outline-none focus:border-primary"
+                  className="w-full bg-background border border-border rounded px-3 py-3 text-base text-foreground focus:outline-none focus:border-primary"
                 />
               </div>
             )}
@@ -439,10 +439,11 @@ export default function Log() {
                 <label className="block text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2">Amount</label>
                 <input 
                   type="number" 
+                  inputMode="decimal"
                   value={formData.amount}
                   onChange={e => setFormData({...formData, amount: e.target.value})}
                   placeholder="0.0"
-                  className="w-full bg-background border border-border rounded px-3 py-3 text-foreground focus:outline-none focus:border-primary text-lg font-bold"
+                  className="w-full bg-background border border-border rounded px-3 py-3 text-foreground focus:outline-none focus:border-primary text-base md:text-lg font-bold"
                 />
               </div>
               <div>
@@ -450,7 +451,7 @@ export default function Log() {
                 <select 
                   value={formData.unit}
                   onChange={e => setFormData({...formData, unit: e.target.value})}
-                  className="w-full bg-background border border-border rounded px-3 py-3 text-foreground focus:outline-none focus:border-primary appearance-none"
+                  className="w-full bg-background border border-border rounded px-3 py-3 text-base text-foreground focus:outline-none focus:border-primary appearance-none"
                 >
                   <option value="">Select...</option>
                   {action === 'IRRIGATE' ? (
@@ -503,10 +504,11 @@ export default function Log() {
                         </label>
                         <input 
                           type="number" 
+                          inputMode="decimal"
                           value={tankSize}
                           onChange={e => setTankSize(e.target.value)}
                           placeholder="e.g. 500"
-                          className="w-full bg-card border border-border rounded px-2 py-1.5 text-xs text-foreground focus:outline-none focus:border-primary"
+                          className="w-full bg-card border border-border rounded px-2 py-1.5 text-base md:text-xs text-foreground focus:outline-none focus:border-primary"
                         />
                       </div>
                       <div className="flex-1 text-right">
