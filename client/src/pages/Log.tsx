@@ -5,7 +5,7 @@ import { useToast } from "@/hooks/use-toast";
 import { todayPacificISO } from "@/utils/dates";
 import { isPerAcreUnit, getBaseUnit, calcTotal, calcLoads, formatNumber, normalizeUnit, areUnitsCompatible } from "@/utils/mathHelpers";
 import { inferCropType, type CropType } from "@/utils/crops";
-import ProductPicker from "@/components/products/ProductPicker";
+import UnifiedInputPicker from "@/components/products/UnifiedInputPicker";
 
 type ActionType = 'SPRAY' | 'FERT' | 'IRRIGATE';
 
@@ -83,7 +83,7 @@ export default function Log() {
     unit: ""
   });
   const [tankSize, setTankSize] = useState<string>("");
-  const [selectedProductIds, setSelectedProductIds] = useState<string[]>([]);
+  const [selectedIds, setSelectedProductIds] = useState<string[]>([]);
 
   const block = blocks.find(b => b.id === selectedBlock);
   const blockContext = block ? {
@@ -263,7 +263,7 @@ export default function Log() {
     const productLibrary = useStore.getState().productLibrary;
     
     // Create product snapshots if any were selected
-    const productEntries = selectedProductIds.map(id => {
+    const productEntries = selectedIds.map(id => {
       const p = productLibrary.find(p => p.id === id);
       if (!p) return null;
       
@@ -293,7 +293,7 @@ export default function Log() {
       amount: Number(formData.amount),
       unit: formData.unit || (action === 'IRRIGATE' ? 'hrs' : 'lbs'),
       cost: estimatedCost,
-      productIds: selectedProductIds,
+      productIds: selectedIds,
       productEntries: productEntries.length > 0 ? productEntries : undefined
     });
 
@@ -550,14 +550,14 @@ export default function Log() {
                   Products Used <span className="text-muted-foreground text-xs">(Optional)</span>
                 </label>
                 <div className="bg-card border border-border rounded-lg p-4">
-                  <ProductPicker 
-                    selectedProductIds={selectedProductIds} 
+                  <UnifiedInputPicker 
+                    selectedIds={selectedIds} 
                     onSelectionChange={setSelectedProductIds} 
                   />
-                  {selectedProductIds.length > 0 && (
+                  {selectedIds.length > 0 && (
                     <div className="mt-4 pt-4 border-t border-border">
                       <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2">
-                        {selectedProductIds.length} Product(s) Selected
+                        {selectedIds.length} Product(s) Selected
                       </p>
                       <p className="text-[10px] text-muted-foreground">
                         Selected products will be saved with this log entry and will use the primary rate of {formData.amount || "0"} {formData.unit || "unit(s)"}.

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link } from "wouter";
 import { useStore, ProgramTemplate, ProgramLine } from "@/lib/store";
 import { ArrowLeft, PlusCircle, Edit2, Copy, Trash2, ShieldAlert, Sprout, Package, Check, X } from "lucide-react";
-import ProductPicker from "@/components/products/ProductPicker";
+import UnifiedInputPicker from "@/components/products/UnifiedInputPicker";
 
 export default function TemplatesManager() {
   const templates = useStore(s => s.templates);
@@ -137,8 +137,8 @@ export default function TemplatesManager() {
                             </button>
                           </div>
                           <div className="bg-background rounded-lg border border-border p-3 mb-4">
-                            <ProductPicker 
-                              selectedProductIds={lineProducts} 
+                            <UnifiedInputPicker 
+                              selectedIds={lineProducts} 
                               onSelectionChange={setLineProducts} 
                             />
                           </div>

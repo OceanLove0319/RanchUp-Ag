@@ -1,5 +1,5 @@
 import { Link, useLocation } from "wouter";
-import { Home, Map, ClipboardEdit, Archive, Settings, LogOut, FlaskConical, LineChart, Plus, Menu, X, BookOpen } from "lucide-react";
+import { Home, Map, ClipboardEdit, Archive, Settings, LogOut, FlaskConical, LineChart, Plus, Menu, X, BookOpen, Package } from "lucide-react";
 import { useStore } from "@/lib/store";
 import { useState } from "react";
 import { useIsMobile } from "@/hooks/useIsMobile";
@@ -21,8 +21,7 @@ export default function Shell({ children }: { children: React.ReactNode }) {
   ];
 
   const secondaryNavItems = [
-    { href: "/app/chemicals", icon: FlaskConical, label: "Chemicals" },
-    { href: "/app/materials-products", icon: Plus, label: "Materials" },
+    { href: "/app/inputs", icon: Package, label: "Inputs Library" },
     { href: "/app/projections", icon: LineChart, label: "Budget" },
     { href: "/app/settings/billing", icon: Settings, label: "Settings" },
   ];

@@ -33,6 +33,7 @@ import TemplatesManager from "@/pages/TemplatesManager";
 import Glossary from "@/pages/Glossary";
 
 import MaterialsProducts from "@/pages/operations/MaterialsProducts";
+import InputsLibrary from "@/pages/operations/InputsLibrary";
 import ProductLoggingGuide from "@/pages/help/ProductLoggingGuide";
 import GrowerMaterialsGuide from "@/pages/help/GrowerMaterialsGuide";
 
@@ -78,44 +79,14 @@ function Router() {
       <Route path="/app/log">
         <Shell><Log /></Shell>
       </Route>
-      <Route path="/app/chemicals">
-        <Shell><Chemicals /></Shell>
-      </Route>
-      <Route path="/app/chemicals/new">
-        <Shell><ChemicalNew /></Shell>
-      </Route>
-      <Route path="/app/vault">
-        <Shell><Vault /></Shell>
-      </Route>
-      <Route path="/app/pricing">
-        <Shell><Pricing /></Shell>
-      </Route>
-      <Route path="/app/settings/billing">
-        <Shell><Billing /></Shell>
-      </Route>
-      <Route path="/app/projections">
-        <Shell><ProjectionsDashboard /></Shell>
-      </Route>
-      <Route path="/app/projections/templates">
-        <Shell><TemplatesManager /></Shell>
-      </Route>
-      <Route path="/app/projections/block/:id">
-        <Shell><BlockProjectionDetail /></Shell>
-      </Route>
-      <Route path="/app/reports/weekly">
-        <Shell><WeeklyPacket /></Shell>
-      </Route>
-      <Route path="/app/reports/monthly">
-        <Shell><MonthlySummary /></Shell>
-      </Route>
-      <Route path="/app/reports/variance">
-        <Shell><VarianceFlags /></Shell>
-      </Route>
-      <Route path="/app/glossary">
-        <Shell><Glossary /></Shell>
+      <Route path="/app/inputs">
+        <Shell><InputsLibrary /></Shell>
       </Route>
       <Route path="/app/materials-products">
-        <Shell><MaterialsProducts /></Shell>
+        <Shell><InputsLibrary /></Shell>
+      </Route>
+      <Route path="/app/chemicals">
+        <Shell><InputsLibrary /></Shell>
       </Route>
       <Route path="/app/help/product-logging">
         <Shell><ProductLoggingGuide /></Shell>

@@ -1,0 +1,124 @@
+Refactor the current KEBB Ag product/material experience for speed, clarity, and less page fragmentation.
+
+GOAL
+I do not want separate “Chemicals” and “Materials” pages anymore. Combine them into one unified page and make the browsing experience much more optimized.
+
+CORE CHANGES
+
+1) COMBINE CHEMICALS + MATERIALS INTO ONE PAGE
+- Merge the existing Chemicals page and Materials page into a single page.
+- New page name: “Inputs Library”
+- This should be the one place growers go to find, search, filter, and select everything they use and log in operations.
+- Include both:
+  - Chemicals
+  - Materials
+- Preserve all existing data and functionality from both pages.
+- Do not break existing backend assumptions or current log records.
+
+2) ADD TOP-LEVEL TABS FOR FAST BROWSING
+On the new Inputs Library page, add top-level tabs so users can switch instantly between major groups.
+
+Top-level tabs:
+- All
+- Chemicals
+- Materials
+
+3) ADD TYPE TABS WITHIN EACH SECTION
+I don’t want one long list where all 100 items feel hidden.
+Within Chemicals and Materials, add a second layer of tabs for Types so growers can browse quickly without scrolling endlessly.
+
+For Materials, create type tabs such as:
+- All
+- Nutrition
+- Amendment / Water
+- Fungicide
+- Herbicide
+- Insecticide / Miticide
+- Adjuvant
+- Biological
+
+For Chemicals, create the same style of type tabs based on the existing chemical taxonomy already in the app.
+If needed, normalize the chemical types so the experience matches the Materials side.
+
+4) DEFAULT UX
+- Default to showing “All” top-level tab, but surface type tabs immediately below it.
+- Show item count per tab.
+  Example:
+  - Materials (100)
+  - Nutrition (30)
+  - Fungicide (20)
+- Make it obvious that all items are present.
+- Do not hide products behind collapsed sections by default.
+
+5) SEARCH + FILTER UX
+- Search should work across the unified Inputs Library.
+- Search should respect whichever top-level tab is selected.
+- Add filters for:
+  - Type
+  - Default unit
+  - Recent
+- Add a “Recently Used” strip near the top when available.
+
+6) CARD / LIST EXPERIENCE
+- Keep the cards compact and mobile-friendly.
+- Each card should clearly show:
+  - Name
+  - Category badge
+  - Type
+  - Default unit
+- Add fast actions:
+  - View
+  - Edit
+  - Use in Log
+- Keep touch targets large and clean.
+
+7) QUICK LOG + TEMPLATE INTEGRATION
+- Anywhere the app currently references Chemicals or Materials separately, point both to the new unified Inputs Library / picker experience.
+- In Quick Log and Templates, allow filtering by:
+  - All
+  - Chemicals
+  - Materials
+  - Type tabs
+- Keep logging optional and additive.
+
+8) INFORMATION ARCHITECTURE
+Update nav so:
+- Remove separate Chemicals page nav item
+- Remove separate Materials page nav item
+- Add one nav item: “Inputs Library”
+
+9) DESIGN REQUIREMENTS
+- This must feel more optimized, less hidden, less fragmented.
+- Reduce scrolling friction.
+- Make the experience obvious and confidence-building for growers.
+- Use the existing KEBB Ag visual language:
+  - black / white base
+  - SF Giants orange accents
+  - clean, modern, Nike-style confidence
+  - mobile-first
+  - simple labels
+  - fast interaction
+
+10) IMPLEMENTATION NOTES
+- Preserve existing stored data for chemicals and materials.
+- If needed, create a normalized shared view model for both.
+- Do not break existing routes without redirecting them.
+- If old Chemicals or Materials routes still exist, redirect them to the new Inputs Library page.
+- Keep the architecture frontend-only with zustand + localStorage.
+
+SUCCESS CRITERIA
+The update is successful if:
+1. Chemicals and Materials are now one unified page
+2. All items are clearly visible through tabs
+3. Materials no longer feel hidden
+4. Chemicals page uses the same optimized tabbed experience
+5. Quick Log and Templates use the new unified picker
+6. Navigation is cleaner and simpler
+7. Existing functionality still works
+
+When complete, summarize:
+- files changed
+- routes merged
+- new tab structure
+- store changes
+- any redirects added
