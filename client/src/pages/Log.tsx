@@ -7,6 +7,8 @@ import { todayPacificISO } from "@/utils/dates";
 import { isPerAcreUnit, getBaseUnit, calcTotal, calcLoads, formatNumber, normalizeUnit, areUnitsCompatible } from "@/utils/mathHelpers";
 import { inferCropType, type CropType } from "@/utils/crops";
 import UnifiedInputPicker from "@/components/products/UnifiedInputPicker";
+import { QuickLogSuggestions } from "@/components/logs/QuickLogSuggestions";
+import { BlockSuggestion } from "@/types/suggestions";
 
 type ActionType = 'SPRAY' | 'FERT' | 'IRRIGATE';
 
@@ -385,6 +387,32 @@ export default function Log() {
           {blocks.map(b => <option key={b.id} value={b.id}>{b.name} ({b.acreage} AC)</option>)}
         </select>
       </div>
+      
+      {selectedBlock && (
+        <QuickLogSuggestions 
+          blockId={selectedBlock} 
+          onSelectSuggestion={(suggestion: BlockSuggestion) => {
+            if (suggestion.operationType) setAction(suggestion.operationType as ActionType);
+            setFormData(prev => ({
+              ...prev,
+              material: suggestion.productName || suggestion.title,
+              amount: suggestion.suggestedRate?.toString() || "",
+              unit: suggestion.suggestedRateUnit || ""
+            }));
+            
+            if (suggestion.productId) {
+              setSelectedProductIds([suggestion.productId]);
+            } else if (suggestion.productName) {
+              // Try to find the product ID from the library
+              const allProducts = useStore.getState().productLibrary;
+              const matchedProd = allProducts.find(p => p.name.toLowerCase() === suggestion.productName?.toLowerCase());
+              if (matchedProd) {
+                setSelectedProductIds([matchedProd.id]);
+              }
+            }
+          }}
+        />
+      )}
 
       <div className="mb-8">
         <label className="block text-sm font-bold uppercase tracking-widest text-muted-foreground mb-3">2. Select Action</label>

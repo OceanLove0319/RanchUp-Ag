@@ -1,0 +1,416 @@
+You are working inside the existing KEBB Ag React + Vite frontend-only prototype.
+
+DO NOT:
+- add a backend
+- break existing routes
+- rename existing core log fields
+- remove current block, quick log, template, or inventory behavior
+- present this as agronomic advice or a prescription engine
+
+GOAL
+Build a new MVP feature called:
+
+“Suggested for This Block”
+
+This feature should help growers and foremen quickly see the most relevant likely next inputs or actions for a specific block based on existing block data, recent logs, templates, inventory, timing, and issue flags.
+
+This is NOT an “AI prescription” tool.
+This IS a smart operational recommendation layer.
+
+The experience should answer:
+“What is most likely worth doing next on this block?”
+
+==================================================
+CORE PRODUCT PRINCIPLES
+==================================================
+
+1) Be practical, not magical
+- Recommendations must feel grounded in visible signals.
+- Always explain why something is showing.
+
+2) Be block-specific
+- Use actual block context:
+  - crop
+  - variety
+  - acres
+  - stage / season tag
+  - recent activity
+  - issue flags
+  - attached templates
+  - inventory
+  - similar recent block activity if available
+
+3) Be actionable
+- Every suggestion should have a one-tap action:
+  - Add to Log
+  - Add to Template
+  - Save for Later
+  - Dismiss
+
+4) Be honest
+- If there is not enough data, show:
+  “Not enough block signals yet”
+  and explain what data would improve suggestions.
+
+==================================================
+FEATURE NAME + LANGUAGE
+==================================================
+
+Use this naming in UI:
+- Section title: “Suggested for This Block”
+- Optional subtitle: “Likely next moves based on this block’s recent activity”
+
+Do NOT use:
+- AI agronomy
+- prescription engine
+- automated spray recommendation
+- guaranteed recommendation
+
+Use language like:
+- Suggested
+- Likely next
+- Based on recent block signals
+- Operational guidance
+- Program assist
+
+==================================================
+WHERE TO ADD IT
+==================================================
+
+1) Block Detail Page
+Add a top module below the block header:
+- Suggested for This Block
+
+2) Quick Log
+Add a smaller “Suggestions” strip above the material/input picker
+
+3) Optional Dashboard Widget
+Add a compact dashboard section:
+- Blocks needing attention
+This can come after the block-level feature is working
+
+==================================================
+MVP DATA INPUTS
+==================================================
+
+Build the recommendation logic from existing frontend data only.
+
+Use these inputs where available:
+- block.crop
+- block.variety
+- block.acres
+- block.stage OR season tag if available
+- recent logs for this block (last 7 / 14 / 30 / 60 days)
+- products/materials attached to this block historically
+- templates attached to this block or crop
+- issue flags / notes
+- inventory / inputs library availability
+- similar block heuristic:
+  same crop + same variety OR same crop + similar recent template usage
+
+If some of these fields do not exist yet, make the feature gracefully degrade.
+
+==================================================
+RECOMMENDATION TYPES
+==================================================
+
+Support these suggestion types in MVP:
+
+1) Nutrition Suggestion
+Examples:
+- Nitrogen fertilizer
+- Zinc product
+- Boron product
+- Calcium product
+- Foliar nutrition
+- Fertigation material
+
+2) Protection Suggestion
+Examples:
+- Fungicide
+- Herbicide
+- Insecticide / Miticide
+- Dormant spray material
+- Spray oil
+
+3) Program Gap Suggestion
+Examples:
+- No zinc application logged this spring
+- No recent herbicide pass logged
+- No dormant material recorded on this block
+- No fungicide event logged during a tagged disease-risk window
+
+4) Inventory-Aware Suggestion
+Examples:
+- Product already on hand
+- Enough inventory for this block
+- Similar blocks used this item recently
+
+5) Template-Based Suggestion
+Examples:
+- This block has a spring nutrition template
+- Similar blocks received this input recently
+- This block usually receives this pass during this season tag
+
+==================================================
+RECOMMENDATION OBJECT MODEL
+==================================================
+
+Create a normalized suggestion model, something like:
+
+type BlockSuggestion = {
+  id: string
+  blockId: string
+  title: string
+  category: "NUTRITION" | "PROTECTION" | "PROGRAM_GAP" | "INVENTORY" | "TEMPLATE"
+  inputType?: string
+  productId?: string
+  productName?: string
+  operationType?: string
+  confidence: "HIGH" | "MEDIUM" | "LOW"
+  reasonLines: string[]
+  sourceSignals: string[]
+  suggestedRate?: number
+  suggestedRateUnit?: string
+  estimatedTotal?: number
+  estimatedTotalUnit?: string
+  inventoryStatus?: "ON_HAND" | "LOW" | "UNKNOWN"
+  templateReference?: string
+  dismissed?: boolean
+  savedForLater?: boolean
+}
+
+Do not persist these as authoritative agronomic records.
+They are generated operational suggestions.
+
+==================================================
+SUGGESTION ENGINE RULES (MVP)
+==================================================
+
+Build a simple deterministic rules engine.
+No LLM calls. No backend inference.
+
+Create a function like:
+getSuggestionsForBlock(block, logs, templates, inventory, materials): BlockSuggestion[]
+
+Start with practical rules like these:
+
+RULE GROUP A: RECENCY / GAP
+- If no nutrition-related input has been logged in X days, create a low/medium confidence nutrition suggestion.
+- If no herbicide-related input has been logged in a long interval, create a weed-control gap suggestion.
+- If no dormant spray material exists during a dormant season tag, create a dormant program gap suggestion.
+- If block has issue flags mentioning mites, disease, weed escapes, deficiency, or infiltration, bias toward relevant categories.
+
+RULE GROUP B: TEMPLATE MATCH
+- If a block has an attached template, suggest the next template-linked product/material not recently logged.
+- If a crop template exists and the block matches that crop, surface it as medium confidence.
+
+RULE GROUP C: INVENTORY MATCH
+- If a suggested item exists in inventory, increase confidence and show “On hand”.
+- If enough quantity exists for block acres using rate x acres, show “Enough on hand”.
+- If inventory is low, show “Low stock”.
+
+RULE GROUP D: SIMILAR BLOCKS
+- If 2+ similar blocks (same crop or same crop + variety) received the same input in the last 14 days, suggest that item at medium confidence.
+- Show reason line:
+  “Used recently on similar blocks”
+
+RULE GROUP E: TIMING
+- If the app has season tags / stage tags, use them.
+Examples:
+  - dormant
+  - bloom
+  - post-bloom
+  - fruit set
+  - sizing
+  - hull split
+  - post-harvest
+- Use tags only as operational cues, not agronomic prescriptions.
+
+CONFIDENCE LOGIC
+- HIGH = 4+ strong signals
+- MEDIUM = 2–3 signals
+- LOW = 1 weak signal or incomplete data
+
+==================================================
+UI REQUIREMENTS
+==================================================
+
+BLOCK PAGE MODULE
+At the top of each block page, add a card section:
+
+Suggested for This Block
+
+Inside:
+- up to 3 primary suggestions max
+- ranked by confidence + relevance
+- each card shows:
+  - product/material name or action title
+  - type/category badge
+  - confidence badge
+  - 2–4 reason lines
+  - optional rate / unit
+  - optional estimated total if acres known
+  - inventory status if known
+  - action buttons:
+    - Add to Log
+    - Add to Template
+    - Save
+    - Dismiss
+
+Also include:
+- “Why this is showing” expandable area
+- “Based on X signals” mini label
+
+QUICK LOG
+Above the picker:
+- show 1–3 compact suggestions
+- one-tap “Use This”
+- autofill the selected input into the current log draft
+
+EMPTY STATE
+If not enough information exists:
+Show:
+- “Not enough block signals yet”
+- “Suggestions improve when this block has recent logs, issue notes, templates, or inventory.”
+
+==================================================
+TOTALS / RATE LOGIC
+==================================================
+
+If a suggestion has:
+- suggestedRate
+- suggestedRateUnit containing /AC
+- block.acres
+
+Then compute:
+estimatedTotal = suggestedRate * block.acres
+
+Examples:
+- 15 GAL/AC x 22.5 AC = 337.5 GAL
+- 3 LB/AC x 40 AC = 120 LB
+
+Show this as:
+- Est. Total Needed: 337.5 GAL
+
+If no acreage or no /AC rate, do not compute totals.
+
+==================================================
+DISMISS / SAVE BEHAVIOR
+==================================================
+
+Allow users to:
+- Dismiss a suggestion
+- Save for later
+
+Persist this in localStorage or zustand so dismissed cards do not keep reappearing immediately.
+
+Recommended fields:
+- dismissedSuggestionIdsByBlock
+- savedSuggestionIdsByBlock
+
+==================================================
+FILES TO CREATE OR UPDATE
+==================================================
+
+Create or update as appropriate:
+
+- client/src/lib/store.ts
+- client/src/lib/suggestions/getSuggestionsForBlock.ts
+- client/src/lib/suggestions/suggestionRules.ts
+- client/src/components/blocks/BlockSuggestionsCard.tsx
+- client/src/components/blocks/SuggestionCard.tsx
+- client/src/components/logs/QuickLogSuggestions.tsx
+- client/src/types/suggestions.ts
+
+If there is already a block details page:
+- inject the new module there
+
+If there is already a Quick Log form:
+- inject compact suggestions above the material/input picker
+
+==================================================
+VISUAL / UX STYLE
+==================================================
+
+Use existing KEBB Ag design language:
+- black / white base
+- SF Giants orange accents
+- clean, sharp, modern
+- confident but simple
+- not cluttered
+- mobile-first
+- large tap targets
+- clear badges
+
+Badges:
+- HIGH = strong, clean accent
+- MEDIUM = neutral
+- LOW = subtle
+
+Keep this feeling:
+- practical
+- useful
+- foreman-friendly
+- not like enterprise software overload
+
+==================================================
+INITIAL MVP EXAMPLES
+==================================================
+
+Example suggestion card output patterns:
+
+1) Zinc Product
+Why this is showing:
+- No zinc-related input logged in 30 days
+- Spring nutrition template is attached
+- Similar blocks received zinc this week
+- Product is on hand
+
+2) Horticultural Oil
+Why this is showing:
+- Dormant season tag is active
+- No dormant material logged yet
+- Similar almond blocks received oil recently
+
+3) Pre-emergent Herbicide
+Why this is showing:
+- Weed-control gap detected
+- No recent floor pass logged
+- This block historically receives a herbicide pass this time of season
+
+==================================================
+IMPORTANT SAFETY / POSITIONING
+==================================================
+
+Do NOT frame suggestions as:
+- guaranteed correct
+- agronomic advice
+- label replacement
+- PCA replacement
+
+Add subtle UI helper text:
+“Operational suggestions only. Always follow label, PCA, and ranch practices.”
+
+Place this helper text small but visible in the block suggestion module.
+
+==================================================
+SUCCESS CRITERIA
+==================================================
+
+The build is successful if:
+1. Each block can show up to 3 grounded suggestions
+2. Every suggestion explains why it is showing
+3. Quick Log can use suggestions directly
+4. Suggestions use existing frontend data only
+5. Suggestions degrade gracefully if data is sparse
+6. Dismiss/save state persists
+7. The feature feels operationally useful, not gimmicky
+8. Existing app functionality remains intact
+
+When complete, summarize:
+- files changed
+- rules implemented
+- data sources used
+- UI modules added
+- assumptions made

@@ -11,6 +11,7 @@ import { getSprayChartWindows } from "@/utils/sprayTemplates";
 import { useGating } from "@/utils/gating";
 import { useToast } from "@/hooks/use-toast";
 import BlockLogs from "@/components/BlockLogs";
+import { BlockSuggestionsCard } from "@/components/blocks/BlockSuggestionsCard";
 
 export default function BlockDetail() {
   const [, params] = useRoute("/app/blocks/:id");
@@ -190,7 +191,9 @@ export default function BlockDetail() {
         <p className="text-gray-400 font-medium">{block.variety} • {block.seasonGroup} Season • {block.irrigationType}</p>
       </header>
 
-      <p className="text-xs font-bold uppercase tracking-widest text-primary mb-4">NEXT STEP: REVIEW THIS BLOCK'S TARGETS.</p>
+      <BlockSuggestionsCard blockId={block.id} />
+
+      <p className="text-xs font-bold uppercase tracking-widest text-primary mb-4 mt-8">NEXT STEP: REVIEW THIS BLOCK'S TARGETS.</p>
 
       <div className="grid md:grid-cols-3 gap-6 mb-10">
         <div className="bg-[#111113] border border-white/10 p-6 rounded-lg flex flex-col">

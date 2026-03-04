@@ -161,6 +161,10 @@ type AppState = {
   setAddOn: (addOnId: string, value: boolean | number) => void;
   purchaseOnboarding: () => void;
 
+  // Suggestion State
+  dismissedSuggestions: string[];
+  dismissSuggestion: (id: string) => void;
+
   // Product Library Actions
   addProductLibraryItem: (item: ProductLibraryItem) => void;
   updateProductLibraryItem: (id: string, patch: Partial<ProductLibraryItem>) => void;
@@ -400,6 +404,10 @@ export const useStore = create<AppState>((set) => ({
     localStorage.setItem('kebb_billing', JSON.stringify(newBilling));
     return { billing: newBilling };
   }),
+
+  // Suggestions
+  dismissedSuggestions: [],
+  dismissSuggestion: (id) => set(state => ({ dismissedSuggestions: [...state.dismissedSuggestions, id] })),
 
   // Product Library Actions
   addProductLibraryItem: (item) => set((state) => {
