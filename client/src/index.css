@@ -36,7 +36,7 @@
   --card-foreground: 45 30% 95%;
   --popover: 153 50% 15%;
   --popover-foreground: 45 30% 95%;
-  --primary: 46 65% 52%; /* #D4AF37 Gold accent */
+  --primary: 32 80% 58%; /* #EA993D Gold accent */
   --primary-foreground: 153 59% 10%; /* Dark text on gold */
   --secondary: 153 40% 20%;
   --secondary-foreground: 45 30% 95%;
@@ -48,7 +48,7 @@
   --destructive-foreground: 45 30% 95%;
   --border: 153 30% 25%;
   --input: 153 30% 25%;
-  --ring: 46 65% 52%;
+  --ring: 32 80% 58%;
 }
 
 .dark {
@@ -58,7 +58,7 @@
   --card-foreground: 45 30% 95%;
   --popover: 153 50% 15%;
   --popover-foreground: 45 30% 95%;
-  --primary: 46 65% 52%; 
+  --primary: 32 80% 58%; 
   --primary-foreground: 153 59% 10%;
   --secondary: 153 40% 20%;
   --secondary-foreground: 45 30% 95%;
@@ -70,7 +70,7 @@
   --destructive-foreground: 45 30% 95%;
   --border: 153 30% 25%;
   --input: 153 30% 25%;
-  --ring: 46 65% 52%;
+  --ring: 32 80% 58%;
 }
 
 @layer base {

@@ -22,7 +22,7 @@ export default function Chemicals() {
           <p className="text-xs font-bold uppercase tracking-widest text-primary mb-2">Clarity</p>
           <h1 className="text-4xl font-black uppercase tracking-tighter text-foreground">Chemicals</h1>
         </div>
-        <Link href="/app/chemicals/new" className="flex items-center gap-2 bg-primary hover:bg-primary/90 text-primary-foreground px-4 py-2 rounded font-bold uppercase tracking-widest text-sm transition-colors shadow-[0_0_15px_rgba(212,175,55,0.3)]">
+        <Link href="/app/chemicals/new" className="flex items-center gap-2 bg-primary hover:bg-primary/90 text-primary-foreground px-4 py-2 rounded font-bold uppercase tracking-widest text-sm transition-colors shadow-[0_0_15px_rgba(234,153,61,0.3)]">
           <Plus className="w-4 h-4" /> Log Chem
         </Link>
       </div>

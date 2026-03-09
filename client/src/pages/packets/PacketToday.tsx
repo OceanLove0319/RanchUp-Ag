@@ -133,7 +133,7 @@ export default function PacketToday() {
         </div>
       )}
 
-      <div className="bg-card border border-primary/30 p-6 rounded-xl shadow-[0_0_20px_rgba(212,175,55,0.05)] text-center">
+      <div className="bg-card border border-primary/30 p-6 rounded-xl shadow-[0_0_20px_rgba(234,153,61,0.05)] text-center">
         {!pdfUrl ? (
           <Button 
             onClick={handleGeneratePdf} 

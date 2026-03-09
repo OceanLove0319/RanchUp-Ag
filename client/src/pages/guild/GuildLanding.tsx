@@ -120,7 +120,7 @@ export default function GuildLanding() {
         </p>
         
         <div className="flex flex-col sm:flex-row gap-4 mb-12 md:mb-16">
-          <button onClick={scrollToApply} className="bg-primary hover:bg-primary/90 text-primary-foreground px-6 md:px-8 py-4 rounded font-black uppercase tracking-widest text-sm transition-colors flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(212,175,55,0.4)] w-full sm:w-auto">
+          <button onClick={scrollToApply} className="bg-primary hover:bg-primary/90 text-primary-foreground px-6 md:px-8 py-4 rounded font-black uppercase tracking-widest text-sm transition-colors flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(234,153,61,0.4)] w-full sm:w-auto">
             Request an Invite <ArrowRight className="w-4 h-4" />
           </button>
           <button onClick={scrollToKickbacks} className="bg-transparent border border-primary/50 hover:bg-primary/10 text-primary px-6 md:px-8 py-4 rounded font-black uppercase tracking-widest text-sm transition-colors flex items-center justify-center w-full sm:w-auto">

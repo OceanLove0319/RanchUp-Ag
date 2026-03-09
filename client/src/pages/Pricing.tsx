@@ -69,7 +69,7 @@ export default function Pricing() {
           const price = localAnnual ? plan.annualPrice / 12 : plan.monthlyPrice;
           
           return (
-            <div key={plan.id} className={`bg-card rounded-lg p-8 border-2 transition-all ${isCurrent ? 'border-primary shadow-[0_0_20px_rgba(212,175,55,0.15)] relative' : 'border-border'}`}>
+            <div key={plan.id} className={`bg-card rounded-lg p-8 border-2 transition-all ${isCurrent ? 'border-primary shadow-[0_0_20px_rgba(234,153,61,0.15)] relative' : 'border-border'}`}>
               {isCurrent && (
                 <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full">
                   Current Plan

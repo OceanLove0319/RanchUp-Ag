@@ -148,7 +148,7 @@ export default function InputsLibrary() {
             className="pl-9 bg-card border-border"
           />
         </div>
-        <Button className="font-bold uppercase tracking-wider text-xs shadow-[0_0_15px_rgba(212,175,55,0.2)]">
+        <Button className="font-bold uppercase tracking-wider text-xs shadow-[0_0_15px_rgba(234,153,61,0.2)]">
           <Plus className="w-4 h-4 mr-2" /> Add {activeTab === "CHEMICALS" ? "Chemical" : activeTab === "MATERIALS" ? "Material" : "Item"}
         </Button>
       </div>

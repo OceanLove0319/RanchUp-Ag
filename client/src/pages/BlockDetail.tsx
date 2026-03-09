@@ -158,7 +158,7 @@ export default function BlockDetail() {
 
           <button 
             onClick={handleSaveEdit}
-            className="w-full mt-8 bg-primary text-primary-foreground font-black uppercase tracking-widest py-3 rounded hover:bg-primary/90 transition-colors shadow-[0_0_15px_rgba(212,175,55,0.3)]"
+            className="w-full mt-8 bg-primary text-primary-foreground font-black uppercase tracking-widest py-3 rounded hover:bg-primary/90 transition-colors shadow-[0_0_15px_rgba(234,153,61,0.3)]"
           >
             Save Changes
           </button>
@@ -289,7 +289,7 @@ export default function BlockDetail() {
           <Link href={`/app/chemicals?blockId=${block.id}`} className="flex-1 md:flex-none text-center px-6 py-3 border border-border rounded font-bold uppercase tracking-wide text-sm hover:bg-white/5 transition-colors">
             View Details
           </Link>
-          <Link href={`/app/chemicals/new?blockId=${block.id}`} className="flex-1 md:flex-none text-center px-6 py-3 bg-primary text-primary-foreground rounded font-bold uppercase tracking-wide text-sm hover:bg-primary/90 transition-colors shadow-[0_0_15px_rgba(212,175,55,0.3)]">
+          <Link href={`/app/chemicals/new?blockId=${block.id}`} className="flex-1 md:flex-none text-center px-6 py-3 bg-primary text-primary-foreground rounded font-bold uppercase tracking-wide text-sm hover:bg-primary/90 transition-colors shadow-[0_0_15px_rgba(234,153,61,0.3)]">
             Log Chem
           </Link>
         </div>

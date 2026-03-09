@@ -146,7 +146,7 @@ View full packet in app.`;
         <div className="space-y-8">
           
           {/* Action Card */}
-          <div className="bg-card border border-primary/30 p-5 rounded-xl shadow-[0_0_20px_rgba(212,175,55,0.05)]">
+          <div className="bg-card border border-primary/30 p-5 rounded-xl shadow-[0_0_20px_rgba(234,153,61,0.05)]">
             {!pdfUrl ? (
               <Button 
                 onClick={handleGeneratePdf} 

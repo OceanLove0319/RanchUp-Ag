@@ -651,7 +651,7 @@ export default function Log() {
           <button 
             onClick={handleSave}
             disabled={!formData.amount}
-            className="w-full mt-8 bg-primary text-primary-foreground font-black uppercase tracking-widest py-4 rounded disabled:opacity-50 hover:bg-primary/90 transition-colors flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(212,175,55,0.3)]"
+            className="w-full mt-8 bg-primary text-primary-foreground font-black uppercase tracking-widest py-4 rounded disabled:opacity-50 hover:bg-primary/90 transition-colors flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(234,153,61,0.3)]"
           >
             <Check className="w-5 h-5" /> Save Action
           </button>

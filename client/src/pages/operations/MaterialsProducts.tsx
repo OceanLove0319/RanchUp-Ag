@@ -97,7 +97,7 @@ export default function MaterialsProducts() {
         </div>
         <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
           <DialogTrigger asChild>
-            <Button onClick={openAdd} className="font-bold uppercase tracking-wider text-xs shadow-[0_0_15px_rgba(212,175,55,0.2)]">
+            <Button onClick={openAdd} className="font-bold uppercase tracking-wider text-xs shadow-[0_0_15px_rgba(234,153,61,0.2)]">
               <Plus className="w-4 h-4 mr-2" /> Add Product
             </Button>
           </DialogTrigger>

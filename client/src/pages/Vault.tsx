@@ -116,7 +116,7 @@ export default function Vault() {
         <div className="flex flex-col items-end gap-2">
           <button 
             onClick={handleExportClick}
-            className="flex items-center gap-2 bg-primary text-primary-foreground px-4 py-3 rounded font-black uppercase tracking-widest text-sm transition-colors hover:bg-primary/90 shadow-[0_0_15px_rgba(212,175,55,0.2)]"
+            className="flex items-center gap-2 bg-primary text-primary-foreground px-4 py-3 rounded font-black uppercase tracking-widest text-sm transition-colors hover:bg-primary/90 shadow-[0_0_15px_rgba(234,153,61,0.2)]"
           >
             <Printer className="w-4 h-4" /> Export Season Packet
           </button>

@@ -679,7 +679,7 @@ export default function PcaIntakeCard() {
         <div className="flex flex-col sm:flex-row gap-4 pt-6 border-t border-border mt-8">
           <button 
             onClick={handleSave}
-            className="flex-1 bg-primary text-primary-foreground font-black uppercase tracking-widest py-3 px-6 rounded shadow-[0_0_15px_rgba(212,175,55,0.3)] hover:bg-primary/90 transition-all flex justify-center items-center gap-2"
+            className="flex-1 bg-primary text-primary-foreground font-black uppercase tracking-widest py-3 px-6 rounded shadow-[0_0_15px_rgba(234,153,61,0.3)] hover:bg-primary/90 transition-all flex justify-center items-center gap-2"
           >
             <Save className="w-5 h-5" /> Save Intake
           </button>

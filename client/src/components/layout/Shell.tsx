@@ -136,7 +136,7 @@ export default function Shell({ children }: { children: React.ReactNode }) {
           {/* Quick Log FAB for Mobile */}
           <Link 
             href="/app/log" 
-            className="fixed bottom-24 right-4 bg-primary text-primary-foreground p-4 rounded-full shadow-[0_4px_20px_rgba(212,175,55,0.4)] z-50 active:scale-95 transition-transform"
+            className="fixed bottom-24 right-4 bg-primary text-primary-foreground p-4 rounded-full shadow-[0_4px_20px_rgba(234,153,61,0.4)] z-50 active:scale-95 transition-transform"
           >
             <Plus className="w-6 h-6" />
           </Link>

@@ -33,7 +33,7 @@ export function GuidedStepRail({ activeStep, onStepChange }: GuidedStepRailProps
               onClick={() => onStepChange(step.id)}
               className={`flex items-center gap-2 px-4 py-2.5 rounded-full whitespace-nowrap transition-colors flex-shrink-0 ${
                 isActive 
-                  ? "bg-primary text-primary-foreground font-black uppercase tracking-widest shadow-[0_0_10px_rgba(212,175,55,0.3)]" 
+                  ? "bg-primary text-primary-foreground font-black uppercase tracking-widest shadow-[0_0_10px_rgba(234,153,61,0.3)]" 
                   : "bg-card border border-border text-muted-foreground font-bold uppercase tracking-widest hover:text-foreground hover:border-primary/50"
               }`}
             >

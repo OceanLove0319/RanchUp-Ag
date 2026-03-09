@@ -215,7 +215,7 @@ export default function HowItWorks() {
 
         <div className="mt-24 md:mt-32 text-center px-4">
           <h2 className="text-2xl md:text-3xl font-black uppercase tracking-tight mb-6">Ready to see it in action?</h2>
-          <Link href="/login" className="inline-flex items-center gap-2 px-6 py-4 md:px-8 bg-primary text-primary-foreground font-black uppercase tracking-widest text-base md:text-lg rounded hover:bg-primary/90 transition-colors shadow-[0_0_20px_rgba(212,175,55,0.4)] w-full sm:w-auto justify-center">
+          <Link href="/login" className="inline-flex items-center gap-2 px-6 py-4 md:px-8 bg-primary text-primary-foreground font-black uppercase tracking-widest text-base md:text-lg rounded hover:bg-primary/90 transition-colors shadow-[0_0_20px_rgba(234,153,61,0.4)] w-full sm:w-auto justify-center">
             Try The Demo
           </Link>
         </div>

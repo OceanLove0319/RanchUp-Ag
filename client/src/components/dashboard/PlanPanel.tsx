@@ -141,7 +141,7 @@ export function PlanPanel() {
                 key={task.id}
                 onClick={() => setLocation(`/app/log?input=${encodeURIComponent(task.material)}&type=MATERIAL`)}
                 className={`w-full text-left bg-card border p-4 rounded-xl flex items-center justify-between transition-all hover:scale-[1.01] active:scale-[0.99] ${
-                  task.isOverdue ? 'border-red-500/50 shadow-[0_0_15px_rgba(239,68,68,0.1)]' : 'border-primary/30 shadow-[0_0_15px_rgba(212,175,55,0.05)]'
+                  task.isOverdue ? 'border-red-500/50 shadow-[0_0_15px_rgba(239,68,68,0.1)]' : 'border-primary/30 shadow-[0_0_15px_rgba(234,153,61,0.05)]'
                 }`}
               >
                 <div>

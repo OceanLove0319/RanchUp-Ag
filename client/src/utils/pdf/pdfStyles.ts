@@ -1,16 +1,16 @@
 export const PDF_THEME = {
   colors: {
-    primary: [212, 175, 55], // Gold
+    primary: [234, 153, 61], // Gold
     background: [17, 17, 19], // Dark Background
     card: [26, 26, 28], // Card Background
     text: {
       main: [240, 240, 240], // White
       muted: [150, 150, 150], // Gray
-      accent: [212, 175, 55] // Gold
+      accent: [234, 153, 61] // Gold
     },
     table: {
       headBg: [30, 32, 35],
-      headText: [212, 175, 55],
+      headText: [234, 153, 61],
       rowBg: [22, 22, 24],
       rowAltBg: [26, 26, 28],
       line: [40, 40, 45]

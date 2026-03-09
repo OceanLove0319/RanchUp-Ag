@@ -96,7 +96,7 @@ export default function Onboarding() {
               <button 
                 onClick={() => setStep(2)}
                 disabled={!formData.operationName}
-                className="w-full mt-10 bg-primary text-primary-foreground font-black uppercase tracking-widest py-4 rounded disabled:opacity-50 hover:bg-primary/90 transition-colors shadow-[0_0_15px_rgba(212,175,55,0.3)]"
+                className="w-full mt-10 bg-primary text-primary-foreground font-black uppercase tracking-widest py-4 rounded disabled:opacity-50 hover:bg-primary/90 transition-colors shadow-[0_0_15px_rgba(234,153,61,0.3)]"
               >
                 Next Step
               </button>
@@ -167,7 +167,7 @@ export default function Onboarding() {
                 <button onClick={() => setStep(1)} className="px-6 border border-border text-foreground font-bold uppercase tracking-widest py-4 rounded hover:bg-white/5 transition-colors">
                   Back
                 </button>
-                <button onClick={() => setStep(3)} disabled={!formData.blockName} className="flex-1 bg-primary text-primary-foreground font-black uppercase tracking-widest py-4 rounded disabled:opacity-50 hover:bg-primary/90 transition-colors shadow-[0_0_15px_rgba(212,175,55,0.3)]">
+                <button onClick={() => setStep(3)} disabled={!formData.blockName} className="flex-1 bg-primary text-primary-foreground font-black uppercase tracking-widest py-4 rounded disabled:opacity-50 hover:bg-primary/90 transition-colors shadow-[0_0_15px_rgba(234,153,61,0.3)]">
                   Next Step
                 </button>
               </div>
@@ -197,7 +197,7 @@ export default function Onboarding() {
                 </div>
               </div>
 
-              <button onClick={handleComplete} className="w-full bg-primary text-primary-foreground font-black uppercase tracking-widest py-5 text-lg rounded shadow-[0_0_20px_rgba(212,175,55,0.4)] hover:bg-primary/90 transition-colors">
+              <button onClick={handleComplete} className="w-full bg-primary text-primary-foreground font-black uppercase tracking-widest py-5 text-lg rounded shadow-[0_0_20px_rgba(234,153,61,0.4)] hover:bg-primary/90 transition-colors">
                 Start Your Season
               </button>
             </div>

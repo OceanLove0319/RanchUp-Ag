@@ -15,7 +15,7 @@ export default function Landing() {
         </p>
         
         <div className="flex flex-col sm:flex-row gap-4 mb-16 md:mb-24 w-full sm:w-auto">
-          <Link href="/login" className="px-8 py-4 bg-primary text-primary-foreground font-black uppercase tracking-widest text-lg rounded hover:bg-primary/90 transition-colors flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(212,175,55,0.4)]">
+          <Link href="/login" className="px-8 py-4 bg-primary text-primary-foreground font-black uppercase tracking-widest text-lg rounded hover:bg-primary/90 transition-colors flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(234,153,61,0.4)]">
             Try Demo <ArrowRight className="w-5 h-5" />
           </Link>
         </div>

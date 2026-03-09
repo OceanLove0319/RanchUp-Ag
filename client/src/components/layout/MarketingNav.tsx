@@ -61,7 +61,7 @@ export default function MarketingNav() {
               </Link>
               <Link 
                 href="/guild" 
-                className="px-5 py-2 bg-primary hover:bg-primary/90 text-primary-foreground rounded-full font-black uppercase tracking-widest text-xs transition-colors hidden sm:block shadow-[0_0_15px_rgba(212,175,55,0.3)]"
+                className="px-5 py-2 bg-primary hover:bg-primary/90 text-primary-foreground rounded-full font-black uppercase tracking-widest text-xs transition-colors hidden sm:block shadow-[0_0_15px_rgba(234,153,61,0.3)]"
               >
                 Join Guild
               </Link>
@@ -116,7 +116,7 @@ export default function MarketingNav() {
               </button>
               <button 
                 onClick={() => handleNavClick('/guild')}
-                className="w-full py-4 bg-primary text-primary-foreground rounded font-black uppercase tracking-widest text-sm shadow-[0_0_20px_rgba(212,175,55,0.4)]"
+                className="w-full py-4 bg-primary text-primary-foreground rounded font-black uppercase tracking-widest text-sm shadow-[0_0_20px_rgba(234,153,61,0.4)]"
               >
                 Join The Guild
               </button>

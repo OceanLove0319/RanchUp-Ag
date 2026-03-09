@@ -78,7 +78,7 @@ export function TodayPanel() {
               onClick={() => setSelectedBlockId(block.id)}
               className={`bg-card border p-4 rounded-lg cursor-pointer transition-all ${
                 selectedBlockId === block.id 
-                  ? "border-primary shadow-[0_0_15px_rgba(212,175,55,0.15)] ring-1 ring-primary/50" 
+                  ? "border-primary shadow-[0_0_15px_rgba(234,153,61,0.15)] ring-1 ring-primary/50" 
                   : "border-border hover:border-primary/50"
               }`}
             >
