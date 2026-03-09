@@ -45,7 +45,7 @@ export default function Shell({ children }: { children: React.ReactNode }) {
         <header className="sticky top-0 z-40 bg-background/90 backdrop-blur-md border-b border-border flex flex-col pt-[env(safe-area-inset-top)]">
           <DemoModeBanner />
           <div className="p-4 flex justify-between items-center">
-            <h1 className="text-lg font-black text-white tracking-widest uppercase">KEBB AG™</h1>
+            <h1 className="text-lg font-black text-white tracking-widest uppercase">RANCHUP™</h1>
             <RanchSwitcher compact />
           </div>
           <GuidedFlowReturnBar />
@@ -56,7 +56,7 @@ export default function Shell({ children }: { children: React.ReactNode }) {
       {!isMobile && (
         <nav className="border-r w-64 flex-shrink-0 flex flex-col justify-between bg-background p-4 sticky top-0 h-screen z-50">
           <div className="mb-6">
-            <h1 className="text-xl font-black text-white tracking-widest mb-4 uppercase">KEBB AG™</h1>
+            <h1 className="text-xl font-black text-white tracking-widest mb-4 uppercase">RANCHUP™</h1>
             <RanchSwitcher />
           </div>
           

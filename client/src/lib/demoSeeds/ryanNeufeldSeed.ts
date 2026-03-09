@@ -346,7 +346,7 @@ export function seedDemoData(store: any) {
   
   // Force a localStorage sync for critical parts by executing their standard set functions if needed,
   // but Zustand persist middleware should catch the setState. Just in case, we do billing manually:
-  localStorage.setItem('kebb_billing', JSON.stringify(DEMO_BILLING));
+  localStorage.setItem('ranchup_billing', JSON.stringify(DEMO_BILLING));
   
   // Assign templates to all blocks to fully populate the plan & budget features
   DEMO_BLOCKS.forEach(block => {

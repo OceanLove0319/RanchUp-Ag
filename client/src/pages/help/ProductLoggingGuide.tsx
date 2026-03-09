@@ -10,7 +10,7 @@ export default function ProductLoggingGuide() {
         </Link>
         <h1 className="text-3xl md:text-5xl font-black uppercase tracking-tighter mb-4 text-primary">Product Logging Guide</h1>
         <p className="text-lg text-muted-foreground font-medium">
-          A practical guide to mapping your real-world applications into KEBB Ag's product tracking categories.
+          A practical guide to mapping your real-world applications into RanchUp's product tracking categories.
         </p>
       </div>
 

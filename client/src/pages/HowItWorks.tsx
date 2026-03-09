@@ -11,7 +11,7 @@ export default function HowItWorks() {
         <header className="mb-12 md:mb-16 text-center">
           <h1 className="text-4xl md:text-7xl font-black uppercase tracking-tighter mb-4">How It Works</h1>
           <p className="text-lg md:text-xl text-muted-foreground font-medium max-w-2xl mx-auto px-4">
-            Everything included in the KEBB Ag™ platform to help you run your orchard.
+            Everything included in the RanchUp™ platform to help you run your orchard.
           </p>
         </header>
 
@@ -66,7 +66,7 @@ export default function HowItWorks() {
               </div>
               <h2 className="text-2xl md:text-3xl font-black uppercase tracking-tight mb-3 md:mb-4">2. The Digital Orchard</h2>
               <p className="text-muted-foreground text-base md:text-lg mb-6 leading-relaxed">
-                Stop tracking your farm across five different spiral notebooks. KEBB Ag lets you map your entire operation—ranches, blocks, acres, and crop types—into a single digital source of truth.
+                Stop tracking your farm across five different spiral notebooks. RanchUp lets you map your entire operation—ranches, blocks, acres, and crop types—into a single digital source of truth.
               </p>
               <ul className="space-y-3">
                 <li className="flex items-center gap-3 font-bold text-sm uppercase tracking-widest"><CheckCircle2 className="w-4 h-4 text-primary" /> Instantly switch between ranches</li>
@@ -160,7 +160,7 @@ export default function HowItWorks() {
             <div className="bg-card border border-border p-4 md:p-6 rounded-xl shadow-2xl relative overflow-hidden order-1 md:order-2">
               <div className="absolute top-0 right-0 w-full h-1 bg-gradient-to-l from-white to-transparent"></div>
               <div className="bg-white text-white p-4 rounded text-xs opacity-90 h-40 md:h-48 overflow-hidden">
-                <h4 className="font-black border-b-2 border-black pb-2 mb-2 uppercase text-[10px] md:text-xs">KEBB Ag Season Packet</h4>
+                <h4 className="font-black border-b-2 border-black pb-2 mb-2 uppercase text-[10px] md:text-xs">RanchUp Season Packet</h4>
                 <div className="flex justify-between mb-4 font-bold text-[10px] md:text-xs">
                   <span>North 40 Peaches</span>
                   <span>40 AC</span>
@@ -201,7 +201,7 @@ export default function HowItWorks() {
               </div>
               <h2 className="text-2xl md:text-3xl font-black uppercase tracking-tight mb-3 md:mb-4">6. Grower's Glossary</h2>
               <p className="text-muted-foreground text-base md:text-lg mb-6 leading-relaxed">
-                Stop googling confusing acronyms. KEBB Ag includes a fully searchable, categorized ag-terminology database right in the app. Whether it's complex water metrics, soil science, or compliance terms—you have the answers instantly.
+                Stop googling confusing acronyms. RanchUp includes a fully searchable, categorized ag-terminology database right in the app. Whether it's complex water metrics, soil science, or compliance terms—you have the answers instantly.
               </p>
               <ul className="space-y-3">
                 <li className="flex items-center gap-3 font-bold text-sm uppercase tracking-widest"><CheckCircle2 className="w-4 h-4 text-green-400" /> 40+ Categorized Terms</li>

@@ -116,7 +116,7 @@ export default function VaultPrint() {
 
         {/* Cover / Header */}
         <div className="border-b-4 border-black pb-6 mb-8 avoid-break">
-          <h1 className="text-4xl font-black uppercase tracking-tighter mb-2">KEBB Ag™ Season Packet</h1>
+          <h1 className="text-4xl font-black uppercase tracking-tighter mb-2">RanchUp™ Season Packet</h1>
           <h2 className="text-2xl font-bold mb-4">{block.name} — {block.acreage} AC</h2>
           
           <div className="grid grid-cols-2 gap-4 text-sm mb-4">

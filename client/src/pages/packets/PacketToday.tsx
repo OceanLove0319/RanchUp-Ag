@@ -5,7 +5,7 @@ import { format, startOfDay, endOfDay } from "date-fns";
 import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { KEBB_SEASON_TOC_V1, PacketState } from "@/lib/packets/packetSchemas";
+import { RANCHUP_SEASON_TOC_V1, PacketState } from "@/lib/packets/packetSchemas";
 import { buildPacket } from "@/lib/packets/buildPacket";
 import { generatePdfFromBlocks, triggerPdfDownload } from "@/utils/pdf/generatePdf";
 
@@ -47,7 +47,7 @@ export default function PacketToday() {
            logs.filter(l => !l.amount || l.amount <= 0).length;
   }, [apps, logs]);
 
-  const filename = "KEBB_Today_Packet.pdf";
+  const filename = "RanchUp_Today_Packet.pdf";
 
   const handleGeneratePdf = () => {
     setIsGenerating(true);
@@ -64,7 +64,7 @@ export default function PacketToday() {
         };
         
         // For Today, we'll reuse the Season TOC but filter data down to Today.
-        const renderBlocks = buildPacket(KEBB_SEASON_TOC_V1, state);
+        const renderBlocks = buildPacket(RANCHUP_SEASON_TOC_V1, state);
         const url = generatePdfFromBlocks(renderBlocks, filename);
         
         setPdfUrl(url);
@@ -152,7 +152,7 @@ export default function PacketToday() {
               <Download className="w-4 h-4" /> Download PDF Again
             </Button>
             <div className="grid grid-cols-2 gap-3">
-              <a href={`sms:?&body=${encodeURIComponent("Today's Packet from KEBB Ag is ready.")}`} className="flex">
+              <a href={`sms:?&body=${encodeURIComponent("Today's Packet from RanchUp is ready.")}`} className="flex">
                 <Button variant="secondary" className="w-full gap-2 text-xs">
                   <MessageSquare className="w-4 h-4" /> Text
                 </Button>

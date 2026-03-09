@@ -137,7 +137,7 @@ export default function Billing() {
             <p className="text-xs text-muted-foreground">Prototype Environment</p>
             <button 
               onClick={() => {
-                localStorage.removeItem('kebb_billing');
+                localStorage.removeItem('ranchup_billing');
                 window.location.reload();
               }}
               className="mt-3 text-[10px] font-bold uppercase tracking-widest text-primary hover:underline"

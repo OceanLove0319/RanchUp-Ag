@@ -32,14 +32,14 @@ export interface PacketSection {
   build: (state: PacketState) => RenderBlock[];
 }
 
-// KEBB Season Packet TOC V1
-export const KEBB_SEASON_TOC_V1: PacketSection[] = [
+// RanchUp Season Packet TOC V1
+export const RANCHUP_SEASON_TOC_V1: PacketSection[] = [
   {
     id: "cover",
-    title: "KEBB Ag™ Season Packet",
+    title: "RanchUp™ Season Packet",
     includeIf: () => true, // Always include
     build: (state) => [
-      { type: "HEADING", level: 1, text: "KEBB Ag™ Season Packet" },
+      { type: "HEADING", level: 1, text: "RanchUp™ Season Packet" },
       { type: "PARAGRAPH", text: `Operation: ${state.ranch?.name || "All Ranches"}` },
       { type: "PARAGRAPH", text: `Season Year: ${state.dateStart.getFullYear()}` },
       { type: "PARAGRAPH", text: `Date Generated: ${new Date().toLocaleDateString()}` },

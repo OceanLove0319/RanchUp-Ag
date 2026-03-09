@@ -237,7 +237,7 @@ export function generatePdfFromBlocks(blocks: RenderBlock[], filename: string = 
       doc.setFont(PDF_THEME.fonts.main, "bold");
       doc.setFontSize(PDF_THEME.fonts.sizes.small);
       doc.setTextColor(PDF_THEME.colors.primary[0], PDF_THEME.colors.primary[1], PDF_THEME.colors.primary[2]);
-      doc.text("KEBB AG™", margin, 12);
+      doc.text("RANCHUP™", margin, 12);
       
       // Document Type in Header
       doc.setFont(PDF_THEME.fonts.main, "normal");

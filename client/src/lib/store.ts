@@ -178,7 +178,7 @@ type AppState = GuidedFlowState & {
 
 const getInitialBilling = (): BillingState => {
   try {
-    const saved = localStorage.getItem('kebb_billing');
+    const saved = localStorage.getItem('ranchup_billing');
     if (saved) return JSON.parse(saved);
   } catch (e) {}
   
@@ -197,7 +197,7 @@ const demoRanches: Ranch[] = [
 ];
 
 export const useStore = create<AppState>((set) => ({
-  user: { name: 'Demo User', org: 'KEBB Farms' }, // Auto logged in for demo
+  user: { name: 'Demo User', org: 'RanchUp Farms' }, // Auto logged in for demo
   billing: getInitialBilling(),
   
   ranches: demoRanches,
@@ -296,7 +296,7 @@ export const useStore = create<AppState>((set) => ({
   productLibrary: [],
   
   login: () => set({ 
-    user: { name: 'Demo User', org: 'KEBB Farms' },
+    user: { name: 'Demo User', org: 'RanchUp Farms' },
     ranches: demoRanches,
     activeRanchId: demoRanches[0].id
   }),
@@ -384,13 +384,13 @@ export const useStore = create<AppState>((set) => ({
   
   setPlan: (planId, isAnnual) => set(state => {
     const newBilling = { ...state.billing, planId, isAnnual };
-    localStorage.setItem('kebb_billing', JSON.stringify(newBilling));
+    localStorage.setItem('ranchup_billing', JSON.stringify(newBilling));
     return { billing: newBilling };
   }),
   
   toggleAnnual: (isAnnual) => set(state => {
     const newBilling = { ...state.billing, isAnnual };
-    localStorage.setItem('kebb_billing', JSON.stringify(newBilling));
+    localStorage.setItem('ranchup_billing', JSON.stringify(newBilling));
     return { billing: newBilling };
   }),
   
@@ -399,13 +399,13 @@ export const useStore = create<AppState>((set) => ({
       ...state.billing, 
       addOns: { ...state.billing.addOns, [addOnId]: value } 
     };
-    localStorage.setItem('kebb_billing', JSON.stringify(newBilling));
+    localStorage.setItem('ranchup_billing', JSON.stringify(newBilling));
     return { billing: newBilling };
   }),
   
   purchaseOnboarding: () => set(state => {
     const newBilling = { ...state.billing, onboardingPurchased: true };
-    localStorage.setItem('kebb_billing', JSON.stringify(newBilling));
+    localStorage.setItem('ranchup_billing', JSON.stringify(newBilling));
     return { billing: newBilling };
   }),
 
@@ -444,19 +444,19 @@ export const useStore = create<AppState>((set) => ({
   // Product Library Actions
   addProductLibraryItem: (item) => set((state) => {
     const newLib = [...state.productLibrary, item];
-    localStorage.setItem('kebb_product_library', JSON.stringify(newLib));
+    localStorage.setItem('ranchup_product_library', JSON.stringify(newLib));
     return { productLibrary: newLib };
   }),
   
   updateProductLibraryItem: (id, patch) => set((state) => {
     const newLib = state.productLibrary.map(p => p.id === id ? { ...p, ...patch } : p);
-    localStorage.setItem('kebb_product_library', JSON.stringify(newLib));
+    localStorage.setItem('ranchup_product_library', JSON.stringify(newLib));
     return { productLibrary: newLib };
   }),
   
   removeProductLibraryItem: (id) => set((state) => {
     const newLib = state.productLibrary.filter(p => p.id !== id);
-    localStorage.setItem('kebb_product_library', JSON.stringify(newLib));
+    localStorage.setItem('ranchup_product_library', JSON.stringify(newLib));
     return { productLibrary: newLib };
   }),
   
@@ -465,7 +465,7 @@ export const useStore = create<AppState>((set) => ({
     if (state.productLibrary.length > 0) return state;
     import('@/data/materialsSeed').then(({ TOP_100_MATERIALS }) => {
       const seeded = TOP_100_MATERIALS.map((m, i) => ({ ...m, id: `seed-${i}` }));
-      localStorage.setItem('kebb_product_library', JSON.stringify(seeded));
+      localStorage.setItem('ranchup_product_library', JSON.stringify(seeded));
       useStore.setState({ productLibrary: seeded as any });
     });
     return state;
@@ -474,7 +474,7 @@ export const useStore = create<AppState>((set) => ({
 
 // Initialize LocalStorage loaded state
 try {
-  const savedProducts = localStorage.getItem('kebb_product_library');
+  const savedProducts = localStorage.getItem('ranchup_product_library');
   if (savedProducts) {
     useStore.setState({ productLibrary: JSON.parse(savedProducts) });
   } else {

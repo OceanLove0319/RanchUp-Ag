@@ -5,7 +5,7 @@ import { format } from "date-fns";
 import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { KEBB_SEASON_TOC_V1, PacketState } from "@/lib/packets/packetSchemas";
+import { RANCHUP_SEASON_TOC_V1, PacketState } from "@/lib/packets/packetSchemas";
 import { buildPacket } from "@/lib/packets/buildPacket";
 import { generatePdfFromBlocks, triggerPdfDownload } from "@/utils/pdf/generatePdf";
 
@@ -46,13 +46,13 @@ export default function PacketSeason() {
     setIsGenerating(true);
     setTimeout(() => {
       try {
-        const renderBlocks = buildPacket(KEBB_SEASON_TOC_V1, state);
-        const url = generatePdfFromBlocks(renderBlocks, "KEBB_Season_Packet.pdf");
+        const renderBlocks = buildPacket(RANCHUP_SEASON_TOC_V1, state);
+        const url = generatePdfFromBlocks(renderBlocks, "RanchUp_Season_Packet.pdf");
         
         setPdfUrl(url);
         
         // Trigger actual download!
-        triggerPdfDownload(url, "KEBB_Season_Packet.pdf");
+        triggerPdfDownload(url, "RanchUp_Season_Packet.pdf");
         
         toast({ title: "PDF Generated", description: "Season Audit Binder has been downloaded." });
       } catch (e) {
@@ -67,7 +67,7 @@ export default function PacketSeason() {
   const handleDownloadAgain = (e: React.MouseEvent) => {
     e.preventDefault();
     if (pdfUrl) {
-      triggerPdfDownload(pdfUrl, "KEBB_Season_Packet.pdf");
+      triggerPdfDownload(pdfUrl, "RanchUp_Season_Packet.pdf");
     }
   };
 
@@ -122,7 +122,7 @@ export default function PacketSeason() {
           <h3 className="font-bold text-sm uppercase tracking-widest">Table of Contents Preview</h3>
         </div>
         <div className="divide-y divide-border">
-          {KEBB_SEASON_TOC_V1.map((section) => {
+          {RANCHUP_SEASON_TOC_V1.map((section) => {
             const isIncluded = section.includeIf(state);
             return (
               <div key={section.id} className="p-3 px-4 flex items-center gap-3">

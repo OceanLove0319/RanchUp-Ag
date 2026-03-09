@@ -106,7 +106,7 @@ export default function TodayPacket() {
   };
 
   const copySummary = () => {
-    const text = `KEBB Ag Update: ${activeRanch?.name || ''} - ${format(new Date(), 'MMM d')}
+    const text = `RanchUp Update: ${activeRanch?.name || ''} - ${format(new Date(), 'MMM d')}
 Touched ${todayBlocks.length} blocks (${totals.acres.toFixed(1)} ac).
 View full packet in app.`;
     
@@ -114,7 +114,7 @@ View full packet in app.`;
     toast({ title: "Copied to clipboard" });
   };
 
-  const smsLink = `sms:?&body=${encodeURIComponent(`Here is today's field packet for ${activeRanch?.name}. Open KEBB app to view.`)}`;
+  const smsLink = `sms:?&body=${encodeURIComponent(`Here is today's field packet for ${activeRanch?.name}. Open RanchUp app to view.`)}`;
   const emailLink = `mailto:?subject=Today's Packet - ${activeRanch?.name}&body=${encodeURIComponent(`Please find today's logs for ${totals.acres.toFixed(1)} acres attached in the app.`)}`;
 
   return (

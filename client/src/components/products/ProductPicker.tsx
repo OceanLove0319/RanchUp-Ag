@@ -14,7 +14,7 @@ export default function ProductPicker({ selectedProductIds = [], onSelectionChan
 
   useEffect(() => {
     try {
-      const stored = localStorage.getItem("kebb_recent_products");
+      const stored = localStorage.getItem("ranchup_recent_products");
       if (stored) setRecentIds(JSON.parse(stored));
     } catch (e) {}
   }, []);
@@ -22,7 +22,7 @@ export default function ProductPicker({ selectedProductIds = [], onSelectionChan
   const updateRecent = (id: string) => {
     const next = [id, ...recentIds.filter(i => i !== id)].slice(0, 5);
     setRecentIds(next);
-    localStorage.setItem("kebb_recent_products", JSON.stringify(next));
+    localStorage.setItem("ranchup_recent_products", JSON.stringify(next));
   };
 
   const toggleSelection = (id: string) => {

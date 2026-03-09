@@ -23,7 +23,7 @@ export default function Login() {
 
   const handleStandardLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    if (email === "demo@kebbfarms.com" && password === "peaches") {
+    if (email === "demo@ranchupfarms.com" && password === "peaches") {
       login();
       // Activate the PRO plan and Cost Engine for the demo
       useStore.getState().setPlan("PRO", false);
@@ -32,13 +32,13 @@ export default function Login() {
       setLocation("/app");
       toast({
         title: "Welcome back",
-        description: "Logged into KEBB Farms demo account (Pro + Cost Engine active)."
+        description: "Logged into RanchUp Farms demo account (Pro + Cost Engine active)."
       });
     } else {
       toast({
         variant: "destructive",
         title: "Invalid credentials",
-        description: "For the demo, use demo@kebbfarms.com / peaches"
+        description: "For the demo, use demo@ranchupfarms.com / peaches"
       });
     }
   };
@@ -54,7 +54,7 @@ export default function Login() {
             <label className="block text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2">Email</label>
             <input 
               type="email" 
-              placeholder="demo@kebbfarms.com"
+              placeholder="demo@ranchupfarms.com"
               value={email}
               onChange={e => setEmail(e.target.value)}
               className="w-full bg-background border border-border rounded px-4 py-3 text-foreground focus:outline-none focus:border-primary transition-colors"
@@ -69,7 +69,7 @@ export default function Login() {
               onChange={e => setPassword(e.target.value)}
               className="w-full bg-background border border-border rounded px-4 py-3 text-foreground focus:outline-none focus:border-primary transition-colors"
             />
-            <p className="text-[10px] text-muted-foreground mt-2 italic">Demo hint: Use demo@kebbfarms.com / peaches</p>
+            <p className="text-[10px] text-muted-foreground mt-2 italic">Demo hint: Use demo@ranchupfarms.com / peaches</p>
           </div>
           <button type="submit" className="w-full bg-primary text-primary-foreground font-bold uppercase tracking-widest py-3 rounded hover:bg-primary/90 transition-colors">
             Sign In

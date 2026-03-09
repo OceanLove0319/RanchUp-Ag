@@ -5,7 +5,7 @@ import { packerShipperSchema, restrictedMaterialSchema, type PcaIntake, type Pac
 import { FileText, Printer, Save, History, ChevronDown, ChevronUp, AlertCircle, RefreshCw, Check } from "lucide-react";
 import { z } from "zod";
 
-const STORAGE_KEY = "kebb_pca_intakes";
+const STORAGE_KEY = "ranchup_pca_intakes";
 
 export default function PcaIntakeCard() {
   const [activeTab, setActiveTab] = useState<"PACKER_SHIPPER" | "RESTRICTED_MATERIAL">("PACKER_SHIPPER");

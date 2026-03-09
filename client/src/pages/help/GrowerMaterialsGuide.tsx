@@ -10,7 +10,7 @@ export default function GrowerMaterialsGuide() {
         </Link>
         <h1 className="text-3xl md:text-5xl font-black uppercase tracking-tighter mb-4 text-white">Grower Materials Guide</h1>
         <p className="text-lg text-muted-foreground font-medium">
-          A practical reference for classifying your inputs within the KEBB Ag platform.
+          A practical reference for classifying your inputs within the RanchUp platform.
         </p>
       </div>
 

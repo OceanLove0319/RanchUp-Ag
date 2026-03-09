@@ -21,7 +21,7 @@ export default function MarketingNav() {
             <Link href="/">
               <div className="flex items-center gap-2 cursor-pointer group">
                 <div className="w-8 h-8 bg-primary rounded flex items-center justify-center font-black text-primary-foreground text-xl group-hover:bg-primary/90 transition-colors">K</div>
-                <span className="font-black tracking-tighter text-xl uppercase text-white">KEBB Ag™</span>
+                <span className="font-black tracking-tighter text-xl uppercase text-white">RanchUp™</span>
               </div>
             </Link>
           </div>
@@ -78,7 +78,7 @@ export default function MarketingNav() {
             <div className="flex justify-between items-center mb-12 mt-2">
               <div className="flex items-center gap-2">
                 <div className="w-8 h-8 bg-primary rounded flex items-center justify-center font-black text-primary-foreground text-xl">K</div>
-                <span className="font-black tracking-tighter text-xl uppercase text-white">KEBB Ag™</span>
+                <span className="font-black tracking-tighter text-xl uppercase text-white">RanchUp™</span>
               </div>
               <button 
                 onClick={() => setIsMenuOpen(false)}

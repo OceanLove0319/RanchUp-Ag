@@ -80,10 +80,10 @@ export default function Log() {
   
   // LocalStorage state
   const [pinnedTemplates, setPinnedTemplates] = useState<Record<string, string>>(() => {
-    try { return JSON.parse(localStorage.getItem('kebb_quicklog_pins') || '{}'); } catch { return {}; }
+    try { return JSON.parse(localStorage.getItem('ranchup_quicklog_pins') || '{}'); } catch { return {}; }
   });
   const [recentTemplates, setRecentTemplates] = useState<Record<string, Record<string, string>>>(() => {
-    try { return JSON.parse(localStorage.getItem('kebb_quicklog_recent') || '{}'); } catch { return {}; }
+    try { return JSON.parse(localStorage.getItem('ranchup_quicklog_recent') || '{}'); } catch { return {}; }
   });
   
   const [formData, setFormData] = useState({
@@ -146,11 +146,11 @@ export default function Log() {
 
   // Persist pins/recents
   useEffect(() => {
-    localStorage.setItem('kebb_quicklog_pins', JSON.stringify(pinnedTemplates));
+    localStorage.setItem('ranchup_quicklog_pins', JSON.stringify(pinnedTemplates));
   }, [pinnedTemplates]);
 
   useEffect(() => {
-    localStorage.setItem('kebb_quicklog_recent', JSON.stringify(recentTemplates));
+    localStorage.setItem('ranchup_quicklog_recent', JSON.stringify(recentTemplates));
   }, [recentTemplates]);
 
   const applyTemplate = (template: QuickTemplate) => {
