@@ -84,7 +84,7 @@ export default function BlockDetail() {
               />
             </div>
             
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2">Acreage</label>
                 <input 
@@ -105,7 +105,7 @@ export default function BlockDetail() {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2">Season Group</label>
                 <select 
@@ -133,7 +133,7 @@ export default function BlockDetail() {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2">Yield Target (bins/ac)</label>
                 <input 
@@ -182,7 +182,7 @@ export default function BlockDetail() {
       </div>
 
       <header className="mb-10">
-        <div className="flex items-center gap-4 mb-2">
+        <div className="flex flex-wrap items-center gap-4 mb-2">
           <h1 className="text-4xl md:text-5xl font-black uppercase tracking-tighter text-white">{block.name}</h1>
           <span className="bg-white/10 text-white px-3 py-1 rounded text-sm font-bold uppercase tracking-widest">
             {block.acreage} ACRES
@@ -254,7 +254,7 @@ export default function BlockDetail() {
           <p className="text-gray-400 font-medium mb-1">Total estimated cost based on active season window logs.</p>
           <p className="text-xs text-muted-foreground flex items-center gap-1"><Info className="w-3 h-3" /> Totals reflect this block's active season window based on Early/Mid/Late timing.</p>
         </div>
-        <div className="text-right">
+        <div className="text-left w-full md:text-right md:w-auto">
           {costEngine.allowed ? (
             <>
               <p className="text-4xl font-black text-white">{formattedSpend}</p>
@@ -281,14 +281,14 @@ export default function BlockDetail() {
           <p className="text-xs text-amber-500/80 mt-1">1 recent log is missing an application rate.</p>
         </div>
         <Link href={`/app/reports/variance?blockId=${block.id}`}>
-          <button className="bg-amber-500/20 text-amber-500 hover:bg-amber-500/30 border border-amber-500/30 w-full sm:w-auto text-xs uppercase tracking-widest px-4 py-2 rounded font-bold transition-colors">
+          <button className="bg-amber-500/20 text-amber-500 hover:bg-amber-500/30 border border-amber-500/30 w-full sm:w-auto text-xs uppercase tracking-widest px-4 py-3 rounded font-bold transition-colors">
             Fix Info
           </button>
         </Link>
       </div>
 
-      <div className="flex gap-3 mb-6">
-        <Link href={`/app/packets/season?blockId=${block.id}`} className="flex-1 bg-card border border-border hover:border-primary/50 text-foreground p-4 rounded-lg flex items-center justify-center gap-2 font-bold uppercase tracking-widest transition-colors text-sm">
+      <div className="flex flex-col gap-3 mb-6">
+        <Link href={`/app/packets/season?blockId=${block.id}`} className="w-full bg-card border border-border hover:border-primary/50 text-foreground p-5 rounded-lg flex items-center justify-center gap-2 font-bold uppercase tracking-widest transition-colors text-sm">
            Print Block Packet
         </Link>
       </div>
@@ -306,11 +306,11 @@ export default function BlockDetail() {
           </p>
           <p className="text-xs text-muted-foreground flex items-center gap-1"><Info className="w-3 h-3" /> Dates and season totals are computed in Pacific time (CA).</p>
         </div>
-        <div className="flex gap-3 w-full md:w-auto">
-          <Link href={`/app/chemicals?blockId=${block.id}`} className="flex-1 md:flex-none text-center px-6 py-3 border border-border rounded font-bold uppercase tracking-wide text-sm hover:bg-white/5 transition-colors">
+        <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
+          <Link href={`/app/chemicals?blockId=${block.id}`} className="w-full sm:w-auto text-center px-6 py-4 border border-border rounded-lg font-bold uppercase tracking-wide text-sm hover:bg-white/5 transition-colors">
             View Details
           </Link>
-          <Link href={`/app/chemicals/new?blockId=${block.id}`} className="flex-1 md:flex-none text-center px-6 py-3 bg-primary text-primary-foreground rounded font-bold uppercase tracking-wide text-sm hover:bg-primary/90 transition-colors shadow-[0_0_15px_rgba(234,153,61,0.3)]">
+          <Link href={`/app/chemicals/new?blockId=${block.id}`} className="w-full sm:w-auto text-center px-6 py-4 bg-primary text-primary-foreground rounded-lg font-bold uppercase tracking-wide text-sm hover:bg-primary/90 transition-colors shadow-[0_0_15px_rgba(234,153,61,0.3)]">
             Log Chem
           </Link>
         </div>

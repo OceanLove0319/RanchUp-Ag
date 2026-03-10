@@ -84,31 +84,31 @@ export default function PacketSeason() {
         <p className="text-gray-400 font-medium">Generate your season audit packet.</p>
       </header>
 
-      <div className="grid grid-cols-3 gap-4 mb-8">
-        <div className="bg-[#111113] border border-border p-4 rounded-lg text-center">
-          <p className="text-2xl font-black text-white">{logs.length}</p>
-          <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Season Logs</p>
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+        <div className="bg-[#111113] border border-border p-5 rounded-xl text-center shadow-sm">
+          <p className="text-3xl font-black text-white">{logs.length}</p>
+          <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mt-1">Season Logs</p>
         </div>
-        <div className="bg-[#111113] border border-border p-4 rounded-lg text-center">
-          <p className="text-2xl font-black text-white">{blocks.length}</p>
-          <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Blocks</p>
+        <div className="bg-[#111113] border border-border p-5 rounded-xl text-center shadow-sm">
+          <p className="text-3xl font-black text-white">{blocks.length}</p>
+          <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mt-1">Blocks</p>
         </div>
-        <div className={`border p-4 rounded-lg text-center ${issuesCount > 0 ? 'bg-red-500/10 border-red-500/30' : 'bg-[#111113] border-border'}`}>
-          <p className={`text-2xl font-black ${issuesCount > 0 ? 'text-red-400' : 'text-white'}`}>{issuesCount}</p>
-          <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Missing Info</p>
+        <div className={`border p-5 rounded-xl text-center shadow-sm ${issuesCount > 0 ? 'bg-red-500/10 border-red-500/30' : 'bg-[#111113] border-border'}`}>
+          <p className={`text-3xl font-black ${issuesCount > 0 ? 'text-red-400' : 'text-white'}`}>{issuesCount}</p>
+          <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mt-1">Missing Info</p>
         </div>
       </div>
 
       {issuesCount > 0 && (
-        <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-4 mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-5 mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-sm">
           <div>
-            <h3 className="font-bold text-red-400 flex items-center gap-2">
-              <AlertCircle className="w-4 h-4" /> Heads Up: Missing Info
+            <h3 className="font-bold text-red-400 flex items-center gap-2 text-lg">
+              <AlertCircle className="w-5 h-5" /> Heads Up: Missing Info
             </h3>
-            <p className="text-xs text-red-400/80 mt-1">Some logs are missing rates or acreage.</p>
+            <p className="text-sm text-red-400/80 mt-1">Some logs are missing rates or acreage.</p>
           </div>
           <Link href="/app/reports/variance">
-            <Button size="sm" variant="outline" className="border-red-500/50 text-red-400 hover:bg-red-500/20 w-full sm:w-auto text-xs uppercase tracking-widest">
+            <Button size="lg" variant="outline" className="border-red-500/50 text-red-400 hover:bg-red-500/20 w-full sm:w-auto text-sm font-bold uppercase tracking-widest py-6">
               Fix Now
             </Button>
           </Link>

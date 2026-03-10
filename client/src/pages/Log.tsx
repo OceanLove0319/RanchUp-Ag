@@ -445,7 +445,7 @@ export default function Log() {
 
       <div className="mb-8">
         <label className="block text-sm font-bold uppercase tracking-widest text-muted-foreground mb-3">2. Select Action</label>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
           {(['SPRAY', 'FERT', 'IRRIGATE', 'LABOR'] as ActionType[]).map(a => {
             const config = actionConfig[a];
             const Icon = config.icon;
@@ -474,10 +474,10 @@ export default function Log() {
       {action && (
         <div className="animate-in slide-in-from-bottom-4 fade-in duration-300 bg-card border border-border p-4 md:p-6 rounded-lg">
           <div className="flex flex-col mb-6 gap-3 border-b border-border pb-4">
-            <div className="flex flex-col md:flex-row justify-between md:items-center gap-3">
+            <div className="flex flex-col md:flex-row justify-between md:items-center gap-4">
               <label className="block text-sm font-bold uppercase tracking-widest text-muted-foreground">3. Details</label>
               {action && getFilteredTemplates().length > 0 && (
-                <div className="flex overflow-x-auto pb-2 md:pb-0 md:flex-wrap gap-2 md:justify-end no-scrollbar -mx-4 px-4 md:mx-0 md:px-0">
+                <div className="flex flex-wrap gap-2 md:justify-end">
                   {getFilteredTemplates().map(t => {
                     const isPinned = t.labelType === 'Pinned';
                     const isRecent = t.labelType === 'Recent';
@@ -485,7 +485,7 @@ export default function Log() {
                       <div key={t.id} className="relative group flex-shrink-0">
                         <button
                           onClick={() => applyTemplate(t)}
-                          className={`flex items-center gap-1.5 px-3 py-2 md:py-1.5 rounded text-[11px] md:text-xs font-bold uppercase tracking-widest transition-colors whitespace-nowrap ${
+                          className={`flex items-center gap-1.5 px-4 py-3 md:py-2 rounded-lg text-xs md:text-xs font-bold uppercase tracking-widest transition-colors whitespace-nowrap ${
                             activeTemplate === t.name 
                               ? 'bg-primary text-primary-foreground' 
                               : isPinned
@@ -546,7 +546,7 @@ export default function Log() {
               </div>
             )}
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2">Amount</label>
                 <input 
@@ -599,14 +599,14 @@ export default function Log() {
 
             {/* Expandable Advanced Area */}
             <details className="group [&_summary::-webkit-details-marker]:hidden mt-6">
-              <summary className="flex items-center justify-between cursor-pointer list-none py-3 border-t border-border">
+              <summary className="flex items-center justify-between cursor-pointer list-none py-4 px-4 bg-background border border-border rounded-lg">
                 <span className="text-xs font-bold uppercase tracking-widest text-primary">More for PCA / Office</span>
                 <span className="transition group-open:rotate-180">
                   <svg fill="none" height="24" shapeRendering="geometricPrecision" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" viewBox="0 0 24 24" width="24"><path d="M6 9l6 6 6-6"></path></svg>
                 </span>
               </summary>
               
-              <div className="pt-2 pb-4 space-y-4">
+              <div className="pt-4 pb-4 space-y-4">
                 {/* Math Helper Panel */}
                 {isPerAcreUnit(formData.unit) && (
                   <div className="bg-background border border-border rounded-lg p-4">
@@ -641,7 +641,7 @@ export default function Log() {
                               value={tankSize}
                               onChange={e => setTankSize(e.target.value)}
                               placeholder="e.g. 500"
-                              className="w-full bg-card border border-border rounded px-2 py-1.5 text-base md:text-xs text-foreground focus:outline-none focus:border-primary"
+                              className="w-full bg-card border border-border rounded px-3 py-3 text-base text-foreground focus:outline-none focus:border-primary"
                             />
                           </div>
                           <div className="flex-1 text-right">
@@ -675,7 +675,7 @@ export default function Log() {
                 <div>
                    <label className="block text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2">Notes</label>
                    <textarea
-                     className="w-full bg-background border border-border rounded p-3 text-sm focus:outline-none focus:border-primary min-h-[80px]"
+                     className="w-full bg-background border border-border rounded p-3 text-base focus:outline-none focus:border-primary min-h-[100px]"
                      placeholder="Weather, equipment issues, etc."
                    />
                 </div>
@@ -686,7 +686,7 @@ export default function Log() {
           <button 
             onClick={handleSave}
             disabled={!formData.amount}
-            className="w-full mt-8 bg-primary text-primary-foreground font-black uppercase tracking-widest py-4 rounded disabled:opacity-50 hover:bg-primary/90 transition-colors flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(234,153,61,0.3)]"
+            className="w-full mt-8 bg-primary text-primary-foreground font-black uppercase tracking-widest py-5 text-lg rounded-lg disabled:opacity-50 hover:bg-primary/90 transition-colors flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(234,153,61,0.3)] sticky bottom-4 z-10"
           >
             <Check className="w-5 h-5" /> Save Action
           </button>

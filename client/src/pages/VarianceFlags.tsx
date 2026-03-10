@@ -123,20 +123,20 @@ export default function VarianceFlags() {
           </div>
 
           {Object.keys(mismatchesByBlock).length > 0 ? (
-            <div className="space-y-3">
+            <div className="space-y-4">
               {Object.entries(mismatchesByBlock).map(([blockId, count]) => {
                 const block = blocks.find(b => b.id === blockId);
                 return (
-                  <div key={blockId} className="bg-card border border-orange-400/30 p-4 rounded-lg flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  <div key={blockId} className="bg-card border border-orange-400/30 p-5 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-sm">
                     <div>
                       <h3 className="font-bold text-white text-lg">{block?.name || 'Unknown Block'}</h3>
                       <p className="text-sm text-muted-foreground">Log entries with incompatible units</p>
                     </div>
-                    <div className="flex items-center gap-3">
-                      <div className="flex items-center gap-2 bg-orange-400/10 px-3 py-1.5 rounded text-orange-400 border border-orange-400/20">
+                    <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
+                      <div className="flex items-center justify-center gap-2 bg-orange-400/10 px-3 py-2 rounded-lg text-orange-400 border border-orange-400/20 w-full sm:w-auto">
                         <span className="font-black">{count} Error{count > 1 ? 's' : ''}</span>
                       </div>
-                      <Button onClick={() => handleResolveIssue(blockId)} size="sm" className="font-bold uppercase tracking-widest text-xs">
+                      <Button onClick={() => handleResolveIssue(blockId)} className="font-bold uppercase tracking-widest text-sm w-full sm:w-auto py-6">
                         Fix Issue
                       </Button>
                     </div>
@@ -145,10 +145,10 @@ export default function VarianceFlags() {
               })}
             </div>
           ) : (
-            <div className="bg-[#111113] border border-white/10 p-8 rounded-lg text-center flex flex-col items-center">
-              <CheckCircle2 className="w-10 h-10 text-primary mb-3" />
-              <span className="font-bold uppercase tracking-widest text-sm text-white mb-1">No data issues to fix</span>
-              <p className="text-xs text-muted-foreground">All logs and unit matches look good.</p>
+            <div className="bg-[#111113] border border-white/10 p-8 rounded-xl text-center flex flex-col items-center">
+              <CheckCircle2 className="w-12 h-12 text-primary mb-4" />
+              <span className="font-bold uppercase tracking-widest text-base text-white mb-2">No data issues to fix</span>
+              <p className="text-sm text-muted-foreground">All logs and unit matches look good.</p>
             </div>
           )}
         </section>
@@ -161,25 +161,25 @@ export default function VarianceFlags() {
           </div>
           
           {costSpikes.length > 0 ? (
-            <div className="space-y-3">
+            <div className="space-y-4">
               {costSpikes.map(spike => (
-                <div key={spike.blockId} className="bg-card border border-red-500/30 p-4 rounded-lg flex items-center justify-between">
+                <div key={spike.blockId} className="bg-card border border-red-500/30 p-5 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-sm">
                   <div>
                     <h3 className="font-bold text-white text-lg">{spike.blockName}</h3>
                     <p className="text-sm text-muted-foreground">
                       ${spike.currentSpend.toLocaleString()} this month (vs ${spike.lastSpend.toLocaleString()})
                     </p>
                   </div>
-                  <div className="flex items-center gap-2 bg-red-500/10 px-3 py-1.5 rounded text-red-400 border border-red-500/20">
-                    <TrendingUp className="w-4 h-4" />
-                    <span className="font-black">+{spike.percentChange.toFixed(0)}%</span>
+                  <div className="flex items-center justify-center gap-2 bg-red-500/10 px-4 py-3 rounded-lg text-red-400 border border-red-500/20 w-full sm:w-auto">
+                    <TrendingUp className="w-5 h-5" />
+                    <span className="font-black text-lg">+{spike.percentChange.toFixed(0)}%</span>
                   </div>
                 </div>
               ))}
             </div>
           ) : (
-            <div className="bg-[#111113] border border-white/10 p-8 rounded-lg text-center text-muted-foreground">
-              <span className="font-bold uppercase tracking-widest text-sm">No significant cost spikes this month.</span>
+            <div className="bg-[#111113] border border-white/10 p-8 rounded-xl text-center text-muted-foreground">
+              <span className="font-bold uppercase tracking-widest text-base">No significant cost spikes this month.</span>
             </div>
           )}
         </section>

@@ -79,16 +79,16 @@ export default function Home() {
 
       {/* PCA Summary Cards */}
       {isPCA && pcaStats && (
-        <div className="grid grid-cols-3 gap-3 mb-6">
-          <div className="bg-card border border-border p-3 rounded-xl flex flex-col items-center justify-center text-center">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+          <div className="bg-card border border-border p-6 rounded-xl flex flex-col items-center justify-center text-center">
             <span className="text-2xl font-black text-foreground">{pcaStats.ranches}</span>
             <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mt-1">Ranches</span>
           </div>
-          <div className="bg-card border border-border p-3 rounded-xl flex flex-col items-center justify-center text-center">
+          <div className="bg-card border border-border p-6 rounded-xl flex flex-col items-center justify-center text-center">
             <span className="text-2xl font-black text-blue-400">{pcaStats.openRecs}</span>
             <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mt-1">Open Recs</span>
           </div>
-          <div className="bg-card border border-amber-500/30 p-3 rounded-xl flex flex-col items-center justify-center text-center">
+          <div className="bg-card border border-amber-500/30 p-6 rounded-xl flex flex-col items-center justify-center text-center">
             <span className="text-2xl font-black text-amber-500">{pcaStats.blocksNeedingReview}</span>
             <span className="text-[10px] font-bold uppercase tracking-widest text-amber-500/80 mt-1">Needs Review</span>
           </div>
@@ -96,89 +96,89 @@ export default function Home() {
       )}
 
       {/* Primary Action Grid - Top */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-6">
         {isPCA ? (
           <>
-            <Link href="/app/recommendations" className="bg-[#1c2227] border border-[#2d4050] p-4 rounded-xl flex flex-col items-center justify-center gap-2 hover:bg-[#252f34] transition-colors shadow-sm">
-              <div className="bg-blue-500/20 p-3 rounded-full text-blue-400">
+            <Link href="/app/recommendations" className="bg-[#1c2227] border border-[#2d4050] p-6 rounded-xl flex flex-col items-center justify-center gap-3 hover:bg-[#252f34] transition-colors shadow-sm">
+              <div className="bg-blue-500/20 p-4 rounded-full text-blue-400">
                 <ClipboardList className="w-8 h-8" />
               </div>
-              <span className="font-black uppercase tracking-widest text-[10px] mt-1 text-center">Review Recommendations</span>
+              <span className="font-black uppercase tracking-widest text-xs mt-1 text-center">Review Recommendations</span>
             </Link>
             
-            <Link href="/app/reports/variance" className="bg-[#2a1a14] border border-[#503a2d] p-4 rounded-xl flex flex-col items-center justify-center gap-2 hover:bg-[#3a251b] transition-colors shadow-sm">
-              <div className="bg-amber-500/20 p-3 rounded-full text-amber-500">
+            <Link href="/app/reports/variance" className="bg-[#2a1a14] border border-[#503a2d] p-6 rounded-xl flex flex-col items-center justify-center gap-3 hover:bg-[#3a251b] transition-colors shadow-sm">
+              <div className="bg-amber-500/20 p-4 rounded-full text-amber-500">
                 <AlertCircle className="w-8 h-8" />
               </div>
-              <span className="font-black uppercase tracking-widest text-[10px] mt-1 text-center">Blocks Needing Attention</span>
+              <span className="font-black uppercase tracking-widest text-xs mt-1 text-center">Blocks Needing Attention</span>
             </Link>
 
-            <Link href="/app/log" className="bg-card border border-border p-4 rounded-xl flex flex-col items-center justify-center gap-2 hover:border-primary/50 transition-colors shadow-sm">
-              <div className="bg-muted p-3 rounded-full text-muted-foreground">
+            <Link href="/app/log" className="bg-card border border-border p-6 rounded-xl flex flex-col items-center justify-center gap-3 hover:border-primary/50 transition-colors shadow-sm">
+              <div className="bg-muted p-4 rounded-full text-muted-foreground">
                 <Map className="w-8 h-8" />
               </div>
-              <span className="font-black uppercase tracking-widest text-[10px] mt-1 text-center">Log Field Observation</span>
+              <span className="font-black uppercase tracking-widest text-xs mt-1 text-center">Log Field Observation</span>
             </Link>
 
-            <Link href="/app/packets/season" className="bg-[#14271c] border border-[#2d503b] p-4 rounded-xl flex flex-col items-center justify-center gap-2 hover:bg-[#1b3425] transition-colors shadow-sm">
-              <div className="bg-green-500/20 p-3 rounded-full text-green-400">
+            <Link href="/app/packets/season" className="bg-[#14271c] border border-[#2d503b] p-6 rounded-xl flex flex-col items-center justify-center gap-3 hover:bg-[#1b3425] transition-colors shadow-sm">
+              <div className="bg-green-500/20 p-4 rounded-full text-green-400">
                 <Printer className="w-8 h-8" />
               </div>
-              <span className="font-black uppercase tracking-widest text-[10px] mt-1 text-center">Print PCA Packet</span>
+              <span className="font-black uppercase tracking-widest text-xs mt-1 text-center">Print PCA Packet</span>
             </Link>
           </>
         ) : (
           <>
-            <Link href="/app/log?action=SPRAY" className="bg-[#1c1427] border border-[#3b2d50] p-4 rounded-xl flex flex-col items-center justify-center gap-2 hover:bg-[#251b34] transition-colors shadow-sm">
-              <div className="bg-purple-500/20 p-3 rounded-full text-purple-400">
+            <Link href="/app/log?action=SPRAY" className="bg-[#1c1427] border border-[#3b2d50] p-6 rounded-xl flex flex-col items-center justify-center gap-3 hover:bg-[#251b34] transition-colors shadow-sm">
+              <div className="bg-purple-500/20 p-4 rounded-full text-purple-400">
                 <ShieldAlert className="w-8 h-8" />
               </div>
-              <span className="font-black uppercase tracking-widest text-xs mt-1">Log Spray</span>
+              <span className="font-black uppercase tracking-widest text-sm mt-1">Log Spray</span>
             </Link>
             
-            <Link href="/app/log?action=FERT" className="bg-[#271b14] border border-[#50352d] p-4 rounded-xl flex flex-col items-center justify-center gap-2 hover:bg-[#34241b] transition-colors shadow-sm">
-              <div className="bg-orange-500/20 p-3 rounded-full text-orange-400">
+            <Link href="/app/log?action=FERT" className="bg-[#271b14] border border-[#50352d] p-6 rounded-xl flex flex-col items-center justify-center gap-3 hover:bg-[#34241b] transition-colors shadow-sm">
+              <div className="bg-orange-500/20 p-4 rounded-full text-orange-400">
                 <Sprout className="w-8 h-8" />
               </div>
-              <span className="font-black uppercase tracking-widest text-xs mt-1">Log Fert</span>
+              <span className="font-black uppercase tracking-widest text-sm mt-1">Log Fert</span>
             </Link>
 
-            <Link href="/app/log?action=IRRIGATE" className="bg-[#141b27] border border-[#2d3b50] p-4 rounded-xl flex flex-col items-center justify-center gap-2 hover:bg-[#1b2434] transition-colors shadow-sm">
-              <div className="bg-blue-500/20 p-3 rounded-full text-blue-400">
+            <Link href="/app/log?action=IRRIGATE" className="bg-[#141b27] border border-[#2d3b50] p-6 rounded-xl flex flex-col items-center justify-center gap-3 hover:bg-[#1b2434] transition-colors shadow-sm">
+              <div className="bg-blue-500/20 p-4 rounded-full text-blue-400">
                 <Droplets className="w-8 h-8" />
               </div>
-              <span className="font-black uppercase tracking-widest text-xs mt-1">Log Irrigate</span>
+              <span className="font-black uppercase tracking-widest text-sm mt-1">Log Irrigate</span>
             </Link>
 
-            <Link href="/app/log?action=LABOR" className="bg-card border border-border p-4 rounded-xl flex flex-col items-center justify-center gap-2 hover:border-primary/50 transition-colors shadow-sm">
-              <div className="bg-muted p-3 rounded-full text-muted-foreground">
+            <Link href="/app/log?action=LABOR" className="bg-card border border-border p-6 rounded-xl flex flex-col items-center justify-center gap-3 hover:border-primary/50 transition-colors shadow-sm">
+              <div className="bg-muted p-4 rounded-full text-muted-foreground">
                 <Users className="w-8 h-8" />
               </div>
-              <span className="font-black uppercase tracking-widest text-xs mt-1">Log Labor</span>
+              <span className="font-black uppercase tracking-widest text-sm mt-1">Log Labor</span>
             </Link>
           </>
         )}
       </div>
 
-      <div className="grid grid-cols-2 gap-3 mb-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
         {isPCA ? (
           <>
-            <Link href="/app/vault" className="bg-card border border-border p-4 rounded-xl flex items-center justify-center gap-3 hover:border-primary/50 transition-colors">
+            <Link href="/app/vault" className="bg-card border border-border p-5 rounded-xl flex items-center justify-center gap-3 hover:border-primary/50 transition-colors">
               <History className="w-6 h-6 text-foreground" />
-              <span className="font-bold uppercase tracking-widest text-[11px]">View Spray History</span>
+              <span className="font-bold uppercase tracking-widest text-xs">View Spray History</span>
             </Link>
-            <Link href="/app/inputs" className="bg-card border border-border p-4 rounded-xl flex items-center justify-center gap-3 hover:border-primary/50 transition-colors">
+            <Link href="/app/inputs" className="bg-card border border-border p-5 rounded-xl flex items-center justify-center gap-3 hover:border-primary/50 transition-colors">
               <Package className="w-6 h-6 text-foreground" />
-              <span className="font-bold uppercase tracking-widest text-[11px]">View Product Usage</span>
+              <span className="font-bold uppercase tracking-widest text-xs">View Product Usage</span>
             </Link>
           </>
         ) : (
           <>
-            <Link href="/app/blocks" className="bg-card border border-border p-4 rounded-xl flex items-center justify-center gap-3 hover:border-primary/50 transition-colors">
+            <Link href="/app/blocks" className="bg-card border border-border p-5 rounded-xl flex items-center justify-center gap-3 hover:border-primary/50 transition-colors">
               <DollarSign className="w-6 h-6 text-green-400" />
               <span className="font-bold uppercase tracking-widest text-sm">Block Costs</span>
             </Link>
-            <Link href="/app/packets/season" className="bg-card border border-border p-4 rounded-xl flex items-center justify-center gap-3 hover:border-primary/50 transition-colors">
+            <Link href="/app/packets/season" className="bg-card border border-border p-5 rounded-xl flex items-center justify-center gap-3 hover:border-primary/50 transition-colors">
               <Printer className="w-6 h-6 text-foreground" />
               <span className="font-bold uppercase tracking-widest text-sm">Print Packet</span>
             </Link>
@@ -211,7 +211,7 @@ export default function Home() {
               <span className="text-[10px] uppercase tracking-widest text-muted-foreground group-hover:text-primary transition-colors">Details →</span>
             </div>
             
-            <div className="flex gap-2 overflow-hidden">
+            <div className="flex flex-wrap gap-2">
               {todayBlocks.slice(0, 3).map(block => (
                 <div key={block.id} className="bg-background border border-border px-3 py-1.5 rounded-md text-xs font-bold whitespace-nowrap">
                   {block.name}

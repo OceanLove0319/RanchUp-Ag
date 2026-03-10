@@ -1,0 +1,362 @@
+Refactor the entire app to be truly mobile responsive and specifically usable for older Central Valley growers, ranch managers, irrigators, and PCAs who may have poor eyesight, large fingers, low patience for typing, and low tolerance for confusing screens. The app must feel easy to use on an iPhone in the field, near a truck, in bright sunlight, and under real working conditions.
+
+CORE REQUIREMENT
+Design the app for:
+- no horizontal scrolling anywhere
+- large tap targets
+- large readable text
+- simple step-by-step flows
+- minimal typing
+- clear next steps
+- high contrast
+- one-handed mobile use
+
+This is not a normal SaaS dashboard. It is a field-first, truck-friendly ranch tool.
+
+GLOBAL RESPONSIVE RULES
+
+1. Eliminate horizontal scrolling completely
+Audit the full app and remove all horizontal scrolling from:
+- tables
+- dashboard cards
+- nav bars
+- tabs
+- filters
+- button rows
+- form sections
+- print previews
+- charts
+- packet views
+- lists
+- modals
+
+If content currently overflows horizontally, redesign it into:
+- stacked cards
+- vertical lists
+- accordions
+- wrapped buttons
+- segmented controls that collapse cleanly
+- single-column layouts
+
+Do not rely on sideways swiping to reveal important content.
+
+2. Mobile-first layout system
+Refactor all screens to use a single-column mobile-first layout by default.
+
+Rules:
+- Phone: 1 column
+- Tablet: 1–2 columns max
+- Desktop: expand gracefully, but keep core actions obvious
+
+All major content blocks should stack vertically in a clean order.
+
+3. Bigger touch targets for older users
+All tappable elements must be sized for fat-finger use.
+
+Minimum requirements:
+- buttons at least 48–56px tall
+- large vertical spacing between tappable items
+- generous padding
+- no tiny icon-only critical buttons
+- no tightly packed form controls
+- no small checkboxes as primary actions
+
+Where possible, make the whole card tappable instead of only a tiny icon or text link.
+
+4. Large readable typography
+Increase readability across the app.
+
+Requirements:
+- body text should not feel small on iPhone
+- headings should be obvious and high-contrast
+- labels should be readable without squinting
+- avoid light gray text for key information
+- use a clear font hierarchy
+- use roomy line-height
+- avoid dense paragraphs
+
+Prioritize clarity over visual cleverness.
+
+5. High contrast for field use
+The app must remain usable outdoors in bright daylight and dusty, glare-heavy conditions.
+
+Use:
+- strong contrast
+- dark text on light backgrounds or vice versa
+- obvious section boundaries
+- bold labels for important numbers
+- distinct button states
+- highly visible active tabs and filters
+
+Avoid washed-out UI styling, faint outlines, or subtle gray-on-gray text.
+
+UX RULES FOR OLDER FARMERS AND FIELD OPERATORS
+
+6. Simplify every major flow
+Every important task should take as few steps as possible.
+
+Key flows such as:
+- log spray
+- log fertilizer
+- log irrigation
+- log labor
+- review block
+- view cost
+- print packet
+- review recommendation
+
+should all be doable in 3–4 screens or fewer, preferably less.
+
+Avoid multi-step wizard fatigue unless absolutely necessary.
+
+7. Keep one primary action per screen
+Each screen should make it obvious what to do next.
+
+Examples:
+- Log Spray
+- Save Entry
+- Review Missing Info
+- Print Packet
+- View Block Cost
+
+Do not crowd screens with too many competing CTAs.
+
+8. Reduce typing as much as possible
+Older growers and field staff should not need to type much.
+
+Add or improve:
+- recent products
+- saved templates
+- repeat last entry
+- defaults by block
+- defaults by ranch
+- date autofill
+- recent notes
+- quick-pick values
+- dropdowns with large tap rows
+- photo-first proof options
+- voice-note placeholder support if practical
+
+Use taps instead of typing wherever possible.
+
+9. Avoid dense tables on mobile
+Any table-like screen must be redesigned for mobile.
+
+Convert desktop tables into:
+- stacked cards
+- expandable rows
+- summary cards with tap-to-expand detail
+- grouped list items
+
+For example, instead of six columns across, show:
+- block name
+- crop
+- total spend
+- status
+- tap for details
+
+No tiny spreadsheet-style interfaces on mobile.
+
+10. Make forms forgiving
+Forms should feel calm and forgiving, not strict and technical.
+
+Use:
+- large labels
+- one field per row
+- obvious required vs optional fields
+- soft validation
+- inline help
+- “almost complete” messaging
+- autosave drafts
+- clear confirmation after save
+
+Avoid:
+- dense forms
+- tiny required-field markers
+- red error walls
+- multi-column mobile forms
+
+NAVIGATION AND STRUCTURE
+
+11. Make navigation obvious and simple
+Refactor navigation for older users.
+
+Requirements:
+- bottom nav or very simple top-level nav on mobile
+- no crowded nav bars
+- no tiny stacked icons
+- clearly named sections
+- easy way to get back home
+- persistent Guide Me / Next Step access
+
+Suggested mobile nav:
+- Home
+- Blocks
+- Log
+- Packets
+- More
+
+12. Keep important actions sticky
+On mobile, keep the main action visible.
+
+Examples:
+- sticky Save button on log screens
+- sticky Print button on packet screens
+- sticky Fix Now button on missing-info screens
+- sticky Add Activity button on block detail screens
+
+This matters on long screens so users do not need to scroll back up.
+
+13. Prevent hidden functionality
+Important actions should never be buried in tiny kebab menus or hidden states.
+
+Especially for older users:
+- do not hide critical actions behind icon-only controls
+- do not require precise taps
+- do not rely on hover interactions
+- do not put core tasks only in overflow menus
+
+SCREEN-SPECIFIC REQUIREMENTS
+
+14. Home / dashboard
+Refactor the home screen into a simple vertically stacked layout with large action tiles:
+
+- Log Spray
+- Log Fertilizer
+- Log Irrigation
+- Log Labor
+- View Block Costs
+- Print Packet
+
+Under that, show:
+- Needs Attention
+- Recent Activity
+- My Ranches / My Growers
+- Guide Me Rail
+
+All sections must stack cleanly on phone with no sideways movement.
+
+15. Block detail pages
+Block detail pages must be easy to scan and not overloaded.
+
+On mobile, show in this order:
+1. block name / crop / acres
+2. current status
+3. total spend to date
+4. spend per acre
+5. recent activity
+6. missing info flags
+7. recommendations
+8. print options
+
+Use cards and accordions where needed.
+
+16. Quick log screens
+Quick log screens must be optimized for speed and visibility.
+
+Requirements:
+- one column only
+- large field controls
+- big product picker rows
+- recent products near top
+- saved templates near top
+- large Save button
+- clear Back / Cancel behavior
+- confirmation after save
+
+17. Packet and print views
+All packet previews must be mobile readable.
+
+Do not create desktop-style print preview layouts that overflow on phone.
+
+Instead:
+- show packet sections as stacked cards
+- offer a clean mobile preview
+- provide an obvious Print / Export button
+- allow users to see readiness status without zooming or side-scrolling
+
+18. Recommendations and compliance pages
+These pages must be especially easy to review in the field.
+
+For recommendations:
+- use large cards
+- concise summaries
+- obvious status
+- one-tap expand for full detail
+
+For compliance issues:
+- show each issue as a separate card
+- explain what is missing in plain English
+- provide a big Fix Now action
+
+ACCESSIBILITY AND USABILITY EXPECTATIONS
+
+19. Build for aging eyes and hands
+This app should implicitly support users who:
+- wear reading glasses
+- have calloused hands
+- work in motion
+- are uncomfortable with apps
+- need confidence that they won’t break anything
+
+The UI should feel:
+- calm
+- obvious
+- sturdy
+- forgiving
+- practical
+
+20. Add a simple-mode bias everywhere
+Every design decision should ask:
+Would an older grower understand this immediately?
+
+Prefer:
+- fewer options
+- clearer labels
+- larger controls
+- shorter decisions
+- visible next steps
+- strong confirmation feedback
+
+TECHNICAL IMPLEMENTATION EXPECTATIONS
+
+Update the frontend so that:
+- all pages use responsive breakpoints correctly
+- all containers respect viewport width
+- no component causes overflow-x
+- cards wrap correctly
+- long text truncates or wraps appropriately
+- tabs collapse into wrapped rows, segmented controls, or dropdowns on mobile
+- tables are replaced with responsive card/list layouts
+- modals fit fully within the mobile viewport
+- sticky buttons do not cover key content
+- spacing remains generous on small screens
+
+Add overflow-x-hidden only where needed, but do not use it as a lazy patch. Fix root layout issues properly.
+
+QA / ACCEPTANCE CRITERIA
+
+The build is only acceptable if all of the following are true:
+1. No horizontal scrolling exists anywhere on mobile
+2. A user can operate core flows comfortably on an iPhone
+3. Buttons and fields are easy to tap with large fingers
+4. Text is readable without zooming
+5. Important actions are always obvious
+6. No major task feels software-heavy or cluttered
+7. The app feels built for older farmers, not office admins
+8. The app remains clean and usable on desktop too
+
+FINAL DESIGN STANDARD
+This app should feel like a sturdy digital ranch notebook for older growers and advisers.
+
+It should NOT feel like:
+- a startup dashboard
+- a spreadsheet app
+- a tiny-font admin system
+- a desktop UI shrunk onto a phone
+
+PRODUCT PROMISE
+Simple enough for the field. Clear enough for the office. Easy enough for everyone.
+
+DELIVERABLE
+Please refactor the UI accordingly across the full app, not just one screen. Prioritize the home dashboard, block detail screens, quick log flows, packet preview screens, recommendations pages, and compliance issue screens.

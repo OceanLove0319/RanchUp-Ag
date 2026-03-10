@@ -83,8 +83,8 @@ export default function Recommendations() {
             <div key={rec.id} className="bg-card border border-border p-5 rounded-xl hover:border-primary/50 transition-colors">
               <div className="flex flex-col md:flex-row md:items-start justify-between gap-4 mb-4">
                 <div>
-                  <div className="flex items-center gap-2 mb-2">
-                    <div className={`flex items-center gap-1.5 px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-widest border ${getStatusColor(rec.status)}`}>
+                  <div className="flex flex-wrap items-center gap-2 mb-3">
+                    <div className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest border ${getStatusColor(rec.status)}`}>
                       {getStatusIcon(rec.status)}
                       {rec.status}
                     </div>
@@ -94,20 +94,20 @@ export default function Recommendations() {
                   </div>
                   <h3 className="font-bold text-foreground text-xl leading-tight">{rec.title}</h3>
                   
-                  <div className="flex items-center gap-1.5 text-sm text-muted-foreground mt-1">
-                    <Map className="w-4 h-4" />
+                  <div className="flex items-center gap-1.5 text-sm text-muted-foreground mt-2">
+                    <Map className="w-4 h-4 flex-shrink-0" />
                     <span>{ranch?.name} • {block?.name}</span>
                   </div>
                 </div>
                 
-                <div className="flex flex-wrap gap-2 md:justify-end">
+                <div className="flex flex-wrap gap-2 w-full md:w-auto md:justify-end">
                   {rec.cropStage && (
-                    <Badge variant="outline" className="bg-background">
+                    <Badge variant="outline" className="bg-background py-1.5 px-3 text-sm">
                       Stage: {rec.cropStage}
                     </Badge>
                   )}
                   {rec.product && (
-                    <Badge variant="outline" className="bg-background text-primary border-primary/30">
+                    <Badge variant="outline" className="bg-background text-primary border-primary/30 py-1.5 px-3 text-sm">
                       {rec.product}
                     </Badge>
                   )}
@@ -115,23 +115,23 @@ export default function Recommendations() {
               </div>
               
               {rec.notes && (
-                <div className="bg-background border border-border p-3 rounded-lg text-sm text-muted-foreground">
+                <div className="bg-background border border-border p-4 rounded-lg text-base text-muted-foreground">
                   <span className="font-bold text-foreground mr-2">Note:</span>
                   {rec.notes}
                 </div>
               )}
               
-              <div className="mt-4 pt-4 border-t border-border flex justify-end gap-2">
-                <button className="px-4 py-2 text-xs font-bold uppercase tracking-widest text-muted-foreground hover:text-foreground transition-colors">
+              <div className="mt-4 pt-4 border-t border-border flex flex-col sm:flex-row justify-end gap-3">
+                <button className="px-4 py-4 sm:py-2 text-sm font-bold uppercase tracking-widest text-muted-foreground hover:text-foreground transition-colors border border-border sm:border-none rounded-lg sm:rounded-none w-full sm:w-auto">
                   Edit
                 </button>
                 {rec.status === 'DRAFT' && (
-                  <button className="bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-widest transition-colors">
+                  <button className="bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 px-6 py-4 sm:py-2 rounded-lg text-sm font-bold uppercase tracking-widest transition-colors w-full sm:w-auto">
                     Send to Grower
                   </button>
                 )}
                 {(rec.status === 'SENT' || rec.status === 'PENDING') && (
-                  <button className="bg-primary text-primary-foreground hover:bg-primary/90 px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-widest transition-colors">
+                  <button className="bg-primary text-primary-foreground hover:bg-primary/90 px-6 py-4 sm:py-2 rounded-lg text-sm font-bold uppercase tracking-widest transition-colors w-full sm:w-auto shadow-sm">
                     Mark Applied
                   </button>
                 )}

@@ -92,15 +92,15 @@ export default function Vault() {
     <div className="animate-in fade-in duration-500 pb-20 max-w-4xl mx-auto">
       {/* Header & Controls */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 mb-8">
-        <div>
+        <div className="w-full md:w-auto">
           <p className="text-xs font-bold uppercase tracking-widest text-primary mb-2">Archive</p>
           <h1 className="text-4xl font-black uppercase tracking-tighter text-foreground mb-4">Season Vault</h1>
           
-          <div className="relative inline-block">
+          <div className="relative w-full md:inline-block">
             <select 
               value={selectedBlockId}
               onChange={(e) => setSelectedBlockId(e.target.value)}
-              className="appearance-none bg-card border border-border rounded-lg pl-4 pr-10 py-2 text-foreground font-bold focus:outline-none focus:border-primary"
+              className="appearance-none bg-card border border-border rounded-lg pl-4 pr-10 py-3 md:py-2 text-foreground font-bold focus:outline-none focus:border-primary w-full"
             >
               {blocks.map(b => (
                 <option key={b.id} value={b.id}>{b.name} ({b.acreage} AC)</option>
@@ -113,15 +113,15 @@ export default function Vault() {
           </p>
         </div>
         
-        <div className="flex flex-col items-end gap-2">
+        <div className="flex flex-col items-stretch md:items-end gap-2 w-full md:w-auto">
           <button 
             onClick={handleExportClick}
-            className="flex items-center gap-2 bg-primary text-primary-foreground px-4 py-3 rounded font-black uppercase tracking-widest text-sm transition-colors hover:bg-primary/90 shadow-[0_0_15px_rgba(234,153,61,0.2)]"
+            className="flex items-center justify-center gap-2 bg-primary text-primary-foreground px-4 py-4 md:py-3 rounded-lg font-black uppercase tracking-widest text-sm transition-colors hover:bg-primary/90 shadow-[0_0_15px_rgba(234,153,61,0.2)] w-full md:w-auto"
           >
-            <Printer className="w-4 h-4" /> Export Season Packet
+            <Printer className="w-5 h-5" /> Export Season Packet
           </button>
           {!requirePro("Advanced Export").allowed && (
-            <Link href="/app/pricing" className="text-[10px] uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors flex items-center gap-1">
+            <Link href="/app/pricing" className="text-[10px] uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors flex items-center justify-center gap-1 w-full md:w-auto p-2">
               <Lock className="w-3 h-3" /> Upgrade to Pro for Audit Bundles
             </Link>
           )}
@@ -130,20 +130,20 @@ export default function Vault() {
 
       {/* Summary Bar */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-        <div className="bg-card border border-border p-4 rounded-lg">
+        <div className="bg-card border border-border p-5 rounded-xl">
           <p className="text-[10px] md:text-xs font-bold uppercase tracking-widest text-muted-foreground mb-1">Season Spend</p>
           <p className="text-xl md:text-2xl font-black text-foreground">${seasonSpend.toLocaleString()}</p>
         </div>
-        <div className="bg-card border border-border p-4 rounded-lg">
+        <div className="bg-card border border-border p-5 rounded-xl">
           <p className="text-[10px] md:text-xs font-bold uppercase tracking-widest text-muted-foreground mb-1">Total Apps</p>
           <p className="text-xl md:text-2xl font-black text-foreground">{totalApps}</p>
         </div>
-        <div className="bg-card border border-border p-4 rounded-lg">
+        <div className="bg-card border border-border p-5 rounded-xl">
           <p className="text-[10px] md:text-xs font-bold uppercase tracking-widest text-muted-foreground mb-1">Sprays</p>
           <p className="text-lg md:text-xl font-black text-foreground mb-1">${spraySpend.toLocaleString()}</p>
           <p className="text-[10px] md:text-xs font-bold text-muted-foreground">{sprays.length} apps</p>
         </div>
-        <div className="bg-card border border-border p-4 rounded-lg">
+        <div className="bg-card border border-border p-5 rounded-xl">
           <p className="text-[10px] md:text-xs font-bold uppercase tracking-widest text-muted-foreground mb-1">Fertility</p>
           <p className="text-lg md:text-xl font-black text-foreground mb-1">${fertSpend.toLocaleString()}</p>
           <p className="text-[10px] md:text-xs font-bold text-muted-foreground">{fertility.length} apps</p>
