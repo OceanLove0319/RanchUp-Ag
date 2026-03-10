@@ -12,7 +12,7 @@ export function BlockSuggestionsCard({ blockId }: { blockId: string }) {
   const library = useStore(s => s.productLibrary);
   
   // Suggestion state management (simulated persistence)
-  const dismissedSuggestions = useStore(s => (s as any).dismissedSuggestions || []);
+  const dismissedSuggestions = useStore(s => (s as any).dismissedSuggestions) || [];
   const dismissSuggestion = useStore(s => (s as any).dismissSuggestion || (() => {}));
   
   const suggestions = useMemo(() => {

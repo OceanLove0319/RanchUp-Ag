@@ -3,15 +3,20 @@ import { CheckCircle2, AlertCircle, FileText, SprayCan, Sprout, Map } from "luci
 import { useStore } from "@/lib/store";
 import { isWithin } from "@/utils/dates";
 import { getActiveSeasonWindow } from "@/utils/season";
+import { useMemo } from "react";
 
 export function GuideMeRail() {
   const activeRanchId = useStore(s => s.activeRanchId);
-  const blocks = useStore(s => s.blocks.filter(b => b.ranchId === activeRanchId));
-  const logs = useStore(s => s.logs.filter(l => l.ranchId === activeRanchId));
-  const chemicalApps = useStore(s => s.chemicalApps.filter(a => a.ranchId === activeRanchId));
+  const allBlocks = useStore(s => s.blocks);
+  const allLogs = useStore(s => s.logs);
+  const allChemicalApps = useStore(s => s.chemicalApps);
+
+  const blocks = useMemo(() => allBlocks.filter(b => b.ranchId === activeRanchId), [allBlocks, activeRanchId]);
+  const logs = useMemo(() => allLogs.filter(l => l.ranchId === activeRanchId), [allLogs, activeRanchId]);
+  const chemicalApps = useMemo(() => allChemicalApps.filter(a => a.ranchId === activeRanchId), [allChemicalApps, activeRanchId]);
   
   // Find incomplete entries (missing rate or cost info)
-  const incompleteApps = chemicalApps.filter(a => a.costStatus === "UNIT_MISMATCH" || !a.estimatedCost);
+  const incompleteApps = useMemo(() => chemicalApps.filter(a => a.costStatus === "UNIT_MISMATCH" || !a.estimatedCost), [chemicalApps]);
   
   // Tasks to show
   const tasks = [];

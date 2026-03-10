@@ -12,15 +12,15 @@ interface QuickLogSuggestionsProps {
 }
 
 export function QuickLogSuggestions({ blockId, onSelectSuggestion }: QuickLogSuggestionsProps) {
-  const block = useStore(s => s.blocks.find(b => b.id === blockId));
+  const allBlocks = useStore(s => s.blocks);
+  const block = allBlocks.find(b => b.id === blockId);
   const logs = useStore(s => s.logs);
   const templates = useStore(s => s.templates);
-  const allBlocks = useStore(s => s.blocks);
   const library = useStore(s => s.productLibrary);
   
   // Suggestion state
-  const dismissedSuggestions = useStore(s => (s as any).dismissedSuggestions || []);
-  const dismissSuggestion = useStore(s => (s as any).dismissSuggestion || (() => {}));
+  const dismissedSuggestions = useStore(s => (s as any).dismissedSuggestions) || [];
+  const dismissSuggestion = useStore(s => (s as any).dismissSuggestion) || (() => {});
 
   const suggestions = useMemo(() => {
     if (!block) return [];
