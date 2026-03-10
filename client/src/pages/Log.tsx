@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { useStore } from "@/lib/store";
-import { Droplets, Sprout, ShieldAlert, Check, Zap, Star, Package } from "lucide-react";
+import { Droplets, Sprout, ShieldAlert, Check, Zap, Star, Package, Users } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { todayPacificISO } from "@/utils/dates";
 import { isPerAcreUnit, getBaseUnit, calcTotal, calcLoads, formatNumber, normalizeUnit, areUnitsCompatible } from "@/utils/mathHelpers";
@@ -10,7 +10,7 @@ import UnifiedInputPicker from "@/components/products/UnifiedInputPicker";
 import { QuickLogSuggestions } from "@/components/logs/QuickLogSuggestions";
 import { BlockSuggestion } from "@/types/suggestions";
 
-type ActionType = 'SPRAY' | 'FERT' | 'IRRIGATE';
+type ActionType = 'SPRAY' | 'FERT' | 'IRRIGATE' | 'LABOR';
 
 type SeasonGroup = "Early" | "Mid" | "Late";
 type IrrigationType = "Flood" | "Drip" | "Fanjet" | "Sprinkler" | string;
@@ -45,18 +45,26 @@ const QUICK_TEMPLATES: Record<ActionType, QuickTemplate[]> = {
     { id: "irrig-standard-flood", name: "Standard Set", material: "Water", amount: "24", unit: "hrs", irrigationTypes: ["Flood"] },
     { id: "irrig-standard-drip", name: "Standard Runtime", material: "Water", amount: "12", unit: "hrs", irrigationTypes: ["Drip", "Fanjet"] },
     { id: "irrig-heat-bump", name: "Heat Week Bump", material: "Water", amount: "6", unit: "hrs" },
+  ],
+  LABOR: [
+    { id: "labor-thinning", name: "Thinning", material: "Hand Thinning", amount: "1", unit: "pass", cropTypes: ["STONE_FRUIT"] },
+    { id: "labor-pruning", name: "Pruning", material: "Winter Pruning", amount: "1", unit: "pass" },
+    { id: "labor-mowing", name: "Mow Middles", material: "Mowing", amount: "1", unit: "pass" },
+    { id: "labor-repair", name: "Irrigation Repair", material: "Repair", amount: "2", unit: "hrs" },
   ]
 };
 
 const ALLOWED_UNITS: Record<ActionType, string[]> = {
   SPRAY: ["oz/ac", "pt/ac", "qt/ac", "gal/ac", "lb/ac", "gal", "lbs", "oz"],
   FERT: ["lb/ac", "gal/ac", "lbs", "gal"],
-  IRRIGATE: ["hrs", "in"]
+  IRRIGATE: ["hrs", "in"],
+  LABOR: ["hrs", "pass", "crew"]
 };
 
 const getFallbackUnit = (action: ActionType) => {
   if (action === 'SPRAY') return 'lb/ac';
   if (action === 'FERT') return 'lb/ac';
+  if (action === 'LABOR') return 'hrs';
   return 'hrs';
 };
 
@@ -133,6 +141,12 @@ export default function Log() {
       return;
     }
     
+    // Also skip reset if action is prefilled from query param directly
+    const queryAction = queryParams.get("action");
+    if (queryAction && queryAction === action && formData.material === "") {
+      return;
+    }
+
     setFormData(prev => ({
       ...prev,
       material: "",
@@ -384,7 +398,8 @@ export default function Log() {
   const actionConfig = {
     SPRAY: { icon: ShieldAlert, color: "text-purple-400", bg: "bg-purple-400/10", border: "border-purple-400/50" },
     FERT: { icon: Sprout, color: "text-orange-400", bg: "bg-orange-400/10", border: "border-orange-400/50" },
-    IRRIGATE: { icon: Droplets, color: "text-blue-400", bg: "bg-blue-400/10", border: "border-blue-400/50" }
+    IRRIGATE: { icon: Droplets, color: "text-blue-400", bg: "bg-blue-400/10", border: "border-blue-400/50" },
+    LABOR: { icon: Users, color: "text-muted-foreground", bg: "bg-muted", border: "border-border" }
   };
 
   return (
@@ -430,8 +445,8 @@ export default function Log() {
 
       <div className="mb-8">
         <label className="block text-sm font-bold uppercase tracking-widest text-muted-foreground mb-3">2. Select Action</label>
-        <div className="grid grid-cols-3 gap-3">
-          {(['SPRAY', 'FERT', 'IRRIGATE'] as ActionType[]).map(a => {
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          {(['SPRAY', 'FERT', 'IRRIGATE', 'LABOR'] as ActionType[]).map(a => {
             const config = actionConfig[a];
             const Icon = config.icon;
             const isSelected = action === a;
@@ -571,81 +586,101 @@ export default function Log() {
               </div>
             </div>
 
-            {/* Math Helper Panel */}
-            {isPerAcreUnit(formData.unit) && (
-              <div className="mt-4 bg-background border border-border rounded-lg p-4">
-                <div className="flex justify-between items-center mb-3">
-                  <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Block Acres</span>
-                  <span className="text-sm font-black text-foreground">{block?.acreage || '—'}</span>
-                </div>
-                <div className="flex justify-between items-center mb-3">
-                  <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Total Needed</span>
-                  <span className="text-sm font-black text-primary">
-                    {formatNumber(calcTotal(Number(formData.amount), block?.acreage), 2)} {getBaseUnit(formData.unit)}
-                  </span>
-                </div>
-                
-                {(!block?.acreage || block.acreage <= 0) && (
-                  <p className="text-[10px] text-orange-400 mt-1 mb-3">Fix block acres to compute totals.</p>
-                )}
-                {(!formData.amount || isNaN(Number(formData.amount))) && (
-                  <p className="text-[10px] text-orange-400 mt-1 mb-3">Rate required to compute totals.</p>
-                )}
+            {/* Simple Optional Photo Capture */}
+            <div className="mt-4">
+               <label className="block text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2">Photo Proof <span className="lowercase font-normal opacity-70">(optional)</span></label>
+               <button className="w-full border-2 border-dashed border-border rounded-lg p-4 flex flex-col items-center justify-center gap-2 hover:border-primary/50 transition-colors bg-background/50">
+                 <div className="bg-muted p-2 rounded-full">
+                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
+                 </div>
+                 <span className="text-xs font-bold text-muted-foreground">Tap to take photo</span>
+               </button>
+            </div>
 
-                {(action === 'SPRAY' || action === 'FERT') && (
-                  <div className="pt-3 border-t border-border mt-1">
-                    <div className="flex items-center gap-3">
-                      <div className="flex-1">
-                        <label className="block text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-1">
-                          Tank Size ({getBaseUnit(formData.unit)})
-                        </label>
-                        <input 
-                          type="number" 
-                          inputMode="decimal"
-                          value={tankSize}
-                          onChange={e => setTankSize(e.target.value)}
-                          placeholder="e.g. 500"
-                          className="w-full bg-card border border-border rounded px-2 py-1.5 text-base md:text-xs text-foreground focus:outline-none focus:border-primary"
-                        />
-                      </div>
-                      <div className="flex-1 text-right">
-                        <span className="block text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-1">Loads</span>
-                        <span className="text-sm font-black text-foreground">
-                          {formatNumber(calcLoads(calcTotal(Number(formData.amount), block?.acreage), Number(tankSize)), 1)}
-                        </span>
-                      </div>
+            {/* Expandable Advanced Area */}
+            <details className="group [&_summary::-webkit-details-marker]:hidden mt-6">
+              <summary className="flex items-center justify-between cursor-pointer list-none py-3 border-t border-border">
+                <span className="text-xs font-bold uppercase tracking-widest text-primary">More for PCA / Office</span>
+                <span className="transition group-open:rotate-180">
+                  <svg fill="none" height="24" shapeRendering="geometricPrecision" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" viewBox="0 0 24 24" width="24"><path d="M6 9l6 6 6-6"></path></svg>
+                </span>
+              </summary>
+              
+              <div className="pt-2 pb-4 space-y-4">
+                {/* Math Helper Panel */}
+                {isPerAcreUnit(formData.unit) && (
+                  <div className="bg-background border border-border rounded-lg p-4">
+                    <div className="flex justify-between items-center mb-3">
+                      <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Block Acres</span>
+                      <span className="text-sm font-black text-foreground">{block?.acreage || '—'}</span>
                     </div>
-                    <p className="text-[9px] text-muted-foreground mt-2 italic text-right">Loads = Total ÷ Tank Size</p>
+                    <div className="flex justify-between items-center mb-3">
+                      <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Total Needed</span>
+                      <span className="text-sm font-black text-primary">
+                        {formatNumber(calcTotal(Number(formData.amount), block?.acreage), 2)} {getBaseUnit(formData.unit)}
+                      </span>
+                    </div>
+                    
+                    {(!block?.acreage || block.acreage <= 0) && (
+                      <p className="text-[10px] text-orange-400 mt-1 mb-3">Fix block acres to compute totals.</p>
+                    )}
+                    {(!formData.amount || isNaN(Number(formData.amount))) && (
+                      <p className="text-[10px] text-orange-400 mt-1 mb-3">Rate required to compute totals.</p>
+                    )}
+
+                    {(action === 'SPRAY' || action === 'FERT') && (
+                      <div className="pt-3 border-t border-border mt-1">
+                        <div className="flex items-center gap-3">
+                          <div className="flex-1">
+                            <label className="block text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-1">
+                              Tank Size ({getBaseUnit(formData.unit)})
+                            </label>
+                            <input 
+                              type="number" 
+                              inputMode="decimal"
+                              value={tankSize}
+                              onChange={e => setTankSize(e.target.value)}
+                              placeholder="e.g. 500"
+                              className="w-full bg-card border border-border rounded px-2 py-1.5 text-base md:text-xs text-foreground focus:outline-none focus:border-primary"
+                            />
+                          </div>
+                          <div className="flex-1 text-right">
+                            <span className="block text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-1">Loads</span>
+                            <span className="text-sm font-black text-foreground">
+                              {formatNumber(calcLoads(calcTotal(Number(formData.amount), block?.acreage), Number(tankSize)), 1)}
+                            </span>
+                          </div>
+                        </div>
+                        <p className="text-[9px] text-muted-foreground mt-2 italic text-right">Loads = Total ÷ Tank Size</p>
+                      </div>
+                    )}
                   </div>
                 )}
-              </div>
-            )}
-
-            {/* Products Used Picker */}
-            {(action === 'SPRAY' || action === 'FERT') && (
-              <div className="pt-4 border-t border-border">
-                <label className="flex items-center gap-2 text-sm font-bold uppercase tracking-widest text-foreground mb-4">
-                  <Package className="w-4 h-4 text-primary" />
-                  Products Used <span className="text-muted-foreground text-xs">(Optional)</span>
-                </label>
-                <div className="bg-card border border-border rounded-lg p-4">
-                  <UnifiedInputPicker 
-                    selectedIds={selectedIds} 
-                    onSelectionChange={setSelectedProductIds} 
-                  />
-                  {selectedIds.length > 0 && (
-                    <div className="mt-4 pt-4 border-t border-border">
-                      <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2">
-                        {selectedIds.length} Product(s) Selected
-                      </p>
-                      <p className="text-[10px] text-muted-foreground">
-                        Selected products will be saved with this log entry and will use the primary rate of {formData.amount || "0"} {formData.unit || "unit(s)"}.
-                      </p>
+                
+                {/* Products Used Picker */}
+                {(action === 'SPRAY' || action === 'FERT') && (
+                  <div>
+                    <label className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2">
+                      Products Used
+                    </label>
+                    <div className="bg-card border border-border rounded-lg p-4">
+                      <UnifiedInputPicker 
+                        selectedIds={selectedIds} 
+                        onSelectionChange={setSelectedProductIds} 
+                      />
                     </div>
-                  )}
+                  </div>
+                )}
+                
+                <div>
+                   <label className="block text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2">Notes</label>
+                   <textarea
+                     className="w-full bg-background border border-border rounded p-3 text-sm focus:outline-none focus:border-primary min-h-[80px]"
+                     placeholder="Weather, equipment issues, etc."
+                   />
                 </div>
               </div>
-            )}
+            </details>
           </div>
 
           <button 

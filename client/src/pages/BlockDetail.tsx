@@ -271,6 +271,27 @@ export default function BlockDetail() {
           )}
         </div>
       </div>
+      
+      {/* Missing Info Flags Section (Mocked for UX) */}
+      <div className="bg-amber-500/10 border border-amber-500/30 p-4 rounded-lg flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+        <div>
+          <h3 className="font-bold text-amber-500 flex items-center gap-2 text-sm uppercase tracking-widest">
+            <Info className="w-4 h-4" /> Almost Complete
+          </h3>
+          <p className="text-xs text-amber-500/80 mt-1">1 recent log is missing an application rate.</p>
+        </div>
+        <Link href={`/app/reports/variance?blockId=${block.id}`}>
+          <button className="bg-amber-500/20 text-amber-500 hover:bg-amber-500/30 border border-amber-500/30 w-full sm:w-auto text-xs uppercase tracking-widest px-4 py-2 rounded font-bold transition-colors">
+            Fix Info
+          </button>
+        </Link>
+      </div>
+
+      <div className="flex gap-3 mb-6">
+        <Link href={`/app/packets/season?blockId=${block.id}`} className="flex-1 bg-card border border-border hover:border-primary/50 text-foreground p-4 rounded-lg flex items-center justify-center gap-2 font-bold uppercase tracking-widest transition-colors text-sm">
+           Print Block Packet
+        </Link>
+      </div>
 
       <BlockLogs blockId={block.id} />
 

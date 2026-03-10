@@ -12,42 +12,42 @@ export default function BlockLogs({ blockId }: { blockId: string }) {
     allLogs
       .filter(l => l.blockId === blockId)
       .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-      .slice(0, 5),
+      .slice(0, 10),
     [allLogs, blockId]
   );
   
   const handleLogAgain = (log: any) => {
     // Navigate to quick log with query params to pre-fill
-    setLocation(`/app/logs/new?blockId=${blockId}&action=${log.actionType}&material=${encodeURIComponent(log.material)}&amount=${log.amount}&unit=${log.unit}`);
+    setLocation(`/app/log?blockId=${blockId}&action=${log.actionType}&material=${encodeURIComponent(log.material)}&amount=${log.amount}&unit=${log.unit}`);
   };
 
   return (
-    <div className="bg-[#111113] border border-white/10 p-6 md:p-8 rounded-lg mb-6">
+    <div className="bg-[#111113] border border-white/10 p-6 md:p-8 rounded-lg mb-6 relative">
       <div className="flex justify-between items-center mb-6">
         <div>
-          <h3 className="text-xl font-black uppercase tracking-tight text-white mb-1">Recent Activity</h3>
-          <p className="text-gray-400 font-medium">Last 5 logs for this block.</p>
+          <h3 className="text-xl font-black uppercase tracking-tight text-white mb-1">Block Timeline</h3>
+          <p className="text-gray-400 font-medium text-sm">Recent activity log</p>
         </div>
-        <Link href={`/app/logs/new?blockId=${blockId}`} className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground font-bold uppercase tracking-widest text-xs rounded hover:bg-primary/90 transition-colors">
-          <PlusCircle className="w-4 h-4" /> Log New
-        </Link>
       </div>
 
       {logs.length > 0 ? (
-        <div className="space-y-3">
+        <div className="relative border-l-2 border-border ml-3 pl-6 space-y-8">
           {logs.map(log => (
-            <div key={log.id} className="bg-card border border-border p-4 rounded-lg flex items-center justify-between group hover:border-primary/50 transition-colors">
-              <div className="flex items-center gap-4">
-                <div className={`w-2 h-10 rounded-full ${
+            <div key={log.id} className="relative group">
+              <div className={`absolute -left-[31px] top-1 w-4 h-4 rounded-full border-4 border-[#111113] ${
                   log.actionType === 'SPRAY' ? 'bg-purple-400' : 
-                  log.actionType === 'FERT' ? 'bg-orange-400' : 'bg-blue-400'
-                }`} />
+                  log.actionType === 'FERT' ? 'bg-orange-400' : 
+                  log.actionType === 'LABOR' ? 'bg-muted-foreground' : 'bg-blue-400'
+                }`} 
+              />
+              
+              <div className="bg-card border border-border p-4 rounded-lg flex flex-col md:flex-row md:items-center justify-between gap-4 hover:border-primary/50 transition-colors">
                 <div>
                   <div className="flex items-center gap-2 mb-1">
                     <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
                       {format(new Date(log.date), 'MMM d, yyyy')}
                     </span>
-                    <span className="text-[10px] font-bold uppercase tracking-widest bg-white/10 px-2 py-0.5 rounded text-white">
+                    <span className="text-[10px] font-bold uppercase tracking-widest bg-white/5 px-2 py-0.5 rounded text-white border border-white/10">
                       {log.actionType}
                     </span>
                   </div>
@@ -55,14 +55,23 @@ export default function BlockLogs({ blockId }: { blockId: string }) {
                     <span className="font-black text-lg text-white">{log.material}</span>
                     <span className="text-sm font-medium text-gray-400">@ {log.amount} {log.unit}</span>
                   </div>
+                  {log.notes && (
+                    <p className="text-sm text-gray-400 mt-2 italic">"{log.notes}"</p>
+                  )}
+                  {log.cost && (
+                    <p className="text-xs font-bold text-primary mt-2 uppercase tracking-widest">${log.cost} Cost</p>
+                  )}
+                </div>
+                
+                <div className="flex items-center gap-2 mt-2 md:mt-0">
+                  <button 
+                    onClick={() => handleLogAgain(log)}
+                    className="flex items-center gap-2 px-3 py-2 bg-background border border-border rounded font-bold uppercase tracking-widest text-[10px] hover:bg-white/5 hover:text-primary transition-colors text-muted-foreground"
+                  >
+                    <Copy className="w-3 h-3" /> Log Again
+                  </button>
                 </div>
               </div>
-              <button 
-                onClick={() => handleLogAgain(log)}
-                className="flex items-center gap-2 px-3 py-2 border border-border rounded font-bold uppercase tracking-widest text-[10px] hover:bg-white/5 hover:text-primary transition-colors text-muted-foreground"
-              >
-                <Copy className="w-3 h-3" /> Log Again
-              </button>
             </div>
           ))}
         </div>

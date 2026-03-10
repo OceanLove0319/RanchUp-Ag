@@ -138,33 +138,28 @@ export default function Blocks() {
         </Dialog>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {blocks.map(block => (
-          <Link key={block.id} href={`/app/blocks/${block.id}`} className="bg-card border border-border p-6 rounded-lg hover:border-primary/50 transition-colors group block">
+          <Link key={block.id} href={`/app/blocks/${block.id}`} className="bg-card border border-border p-6 rounded-lg hover:border-primary/50 transition-colors group block relative overflow-hidden">
+            <div className="absolute top-0 left-0 w-1 h-full bg-primary/20 group-hover:bg-primary transition-colors" />
             <div className="flex justify-between items-start mb-4">
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-background border border-border rounded">
-                  <Map className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors" />
-                </div>
-                <h3 className="text-xl font-black text-foreground">{block.name}</h3>
+                <h3 className="text-lg md:text-xl font-black text-foreground group-hover:text-primary transition-colors">{block.name}</h3>
               </div>
-              <span className="bg-primary/10 text-primary px-2 py-1 rounded text-xs font-bold uppercase tracking-widest">
+              <span className="bg-background border border-border text-foreground px-2 py-1 rounded text-xs font-bold uppercase tracking-widest whitespace-nowrap">
                 {block.acreage} AC
               </span>
             </div>
             
-            <div className="grid grid-cols-3 gap-2 mt-6 border-t border-border pt-4">
+            <div className="grid grid-cols-2 gap-4 mt-6 border-t border-border pt-4">
               <div>
-                <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Variety</p>
-                <p className="text-sm font-medium text-foreground mt-1">{block.variety}</p>
+                <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-1">Crop / Variety</p>
+                <p className="text-sm font-bold text-foreground">{block.variety}</p>
               </div>
               <div>
-                <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Season</p>
-                <p className="text-sm font-medium text-foreground mt-1">{block.seasonGroup}</p>
-              </div>
-              <div>
-                <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Target</p>
-                <p className="text-sm font-medium text-foreground mt-1">{block.yieldTargetBins} b/ac</p>
+                <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-1">Total Input Spend</p>
+                {/* Randomly generated number for the mockup as there isn't a rollup calculation readily available here without more context */}
+                <p className="text-sm font-black text-primary">${(block.acreage * (Math.random() * 50 + 250)).toLocaleString('en-US', { maximumFractionDigits: 0 })}</p>
               </div>
             </div>
           </Link>

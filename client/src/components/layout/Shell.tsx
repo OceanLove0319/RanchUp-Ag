@@ -1,5 +1,5 @@
 import { Link, useLocation } from "wouter";
-import { Home, Map, ClipboardEdit, Archive, Settings, LogOut, FlaskConical, LineChart, Plus, Menu, X, BookOpen, Package } from "lucide-react";
+import { Home, Map, ClipboardEdit, Archive, Settings, LogOut, FlaskConical, LineChart, Plus, Menu, X, BookOpen, Package, FileText } from "lucide-react";
 import { useStore } from "@/lib/store";
 import { useState } from "react";
 import { useIsMobile } from "@/hooks/useIsMobile";
@@ -18,7 +18,7 @@ export default function Shell({ children }: { children: React.ReactNode }) {
     { href: "/app/blocks", icon: Map, label: "Blocks" },
     // Log is a FAB on mobile, so we don't include it in bottom nav
     ...(isMobile ? [] : [{ href: "/app/log", icon: ClipboardEdit, label: "Log" }]),
-    { href: "/app/vault", icon: Archive, label: "Vault" },
+    { href: "/app/packets/season", icon: FileText, label: "Print Packet" },
   ];
 
   const secondaryNavItems = [

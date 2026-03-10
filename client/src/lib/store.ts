@@ -44,7 +44,7 @@ export type FieldLog = {
   ranchId: string;
   blockId: string;
   date: string;
-  actionType: 'SPRAY' | 'FERT' | 'IRRIGATE';
+  actionType: 'SPRAY' | 'FERT' | 'IRRIGATE' | 'LABOR';
   material: string;
   amount: number;
   unit: string;
@@ -191,13 +191,13 @@ const getInitialBilling = (): BillingState => {
 };
 
 const demoRanches: Ranch[] = [
-  { id: "ranch-1", name: "North Home Ranch" },
-  { id: "ranch-2", name: "River Bottom" },
-  { id: "ranch-3", name: "East Side Pilot" },
+  { id: "ranch-1", name: "Kingsburg Home Ranch", region: "Kingsburg" },
+  { id: "ranch-2", name: "Tulare Almonds", region: "Tulare" },
+  { id: "ranch-3", name: "Reedley Citrus", region: "Reedley" },
 ];
 
 export const useStore = create<AppState>((set) => ({
-  user: { name: 'Demo User', org: 'RanchUp Farms' }, // Auto logged in for demo
+  user: { name: 'Demo User', org: 'Central Valley Ag' },
   billing: getInitialBilling(),
   
   ranches: demoRanches,
@@ -205,36 +205,47 @@ export const useStore = create<AppState>((set) => ({
 
   blocks: [
     {
-      id: 'demo-peach-1',
-      ranchId: 'ranch-1',
-      name: 'North 40 Peaches',
+      id: 'demo-almond-1',
+      ranchId: 'ranch-2',
+      name: 'Block 1 - Nonpareil',
       acreage: 40,
-      variety: 'O\'Henry Peach',
+      variety: 'Nonpareil Almond',
       seasonGroup: 'Mid',
       irrigationType: 'Drip',
+      yieldTargetBins: 3000, // lbs
+      waterTargetAcreFeet: 4.0
+    },
+    {
+      id: 'demo-almond-2',
+      ranchId: 'ranch-2',
+      name: 'Block 2 - Monterey',
+      acreage: 40,
+      variety: 'Monterey Almond',
+      seasonGroup: 'Mid',
+      irrigationType: 'Drip',
+      yieldTargetBins: 2800, // lbs
+      waterTargetAcreFeet: 4.0
+    },
+    {
+      id: 'demo-peach-1',
+      ranchId: 'ranch-1',
+      name: 'Block 7 - O\'Henry',
+      acreage: 20,
+      variety: 'O\'Henry Peach',
+      seasonGroup: 'Mid',
+      irrigationType: 'Fanjet',
       yieldTargetBins: 35,
       waterTargetAcreFeet: 3.5
     },
     {
       id: 'demo-citrus-1',
-      ranchId: 'ranch-1',
-      name: 'East Navels',
-      acreage: 25,
+      ranchId: 'ranch-3',
+      name: 'Block 12 - Navels',
+      acreage: 35,
       variety: 'Washington Navel',
       seasonGroup: 'Late',
       irrigationType: 'Fanjet',
       yieldTargetBins: 25,
-      waterTargetAcreFeet: 2.8
-    },
-    {
-      id: 'demo-citrus-2',
-      ranchId: 'ranch-2',
-      name: 'South Lemons',
-      acreage: 15,
-      variety: 'Lisbon Lemon',
-      seasonGroup: 'Early',
-      irrigationType: 'Fanjet',
-      yieldTargetBins: 30,
       waterTargetAcreFeet: 3.0
     }
   ],
@@ -244,21 +255,24 @@ export const useStore = create<AppState>((set) => ({
       ranchId: 'ranch-1',
       blockId: 'demo-peach-1',
       date: todayPacificISO(),
-      actionType: 'IRRIGATE',
-      material: 'Water',
-      amount: 12,
-      unit: 'hrs'
+      actionType: 'SPRAY',
+      material: 'Pristine Fungicide',
+      amount: 1,
+      unit: 'lb/ac',
+      cost: 450,
+      notes: 'Bloom spray'
     },
     {
       id: 'l2',
-      ranchId: 'ranch-1',
-      blockId: 'demo-citrus-1',
+      ranchId: 'ranch-2',
+      blockId: 'demo-almond-1',
       date: todayPacificISO(),
       actionType: 'FERT',
-      material: 'CAN-17 (calcium ammonium nitrate)',
+      material: 'CAN-17',
       amount: 10,
       unit: 'gal/ac',
-      cost: 500
+      cost: 500,
+      notes: 'Spring N push'
     }
   ],
   chemicals: CHEMICALS_SEED,
@@ -268,26 +282,26 @@ export const useStore = create<AppState>((set) => ({
       ranchId: 'ranch-1',
       blockId: 'demo-peach-1',
       chemicalId: 'cv-022',
-      chemicalName: 'Boscalid + Pyraclostrobin (Pristine)',
+      chemicalName: 'Pristine Fungicide',
       category: 'FUNGICIDE',
       dateApplied: todayPacificISO(),
       method: 'SPRAY',
-      estimatedCost: 800,
+      estimatedCost: 450,
       costStatus: "ESTIMATED",
       notes: 'Bloom spray'
     },
     {
       id: 'a2',
-      ranchId: 'ranch-1',
-      blockId: 'demo-citrus-1',
+      ranchId: 'ranch-2',
+      blockId: 'demo-almond-1',
       chemicalId: 'cv-093',
-      chemicalName: 'CAN-17 (calcium ammonium nitrate)',
+      chemicalName: 'CAN-17',
       category: 'FERTILIZER',
       dateApplied: todayPacificISO(),
       method: 'FERTIGATION',
-      estimatedCost: 1500,
+      estimatedCost: 500,
       costStatus: "ESTIMATED",
-      notes: 'Spring flush'
+      notes: 'Spring N push'
     }
   ],
   templates: TEMPLATES_SEED as ProgramTemplate[],

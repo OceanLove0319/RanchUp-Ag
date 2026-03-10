@@ -74,14 +74,14 @@ export default function PacketSeason() {
   return (
     <div className="animate-in fade-in duration-500 max-w-2xl mx-auto pb-24">
       <div className="flex justify-between items-center mb-6">
-        <Link href="/app/packets" className="inline-flex items-center text-xs font-bold uppercase tracking-widest text-muted-foreground hover:text-foreground">
-          <ArrowLeft className="w-4 h-4 mr-2" /> Back to Packets
+        <Link href="/app" className="inline-flex items-center text-xs font-bold uppercase tracking-widest text-muted-foreground hover:text-foreground">
+          <ArrowLeft className="w-4 h-4 mr-2" /> Back to Dashboard
         </Link>
       </div>
 
       <header className="mb-8">
-        <h1 className="text-3xl font-black uppercase tracking-tighter text-white mb-2">Season Packet</h1>
-        <p className="text-gray-400 font-medium">Audit Binder & Rollups</p>
+        <h1 className="text-3xl font-black uppercase tracking-tighter text-white mb-2">Print Proof</h1>
+        <p className="text-gray-400 font-medium">Generate your season audit packet.</p>
       </header>
 
       <div className="grid grid-cols-3 gap-4 mb-8">
@@ -95,7 +95,7 @@ export default function PacketSeason() {
         </div>
         <div className={`border p-4 rounded-lg text-center ${issuesCount > 0 ? 'bg-red-500/10 border-red-500/30' : 'bg-[#111113] border-border'}`}>
           <p className={`text-2xl font-black ${issuesCount > 0 ? 'text-red-400' : 'text-white'}`}>{issuesCount}</p>
-          <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Open Issues</p>
+          <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Missing Info</p>
         </div>
       </div>
 
@@ -103,9 +103,9 @@ export default function PacketSeason() {
         <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-4 mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <h3 className="font-bold text-red-400 flex items-center gap-2">
-              <AlertCircle className="w-4 h-4" /> Issues Detected
+              <AlertCircle className="w-4 h-4" /> Heads Up: Missing Info
             </h3>
-            <p className="text-xs text-red-400/80 mt-1">Audit binder will reflect unresolved flags.</p>
+            <p className="text-xs text-red-400/80 mt-1">Some logs are missing rates or acreage.</p>
           </div>
           <Link href="/app/reports/variance">
             <Button size="sm" variant="outline" className="border-red-500/50 text-red-400 hover:bg-red-500/20 w-full sm:w-auto text-xs uppercase tracking-widest">
@@ -119,7 +119,7 @@ export default function PacketSeason() {
       <div className="bg-[#111113] border border-border rounded-xl mb-8 overflow-hidden">
         <div className="p-4 border-b border-border bg-white/5 flex items-center gap-2">
           <BookOpen className="w-4 h-4 text-primary" />
-          <h3 className="font-bold text-sm uppercase tracking-widest">Table of Contents Preview</h3>
+          <h3 className="font-bold text-sm uppercase tracking-widest">What's inside</h3>
         </div>
         <div className="divide-y divide-border">
           {RANCHUP_SEASON_TOC_V1.map((section) => {
@@ -147,14 +147,14 @@ export default function PacketSeason() {
             disabled={isGenerating}
             className="w-full h-14 text-base font-black uppercase tracking-widest gap-2"
           >
-            {isGenerating ? "Compiling Audit Binder..." : "Generate PDF"}
+            {isGenerating ? "Compiling Packet..." : "Print Season Packet"}
           </Button>
         ) : (
           <Button 
             onClick={handleDownloadAgain}
             className="w-full h-14 gap-2 text-base font-black uppercase tracking-widest"
           >
-            <Download className="w-5 h-5" /> Download Season Packet Again
+            <Download className="w-5 h-5" /> Download Packet Again
           </Button>
         )}
       </div>
