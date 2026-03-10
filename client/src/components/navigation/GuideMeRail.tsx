@@ -115,12 +115,12 @@ export function GuideMeRail() {
       <div className="px-4 py-2 bg-muted/30 border-b border-border">
         <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">{isPCA ? 'PCA Priorities' : 'Keep Me On Track'}</span>
       </div>
-      <div className="flex overflow-x-auto no-scrollbar py-3 px-4 gap-3">
+      <div className="flex flex-col sm:flex-row py-3 px-4 gap-3">
         {tasks.map(task => {
           const Icon = task.icon;
           return (
-            <Link key={task.id} href={task.link} className="flex-shrink-0 flex items-center gap-3 bg-background border border-border p-3 rounded-lg hover:border-primary/50 transition-colors min-w-[200px]">
-              <div className={`p-2 rounded-md ${task.bg} ${task.color}`}>
+            <Link key={task.id} href={task.link} className="flex items-center gap-3 bg-background border border-border p-3 rounded-lg hover:border-primary/50 transition-colors w-full sm:w-auto">
+              <div className={`p-2 rounded-md ${task.bg} ${task.color} flex-shrink-0`}>
                 <Icon className="w-5 h-5" />
               </div>
               <span className="text-sm font-bold tracking-tight">{task.title}</span>
