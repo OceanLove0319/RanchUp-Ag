@@ -31,6 +31,7 @@ import ProjectionsDashboard from "@/pages/ProjectionsDashboard";
 import BlockProjectionDetail from "@/pages/BlockProjectionDetail";
 import TemplatesManager from "@/pages/TemplatesManager";
 import Glossary from "@/pages/Glossary";
+import Recommendations from "@/pages/Recommendations";
 
 import PacketsHome from "@/pages/packets/PacketsHome";
 import PacketToday from "@/pages/packets/PacketToday";
@@ -83,6 +84,9 @@ function Router() {
       </Route>
       <Route path="/app/log">
         <Shell><Log /></Shell>
+      </Route>
+      <Route path="/app/recommendations">
+        <Shell><Recommendations /></Shell>
       </Route>
       <Route path="/app/inputs">
         <Shell><InputsLibrary /></Shell>

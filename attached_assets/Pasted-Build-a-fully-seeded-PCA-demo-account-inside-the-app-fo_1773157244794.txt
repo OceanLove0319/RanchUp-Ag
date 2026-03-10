@@ -1,0 +1,785 @@
+Build a fully seeded PCA demo account inside the app for a user named Karl W. who works for Simplot Grower Solutions. This account should feel immediately useful and credible to a real Central Valley Pest Control Adviser serving permanent crops in towns like Kingsburg, Reedley, Fowler, Traver, Visalia, Tulare, Hanford, Fresno, and Madera. The experience should show a PCA exactly what they would expect to review, recommend, verify, and print inside the platform.
+
+Goal
+
+Create a demo account that proves the app is valuable for a PCA, not just a grower. The account should be rich with realistic data so Karl can log in and instantly see:
+
+block history
+
+product history
+
+recommendations
+
+spray records
+
+fertilizer records
+
+irrigation notes
+
+compliance gaps
+
+missing information flags
+
+cost visibility
+
+print-ready packets
+
+grower communication context
+
+The account should feel like Karl is actively managing several ranches and helping growers stay organized, compliant, and profitable.
+
+Demo user identity
+
+Create a login-ready PCA user:
+
+Name: Karl W.
+
+Role: PCA
+
+Company: Simplot Grower Solutions
+
+Territory: Central Valley, California
+
+Primary Crops: almonds, citrus, pistachios, peaches, nectarines
+
+Primary Responsibilities: recommendations, spray planning, product oversight, block review, compliance support, grower coordination
+
+UX objective
+
+When Karl logs in, the app should feel tailored to a PCA. His dashboard should immediately answer:
+
+What blocks need my attention?
+
+What recommendations are pending?
+
+What has already been applied?
+
+What is missing for compliance?
+
+Which ranches are overspending?
+
+Which records are packet-ready?
+
+Which grower conversations need follow-up?
+
+Do not make the PCA account feel like a generic admin account. It should feel like a working adviser cockpit.
+
+Core seeded experience
+Seed multiple grower accounts Karl advises
+
+Karl should be attached to 4 realistic Central Valley grower operations, each with ranches, blocks, crops, logs, and issues.
+
+Create these example grower accounts:
+
+1. Neufeld Farms
+
+Location: Traver, CA
+
+Crops: peaches, nectarines
+
+Ranches: East Ranch, Canal Ranch
+
+Blocks: 8 total
+
+Good spray history, some missing labor notes, one block overspending
+
+2. Jackson Family Orchards
+
+Location: Kingsburg, CA
+
+Crops: citrus, mandarins
+
+Ranches: River Ranch, Home Place
+
+Blocks: 6 total
+
+Strong irrigation notes, several fertigation entries, one compliance issue
+
+3. Valley Crest Nut Co.
+
+Location: Tulare, CA
+
+Crops: almonds, pistachios
+
+Ranches: South Block Ranch, Turner Ranch
+
+Blocks: 10 total
+
+Multiple fungicide/insecticide passes, nutrient applications, one missing restricted-material detail
+
+4. Reedley Ridge Farms
+
+Location: Reedley, CA
+
+Crops: peaches, almonds
+
+Ranches: Ridge Ranch, Schoolhouse Ranch
+
+Blocks: 7 total
+
+Mixed record quality, some incomplete product rate entries, packet not yet ready
+
+Each grower account should feel distinct.
+
+Seed ranch and block structure
+
+For each ranch, add realistic block metadata:
+
+block name/number
+
+crop
+
+variety
+
+acres
+
+planting year
+
+irrigation type
+
+row spacing if relevant
+
+notes
+
+Use realistic permanent-crop examples such as:
+
+Spring Flame peach
+
+O’Henry peach
+
+Autumn Bright nectarine
+
+Nonpareil almond
+
+Monterey almond
+
+Kerman pistachio
+
+Tango mandarin
+
+Powell navel
+
+Use irrigation types such as:
+
+double-line drip
+
+microsprinkler
+
+fan-jets
+
+drip + minis
+
+Seed realistic activity logs
+
+Populate each block with enough activity history for a PCA to review patterns, not just isolated records.
+
+Include realistic entries across:
+
+spray logs
+
+fertilizer/fertigation logs
+
+irrigation logs
+
+field observations
+
+labor / field work
+
+maintenance / repair notes
+
+PCA recommendations
+
+Seed activity across a believable season timeline with dates spread over several months.
+
+Spray log examples
+
+Include realistic activity such as:
+
+dormant spray
+
+bloom fungicide
+
+petal fall spray
+
+shuck split timing
+
+hull split spray
+
+miticide pass
+
+weed strip herbicide pass
+
+scale / thrips / aphid treatment
+
+citrus fungicide / insect pressure response
+
+Each spray log should include fields like:
+
+date
+
+ranch
+
+block
+
+product(s)
+
+rate
+
+acres
+
+target pest/disease
+
+operator/applicator
+
+REI/PHI if relevant
+
+notes
+
+attachment/photo optional
+
+status: complete / almost complete / missing detail
+
+Fertility / nutrition examples
+
+Include:
+
+UN-32
+
+CAN-17
+
+calcium nitrate
+
+solution-grade gypsum
+
+foliar zinc
+
+potassium thiosulfate
+
+boron
+
+custom nutritional blend
+
+Each should include:
+
+method (fertigation, foliar, banded, etc.)
+
+product
+
+rate
+
+block
+
+cost impact
+
+notes
+
+Irrigation examples
+
+Include:
+
+irrigation set change
+
+microsprinkler repair
+
+plugged emitter issue
+
+pump issue note
+
+fertigation event
+
+heavy set week adjustment
+
+frost-protection irrigation note for citrus
+
+PCA recommendation entries
+
+This is critical. Seed a recommendation layer that shows Karl’s value clearly.
+
+Each recommendation should include:
+
+recommendation title
+
+date issued
+
+ranch/block
+
+crop stage
+
+concern observed
+
+recommended product(s)
+
+recommended rate
+
+timing window
+
+rationale
+
+notes to grower
+
+follow-up required
+
+status: drafted / sent / acknowledged / applied / closed
+
+Examples:
+
+Bloom protection recommendation for peach block
+
+Hull split fungicide + insect management recommendation
+
+Foliar zinc follow-up
+
+Scale pressure monitoring recommendation in citrus
+
+Mite threshold watch in almond block
+
+Gypsum injection recommendation for infiltration issue
+
+Post-rain disease prevention recommendation
+
+Seed realistic product library behavior for a PCA
+
+Karl should be able to see products repeatedly used across growers. Seed the product history and “recent products” list with realistic ag-input language a PCA would recognize.
+
+Include materials from categories such as:
+
+fungicides
+
+insecticides
+
+herbicides
+
+adjuvants
+
+foliar nutritionals
+
+liquid nitrogen
+
+soil amendments
+
+biologicals if applicable
+
+Do not make this generic. The naming and repetition should feel like a real adviser’s book of business.
+
+Seed compliance and missing-info flags
+
+A PCA needs to spot incomplete records quickly. Seed plenty of realistic, fixable flags.
+
+Examples:
+
+Missing rate
+
+Missing acreage
+
+Missing operator name
+
+Missing target pest
+
+Missing REI/PHI note
+
+Missing restricted-material attachment
+
+Missing field observation note
+
+Missing lot or invoice reference
+
+Recommendation not yet acknowledged
+
+Packet incomplete due to 2 missing spray details
+
+Use soft status language:
+
+Needs one more detail
+
+Almost complete
+
+Review before printing
+
+Missing compliance field
+
+Ready after one fix
+
+Make sure some ranches are fully clean and packet-ready, while others need Karl’s review.
+
+Seed cost visibility a PCA would care about
+
+Karl should be able to see cost trends by block, not just agronomic records.
+
+Each block should show:
+
+total spend to date
+
+spend per acre
+
+material cost total
+
+application cost total
+
+nutrition spend
+
+crop protection spend
+
+budget vs actual if available
+
+Seed a few examples where Karl can clearly see:
+
+one block overspending on fungicides
+
+one ranch under budget
+
+one block with repeat nutrition passes
+
+one block where a recommendation helped prevent unnecessary spend
+
+This should support the story that the PCA is not only protecting the crop but helping the grower manage cost discipline.
+
+Seed communication / follow-up context
+
+Add lightweight grower communication context so Karl’s dashboard feels like a working relationship tool.
+
+Examples:
+
+“Grower asked whether second zinc pass is necessary.”
+
+“Waiting on confirmation before applying hull split pass.”
+
+“Block 7 needs follow-up after irrigation leak note.”
+
+“Audit packet requested by packer next week.”
+
+“Need updated observation after rain event.”
+
+These can appear as notes, alerts, or follow-up tasks.
+
+PCA dashboard requirements
+
+When Karl logs in, his home/dashboard should prioritize these sections:
+
+Top actions
+
+Large action buttons:
+
+Review Recommendations
+
+View Blocks Needing Attention
+
+Log Field Observation
+
+View Spray History
+
+View Product Usage
+
+Print PCA Packet
+
+Dashboard summary cards
+
+Show practical PCA metrics such as:
+
+ranches under advisement
+
+open recommendations
+
+blocks needing review
+
+incomplete compliance records
+
+packets ready to print
+
+recent applications logged
+
+follow-ups due this week
+
+“Needs Attention” section
+
+Seed this with realistic items like:
+
+3 blocks missing spray rate
+
+2 recommendations awaiting grower acknowledgement
+
+1 restricted-material record incomplete
+
+1 irrigation issue tied to nutrient recommendation
+
+2 packets blocked from print
+
+“Recent Advisory Work” section
+
+Show recent activity Karl touched, such as:
+
+recommendation sent
+
+field note added
+
+spray reviewed
+
+packet printed
+
+block flagged
+
+grower follow-up added
+
+“My Growers” section
+
+List the four seeded grower accounts with quick-glance status:
+
+total blocks
+
+open issues
+
+latest activity
+
+packet status
+
+crops
+
+PCA-specific pages/features to seed
+1. Recommendations page
+
+This should be one of the strongest screens in the demo.
+Include:
+
+drafted recommendations
+
+active recommendations
+
+applied recommendations
+
+closed recommendations
+
+filters by grower, ranch, crop, status, date
+
+Each recommendation should connect to:
+
+the block
+
+supporting observation
+
+recommended products
+
+timing
+
+compliance relevance
+
+application outcome if completed
+
+2. Spray history page
+
+Give Karl an easy way to review all spray logs across his growers.
+Include filters for:
+
+grower
+
+ranch
+
+block
+
+crop
+
+product
+
+pest target
+
+date range
+
+completeness status
+
+3. Block detail page
+
+This page should be rich and convincing. For each seeded block, include:
+
+crop and variety
+
+acres
+
+irrigation type
+
+current status
+
+total spend
+
+recent recommendations
+
+spray timeline
+
+fertility timeline
+
+irrigation notes
+
+compliance flags
+
+photos/attachments
+
+print actions
+
+4. Product usage page
+
+Let Karl see repeated use of products across growers and blocks.
+Show:
+
+most used products
+
+products recently recommended
+
+products recently applied
+
+crop-specific usage
+
+possible duplicate/repeat use patterns
+
+5. PCA packet / print flow
+
+Add print-ready outputs that feel useful to an adviser, such as:
+
+Recommendation Summary Packet
+
+Block Spray History Packet
+
+Compliance Review Packet
+
+Grower Advisory Packet
+
+Seasonal PCA Review Packet
+
+Seed at least 2 accounts as fully packet-ready and 2 with blockers.
+
+Demo realism rules
+Tone and terminology
+
+Use real ag language, not startup language.
+
+Use:
+
+Ranch
+
+Block
+
+Recommendation
+
+Spray History
+
+Product Usage
+
+Field Observation
+
+Notes
+
+Compliance
+
+Packet
+
+Follow-Up
+
+Avoid:
+
+workflow engine
+
+object model
+
+activity abstraction
+
+analytics suite
+
+document orchestration
+
+Mobile-first realism
+
+Karl should be able to open this on a phone and immediately understand what needs attention.
+Use:
+
+big tap targets
+
+concise labels
+
+quick filters
+
+high contrast
+
+minimal typing
+
+sticky primary actions
+
+Seed enough data to feel “alive”
+
+Do not create a shallow demo.
+Karl’s account should feel like he has:
+
+dozens of logs
+
+multiple recommendations
+
+several incomplete records
+
+multiple print-ready packets
+
+ongoing grower work
+
+meaningful crop and ranch variation
+
+Aim for:
+
+4 growers
+
+8–10 ranches total
+
+30+ blocks total
+
+100+ activity records
+
+20+ PCA recommendations
+
+15+ incomplete/missing-info flags
+
+8+ print-ready packet examples
+
+multiple recent notes and follow-ups
+
+Final build requirement
+
+This demo account must make a real PCA say:
+
+“Yes — this is what I need to see.”
+
+It should clearly prove that the app helps a PCA:
+
+keep block history organized
+
+issue recommendations
+
+track whether recommendations were followed
+
+spot compliance issues
+
+coordinate with growers
+
+review product use
+
+support audits
+
+provide professional value beyond a text message or notebook
+
+What I want delivered
+
+Please build and seed:
+
+Karl W. PCA demo login
+
+PCA-tailored dashboard
+
+4 realistic grower accounts tied to Karl
+
+Seeded ranches, blocks, and crop metadata
+
+100+ realistic activity logs
+
+20+ PCA recommendations
+
+missing-info/compliance flags
+
+cost and spend visibility
+
+print-ready PCA packet views
+
+polished demo-ready mobile experience
+
+The final result should feel like a strong Simplot Grower Solutions PCA account serving real Central Valley permanent-crop operations.

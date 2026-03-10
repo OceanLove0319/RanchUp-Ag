@@ -1,5 +1,5 @@
 import { Link, useLocation } from "wouter";
-import { Home, Map, ClipboardEdit, Archive, Settings, LogOut, FlaskConical, LineChart, Plus, Menu, X, BookOpen, Package, FileText } from "lucide-react";
+import { Home, Map, ClipboardEdit, Archive, Settings, LogOut, FlaskConical, LineChart, Plus, Menu, X, BookOpen, Package, FileText, ClipboardList } from "lucide-react";
 import { useStore } from "@/lib/store";
 import { useState } from "react";
 import { useIsMobile } from "@/hooks/useIsMobile";
@@ -10,14 +10,18 @@ import { DemoModeBanner } from "@/components/layout/DemoModeBanner";
 export default function Shell({ children }: { children: React.ReactNode }) {
   const [location, setLocation] = useLocation();
   const logout = useStore((state) => state.logout);
+  const user = useStore((state) => state.user);
   const isMobile = useIsMobile();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  
+  const isPCA = user?.role === 'PCA';
 
   const mainNavItems = [
     { href: "/app", icon: Home, label: "Home" },
     { href: "/app/blocks", icon: Map, label: "Blocks" },
     // Log is a FAB on mobile, so we don't include it in bottom nav
     ...(isMobile ? [] : [{ href: "/app/log", icon: ClipboardEdit, label: "Log" }]),
+    ...(isPCA ? [{ href: "/app/recommendations", icon: ClipboardList, label: "Recs" }] : []),
     { href: "/app/packets/season", icon: FileText, label: "Print Packet" },
   ];
 

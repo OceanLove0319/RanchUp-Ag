@@ -5,6 +5,7 @@ import { CHEMICALS_SEED } from '@/data/chemicalsSeed';
 import { TEMPLATES_SEED } from '@/data/templatesSeed';
 import { GuidedFlowState, GuidedStep } from '@/types/guidedFlow';
 import { determineNextStep } from '@/lib/guidedFlow';
+import { pcaDemoUser, pcaDemoRanches, pcaDemoBlocks, pcaDemoLogs, pcaDemoApps, pcaDemoRecommendations } from '@/data/pcaDemoSeed';
 
 export type ProductCategory = "NUTRITION" | "AMENDMENT" | "FUNGICIDE" | "HERBICIDE" | "INSECTICIDE_MITICIDE" | "ADJUVANT" | "BIOLOGICAL" | "WATER_TREATMENT";
 
@@ -119,6 +120,18 @@ export type ChemicalApp = {
   notes?: string;
 };
 
+export type Recommendation = {
+  id: string;
+  ranchId: string;
+  blockId: string;
+  title: string;
+  status: "DRAFT" | "SENT" | "PENDING" | "ACKNOWLEDGED" | "APPLIED" | "CLOSED";
+  date: string;
+  notes?: string;
+  cropStage?: string;
+  product?: string;
+};
+
 export type BillingState = {
   planId: "STARTER" | "PRO" | "OPS";
   isAnnual: boolean;
@@ -127,7 +140,7 @@ export type BillingState = {
 };
 
 type AppState = GuidedFlowState & {
-  user: { name: string; org: string } | null;
+  user: { name: string; org: string; role?: string } | null;
   ranches: Ranch[];
   activeRanchId: string | null;
   blocks: Block[];
@@ -138,6 +151,7 @@ type AppState = GuidedFlowState & {
   projections: BlockProjection[];
   billing: BillingState;
   productLibrary: ProductLibraryItem[];
+  recommendations: Recommendation[];
   
   login: () => void;
   logout: () => void;
@@ -197,117 +211,21 @@ const demoRanches: Ranch[] = [
 ];
 
 export const useStore = create<AppState>((set) => ({
-  user: { name: 'Demo User', org: 'Central Valley Ag' },
+  user: pcaDemoUser,
   billing: getInitialBilling(),
   
-  ranches: demoRanches,
-  activeRanchId: demoRanches[0].id,
+  ranches: pcaDemoRanches,
+  activeRanchId: pcaDemoRanches[0].id,
 
-  blocks: [
-    {
-      id: 'demo-almond-1',
-      ranchId: 'ranch-2',
-      name: 'Block 1 - Nonpareil',
-      acreage: 40,
-      variety: 'Nonpareil Almond',
-      seasonGroup: 'Mid',
-      irrigationType: 'Drip',
-      yieldTargetBins: 3000, // lbs
-      waterTargetAcreFeet: 4.0
-    },
-    {
-      id: 'demo-almond-2',
-      ranchId: 'ranch-2',
-      name: 'Block 2 - Monterey',
-      acreage: 40,
-      variety: 'Monterey Almond',
-      seasonGroup: 'Mid',
-      irrigationType: 'Drip',
-      yieldTargetBins: 2800, // lbs
-      waterTargetAcreFeet: 4.0
-    },
-    {
-      id: 'demo-peach-1',
-      ranchId: 'ranch-1',
-      name: 'Block 7 - O\'Henry',
-      acreage: 20,
-      variety: 'O\'Henry Peach',
-      seasonGroup: 'Mid',
-      irrigationType: 'Fanjet',
-      yieldTargetBins: 35,
-      waterTargetAcreFeet: 3.5
-    },
-    {
-      id: 'demo-citrus-1',
-      ranchId: 'ranch-3',
-      name: 'Block 12 - Navels',
-      acreage: 35,
-      variety: 'Washington Navel',
-      seasonGroup: 'Late',
-      irrigationType: 'Fanjet',
-      yieldTargetBins: 25,
-      waterTargetAcreFeet: 3.0
-    }
-  ],
-  logs: [
-    {
-      id: 'l1',
-      ranchId: 'ranch-1',
-      blockId: 'demo-peach-1',
-      date: todayPacificISO(),
-      actionType: 'SPRAY',
-      material: 'Pristine Fungicide',
-      amount: 1,
-      unit: 'lb/ac',
-      cost: 450,
-      notes: 'Bloom spray'
-    },
-    {
-      id: 'l2',
-      ranchId: 'ranch-2',
-      blockId: 'demo-almond-1',
-      date: todayPacificISO(),
-      actionType: 'FERT',
-      material: 'CAN-17',
-      amount: 10,
-      unit: 'gal/ac',
-      cost: 500,
-      notes: 'Spring N push'
-    }
-  ],
+  blocks: pcaDemoBlocks,
+  logs: pcaDemoLogs,
   chemicals: CHEMICALS_SEED,
-  chemicalApps: [
-    {
-      id: 'a1',
-      ranchId: 'ranch-1',
-      blockId: 'demo-peach-1',
-      chemicalId: 'cv-022',
-      chemicalName: 'Pristine Fungicide',
-      category: 'FUNGICIDE',
-      dateApplied: todayPacificISO(),
-      method: 'SPRAY',
-      estimatedCost: 450,
-      costStatus: "ESTIMATED",
-      notes: 'Bloom spray'
-    },
-    {
-      id: 'a2',
-      ranchId: 'ranch-2',
-      blockId: 'demo-almond-1',
-      chemicalId: 'cv-093',
-      chemicalName: 'CAN-17',
-      category: 'FERTILIZER',
-      dateApplied: todayPacificISO(),
-      method: 'FERTIGATION',
-      estimatedCost: 500,
-      costStatus: "ESTIMATED",
-      notes: 'Spring N push'
-    }
-  ],
+  chemicalApps: pcaDemoApps,
+  
   templates: TEMPLATES_SEED as ProgramTemplate[],
   projections: [],
-  
   productLibrary: [],
+  recommendations: pcaDemoRecommendations,
   
   login: () => set({ 
     user: { name: 'Demo User', org: 'RanchUp Farms' },
