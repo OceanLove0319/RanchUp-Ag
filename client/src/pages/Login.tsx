@@ -3,6 +3,7 @@ import { useStore } from "@/lib/store";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { seedDemoData } from "@/lib/demoSeeds/ryanNeufeldSeed";
+import { pcaDemoUser, pcaDemoRanches, pcaDemoBlocks, pcaDemoLogs, pcaDemoApps, pcaDemoRecommendations } from "@/data/pcaDemoSeed";
 
 export default function Login() {
   const [, setLocation] = useLocation();
@@ -18,6 +19,29 @@ export default function Login() {
     toast({
       title: "Demo Mode Active",
       description: "Logged in as Ryan Neufeld (Neufeld Farms)."
+    });
+  };
+
+  const handlePCADemoLogin = () => {
+    const store = useStore.getState();
+    // Overwrite state completely for PCA mode
+    store.user = pcaDemoUser;
+    store.ranches = pcaDemoRanches;
+    store.blocks = pcaDemoBlocks;
+    store.logs = pcaDemoLogs;
+    store.chemicalApps = pcaDemoApps;
+    store.recommendations = pcaDemoRecommendations;
+    store.activeRanchId = pcaDemoRanches[0].id;
+    store.isAuthenticated = true;
+    
+    // Auto-enable pro plan to show all tools
+    store.setPlan("PRO", false);
+    store.setAddOn("COST_ENGINE", true);
+    
+    setLocation("/app");
+    toast({
+      title: "PCA Demo Active",
+      description: "Logged in as Karl W. (Simplot Grower Solutions)."
     });
   };
 
@@ -87,12 +111,27 @@ export default function Login() {
 
         <div className="space-y-4">
           <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2">Demo Accounts</p>
+          
+          <button 
+            onClick={handlePCADemoLogin}
+            className="w-full border-2 border-blue-500/50 bg-blue-500/10 text-blue-400 text-left px-6 py-4 rounded hover:bg-blue-500/20 transition-colors group flex flex-col items-start"
+          >
+            <div className="flex justify-between w-full items-center mb-1">
+              <span className="font-black uppercase tracking-widest group-hover:text-white transition-colors">Karl W.</span>
+              <span className="text-[10px] bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded font-black tracking-widest uppercase">PCA</span>
+            </div>
+            <span className="text-sm font-medium text-muted-foreground">Simplot • 4 Ranches • Multi-tenant View</span>
+          </button>
+
           <button 
             onClick={handleDemoLogin}
             className="w-full border-2 border-primary bg-primary/5 text-primary text-left px-6 py-4 rounded hover:bg-primary/10 transition-colors group flex flex-col items-start"
           >
-            <span className="font-black uppercase tracking-widest group-hover:text-white transition-colors">Ryan Neufeld</span>
-            <span className="text-sm font-medium text-muted-foreground">Neufeld Farms (Traver, CA) - Stone Fruit</span>
+            <div className="flex justify-between w-full items-center mb-1">
+              <span className="font-black uppercase tracking-widest group-hover:text-white transition-colors">Ryan Neufeld</span>
+              <span className="text-[10px] bg-primary/20 text-primary px-2 py-0.5 rounded font-black tracking-widest uppercase">Grower</span>
+            </div>
+            <span className="text-sm font-medium text-muted-foreground">Neufeld Farms (Traver, CA) • Stone Fruit</span>
           </button>
           
           <button 

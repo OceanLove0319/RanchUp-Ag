@@ -5,7 +5,7 @@ import { format, subDays, subMonths } from 'date-fns';
 const today = new Date();
 const formatDate = (daysAgo: number) => format(subDays(today, daysAgo), 'yyyy-MM-dd');
 
-export const pcaDemoUser = { name: 'Karl W.', org: 'Simplot Grower Solutions', role: 'PCA' };
+export const pcaDemoUser = { name: 'Karl W.', org: 'Simplot Grower Solutions', role: 'PCA', email: 'karl.w@simplot.demo', phone: '(555) 123-4567' };
 
 export const pcaDemoRanches: Ranch[] = [
   { id: "ranch-neufeld", name: "Neufeld Farms", region: "Traver" },
