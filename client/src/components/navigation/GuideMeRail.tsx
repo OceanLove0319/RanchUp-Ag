@@ -1,9 +1,9 @@
 import { Link } from "wouter";
-import { CheckCircle2, AlertCircle, FileText, SprayCan, Sprout, Map, ClipboardList } from "lucide-react";
+import { CheckCircle2, AlertCircle, FileText, SprayCan, Sprout, Map, ClipboardList, ChevronDown, ChevronUp } from "lucide-react";
 import { useStore } from "@/lib/store";
 import { isWithin } from "@/utils/dates";
 import { getActiveSeasonWindow } from "@/utils/season";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 
 export function GuideMeRail() {
   const activeRanchId = useStore(s => s.activeRanchId);
@@ -12,6 +12,8 @@ export function GuideMeRail() {
   const allLogs = useStore(s => s.logs);
   const allChemicalApps = useStore(s => s.chemicalApps);
   const allRecommendations = useStore(s => s.recommendations) || [];
+  
+  const [isExpanded, setIsExpanded] = useState(true);
 
   const blocks = useMemo(() => allBlocks.filter(b => b.ranchId === activeRanchId), [allBlocks, activeRanchId]);
   const logs = useMemo(() => allLogs.filter(l => l.ranchId === activeRanchId), [allLogs, activeRanchId]);
@@ -112,21 +114,30 @@ export function GuideMeRail() {
 
   return (
     <div className="bg-card border-y border-border overflow-hidden">
-      <div className="px-4 py-2 bg-muted/30 border-b border-border">
+      <div 
+        className="px-4 py-3 bg-muted/30 border-b border-border flex justify-between items-center cursor-pointer md:cursor-default"
+        onClick={() => setIsExpanded(!isExpanded)}
+      >
         <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">{isPCA ? 'PCA Priorities' : 'Keep Me On Track'}</span>
+        <button className="md:hidden text-muted-foreground hover:text-foreground transition-colors">
+          {isExpanded ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
+        </button>
       </div>
-      <div className="flex flex-col sm:flex-row py-3 px-4 gap-3">
-        {tasks.map(task => {
-          const Icon = task.icon;
-          return (
-            <Link key={task.id} href={task.link} className="flex items-center gap-3 bg-background border border-border p-3 rounded-lg hover:border-primary/50 transition-colors w-full sm:w-auto">
-              <div className={`p-2 rounded-md ${task.bg} ${task.color} flex-shrink-0`}>
-                <Icon className="w-5 h-5" />
-              </div>
-              <span className="text-sm font-bold tracking-tight">{task.title}</span>
-            </Link>
-          );
-        })}
+      
+      <div className={`md:block ${isExpanded ? 'block' : 'hidden'}`}>
+        <div className="flex flex-col sm:flex-row py-3 px-4 gap-3">
+          {tasks.map(task => {
+            const Icon = task.icon;
+            return (
+              <Link key={task.id} href={task.link} className="flex items-center gap-3 bg-background border border-border p-3 rounded-lg hover:border-primary/50 transition-colors w-full sm:w-auto">
+                <div className={`p-2 rounded-md ${task.bg} ${task.color} flex-shrink-0`}>
+                  <Icon className="w-5 h-5" />
+                </div>
+                <span className="text-sm font-bold tracking-tight">{task.title}</span>
+              </Link>
+            );
+          })}
+        </div>
       </div>
     </div>
   );
