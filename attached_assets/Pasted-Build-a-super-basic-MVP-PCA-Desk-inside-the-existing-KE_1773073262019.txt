@@ -1,0 +1,297 @@
+Build a super-basic MVP “PCA Desk” inside the existing KEBB Ag app.
+
+Goal:
+Add a very simple Pest Control Adviser workflow so the app is useful not only for growers, but also for a PCA managing multiple ranches and blocks. This should feel clean, mobile-friendly, and truck-friendly. Keep it lightweight and frontend-only, using the current React + Vite + TypeScript + Tailwind + shadcn/ui stack and existing mock-data / Zustand patterns. Do not introduce a backend.
+
+IMPORTANT:
+This is an MVP. Do not overbuild. We only need enough to demonstrate the PCA value clearly in a live demo.
+
+-----------------------------------
+MVP FEATURES TO ADD
+-----------------------------------
+
+Add a new role area called:
+
+PCA Desk
+
+Add these 5 pages only:
+
+1. PCA Home
+2. Clients
+3. Blocks
+4. Recommendations
+5. Review Queue
+
+Do not add messaging, maps, calendar, or advanced permissions yet.
+
+-----------------------------------
+1. PCA HOME PAGE
+-----------------------------------
+
+Create a very simple PCA dashboard page.
+
+Top KPI cards:
+- Clients
+- Active Blocks
+- Open Recommendations
+- Review Flags
+
+Below the KPI cards, add 3 basic sections:
+
+A. Today’s Priorities
+Simple list of:
+- blocks needing recommendation
+- recommendations waiting for approval
+- records needing correction
+
+B. Recent Activity
+Simple feed of:
+- recommendation created
+- field application logged
+- record flagged
+
+C. At-Risk Blocks
+Simple list of blocks with:
+- over-budget status
+- missing records
+- flagged unit mismatch
+
+Use clean cards and simple labels.
+
+-----------------------------------
+2. CLIENTS PAGE
+-----------------------------------
+
+Create a simple PCA client list page.
+
+Each client card should show:
+- Ranch name
+- Contact name
+- Crop types
+- Total acres
+- Number of blocks
+- Open recommendations
+- Open review flags
+
+Add a search bar at the top.
+Add simple filters:
+- All
+- Stone Fruit
+- Citrus
+- Nuts
+
+Clicking a client opens a very basic client detail view or routed page showing:
+- ranch summary
+- blocks list
+- recent recommendations
+- open review flags
+
+Use seeded demo clients relevant to Central Valley permanent crops.
+
+-----------------------------------
+3. BLOCKS PAGE
+-----------------------------------
+
+Create a simple block management page for the PCA.
+
+Each block row/card should show:
+- Block name
+- Client / ranch
+- Crop
+- Variety
+- Acres
+- Current status
+- Planned budget
+- Actual to date
+- Flag count
+
+Add a block detail view with these sections only:
+
+A. Block Overview
+- block name
+- ranch
+- crop
+- variety
+- acres
+- irrigation type
+
+B. Budget Snapshot
+- planned season total
+- actual to date
+- remaining budget
+- over/under variance
+
+C. Recommendation History
+Simple list of recommendations tied to the block
+
+D. Logged Applications
+Simple list of field applications tied to the block
+
+Do not overcomplicate this page.
+
+-----------------------------------
+4. RECOMMENDATIONS PAGE
+-----------------------------------
+
+Create a simple recommendation builder/list page.
+
+Add a “New Recommendation” button.
+
+Recommendation list should show:
+- date
+- ranch
+- block
+- recommendation type
+- status
+
+Statuses:
+- Draft
+- Sent
+- Approved
+- Completed
+
+New recommendation form fields:
+- Client
+- Block
+- Recommendation Type
+- Title
+- Materials / Products
+- Rate
+- Unit
+- Passes Planned
+- Notes
+- Status
+
+Keep this simple. One recommendation can just hold a plain list of materials as text or a simple array.
+
+On save:
+- store in Zustand
+- show in Recommendations list
+- show on PCA Home Recent Activity
+- show inside the Block detail view
+
+-----------------------------------
+5. REVIEW QUEUE PAGE
+-----------------------------------
+
+Create a very basic review queue page.
+
+This page should show records that need attention.
+
+Flag types for MVP:
+- UNIT_MISMATCH
+- MISSING_RATE
+- OVER_BUDGET
+
+Each row/card should show:
+- client
+- block
+- issue type
+- short description
+- status
+
+Statuses:
+- Open
+- Resolved
+
+Add simple actions:
+- Mark Resolved
+- View Related Block
+
+Use seeded fake data plus allow generated data from existing logs if easy.
+
+-----------------------------------
+DATA / STATE
+-----------------------------------
+
+Use Zustand only.
+Stay in mockup mode.
+No backend.
+No auth required.
+
+Add simple seeded PCA demo data:
+- 3 to 5 clients
+- mix of stone fruit, citrus, and almonds/pistachios
+- multiple blocks per client
+- a few recommendations
+- a few review flags
+
+Use Central Valley style demo names and realistic orchard/grove examples.
+
+Example regions/towns:
+- Kingsburg
+- Reedley
+- Fowler
+- Traver
+- Visalia
+- Tulare
+
+Example crops:
+- peaches
+- nectarines
+- plums
+- citrus
+- almonds
+- pistachios
+
+-----------------------------------
+NAVIGATION
+-----------------------------------
+
+Add “PCA Desk” to the main app nav.
+
+Under PCA Desk, add links to:
+- Home
+- Clients
+- Blocks
+- Recommendations
+- Review Queue
+
+If role logic already exists, add a simple PCA role toggle.
+If not, just expose PCA Desk in the nav for demo purposes.
+
+-----------------------------------
+DESIGN REQUIREMENTS
+-----------------------------------
+
+Keep the UI very simple, clean, and mobile responsive.
+This should feel:
+- easy to scan
+- easy to demo
+- truck-friendly
+- orchard-operator friendly
+
+Use the existing KEBB Ag visual language.
+Use cards, tables, badges, and simple status pills.
+Do not create dense enterprise UI.
+Do not add advanced charts unless a super basic one is already easy.
+
+-----------------------------------
+MVP DEMO GOAL
+-----------------------------------
+
+The demo should clearly show this story:
+
+A PCA can:
+- see all ranch clients
+- open a block
+- create a recommendation
+- track that recommendation
+- see simple budget status
+- catch records needing correction
+
+That is enough for the MVP.
+
+-----------------------------------
+DELIVERABLE
+-----------------------------------
+
+Return:
+1. all new pages/components
+2. Zustand store additions
+3. seeded demo data
+4. any updated nav wiring
+5. a short summary of what was added
+
+Do not break the current grower workflow.
+Keep everything additive and lightweight.

@@ -1,0 +1,371 @@
+Build a truck-friendly, ultra-simple MVP UX refactor for our Central Valley permanent-crop app so it feels like a digital ranch notebook, not a software dashboard. The user base includes older growers, ranch managers, PCAs, and irrigators in almonds, pistachios, walnuts, citrus, and stone fruit across places like Kingsburg, Reedley, Fowler, Traver, Visalia, Tulare, Hanford, Fresno, and Madera. The experience must be mobile-first, fast, and easy for skeptical non-tech growers to understand in under 90 seconds.
+
+Core product principle
+
+The app should make the grower feel like he is only doing three things:
+	1.	Log work
+	2.	Check cost
+	3.	Print proof
+
+Everything else should happen underneath the hood.
+
+Primary UX goal
+
+Refactor the dashboard and app structure so the whole system is organized around these five plain-English questions:
+	•	What did we do?
+	•	Where did we do it?
+	•	What did it cost?
+	•	What proof do we have?
+	•	What needs attention next?
+
+New MVP structure
+
+Create a simplified guided dashboard built around these Core 6 modules:
+	1.	Ranches & Blocks
+	2.	Quick Log
+	3.	Product Search
+	4.	Block Cost View
+	5.	Block Timeline
+	6.	Print Packet
+
+Also add these Helpful 4 features:
+	1.	Saved Templates
+	2.	Missing Info Flags
+	3.	Photo Capture
+	4.	Guide Me Rail
+
+Keep deeper logic mostly hidden from the user, including:
+	•	budget/projection engine
+	•	material master library
+	•	compliance rules
+	•	role-based visibility
+	•	recommendation support
+	•	season packet builder
+
+Home screen redesign
+
+Replace any complex dashboard feel with a simple “foreman start screen.” The top of the home screen should show only large, obvious action cards/buttons:
+	•	Log Spray
+	•	Log Fertilizer
+	•	Log Irrigation
+	•	Log Labor / Field Work
+	•	View Block Costs
+	•	Print Season Packet
+
+Do not overload the top of the screen with analytics, widgets, or admin tools.
+
+Below that, create a persistent Guide Me Rail or “Keep Me On Track” section that always helps the user get back to the next useful action. This should surface tasks like:
+	•	Log today’s work
+	•	Finish incomplete entries
+	•	Review Block 12 overspend
+	•	Print audit packet
+	•	Review PCA recommendation
+	•	Add missing rate or acreage
+
+This rail must remain visible or easily accessible throughout the app, especially on mobile.
+
+Navigation model
+
+Refactor navigation so the app feels block-first, not software-first.
+
+Every primary workflow should start with:
+Select Ranch → Select Block → Take Action
+
+Do not make users think in terms of abstract modules first.
+
+The user should think in:
+	•	Ranch
+	•	Block
+	•	Crop
+	•	Variety
+	•	Acres
+	•	Activity
+	•	Cost
+	•	Proof
+
+Quick Log experience
+
+Create a simplified universal logging flow with the fewest required fields possible. The system should support log types such as:
+	•	Spray
+	•	Fertilizer
+	•	Irrigation
+	•	Labor / Field Work
+	•	Repair / Maintenance
+	•	PCA Recommendation
+
+Each quick log should feel extremely short and practical. For a spray log, default fields should be:
+	•	Ranch
+	•	Block
+	•	Date
+	•	Product
+	•	Rate
+	•	Acres
+	•	Notes
+	•	Optional photo
+
+Hide advanced fields behind an expandable area labeled something like:
+Add more details
+or
+More for PCA / office
+
+Do not force complexity on the grower.
+
+Saved templates
+
+Add a saved template system for repetitive orchard work. Users should be able to quickly reuse:
+	•	bloom fungicide pass
+	•	hull split spray
+	•	CAN-17 fertigate set
+	•	microsprinkler repair pass
+	•	mow middles
+	•	herbicide strip spray
+	•	foliar zinc pass
+
+Add buttons like:
+	•	Use Previous Pass
+	•	Use Saved Template
+	•	Repeat Last Block Activity
+
+This should dramatically reduce friction.
+
+Product selection
+
+Make product selection simple and search-first. Do not force the user to browse a giant material library first.
+
+The primary flow should ask:
+What did you apply?
+
+Then support:
+	•	fast search by product name
+	•	recent products list
+	•	favorites
+	•	likely matches
+
+Prioritize common Central Valley terminology and products such as:
+	•	UN-32
+	•	CAN-17
+	•	solution-grade gypsum
+	•	calcium nitrate
+	•	fungicide
+	•	herbicide
+	•	foliar zinc
+	•	adjuvant
+
+Cost visibility
+
+Auto-calculate cost in the background. Do not make the user feel like they are doing accounting.
+
+After logging an activity, automatically calculate and store:
+	•	material cost
+	•	estimated labor cost
+	•	estimated equipment/application cost
+	•	total activity cost
+	•	cumulative block spend
+	•	spend per acre
+
+Then present the result in plain language, such as:
+	•	This pass added $18.40/acre to Block 7
+	•	Block 12 spend is now $10,910 total
+	•	This block is 14% over projected input spend
+
+Block Cost View
+
+Make block cost view one of the hero screens. Each block page should show only a few clear, high-value numbers:
+	•	Total spend to date
+	•	Spend per acre
+	•	Last activity
+	•	Budget vs actual
+	•	Open flags / missing info
+
+Avoid clutter. The question this screen should answer is:
+What do I have into this block so far?
+
+Block Timeline
+
+Add a clean, chronological block timeline so each block tells a simple story. Example:
+	•	Mar 3 — fungicide pass
+	•	Mar 8 — irrigation set change
+	•	Mar 15 — calcium nitrate fertigated
+	•	Mar 22 — weed spray
+	•	Apr 1 — thinning labor
+	•	Apr 7 — PCA recommendation
+
+This timeline should be easy to scan on mobile and should unify all activity types in one place.
+
+Print proof / packet generation
+
+Make printing feel like a superpower. Add a highly visible Print / Preview Packet action.
+
+Users should be able to generate simple printable outputs such as:
+	•	Block Activity Summary
+	•	Spray Record Packet
+	•	Season Input Report
+	•	Packer / Audit Packet
+	•	PCA Review Packet
+	•	Restricted Material Summary
+
+The user should feel:
+I log once, and the paperwork takes care of itself.
+
+Missing info flags
+
+Build soft incomplete-record flags, not harsh form validation. The system should identify issues like:
+	•	missing rate
+	•	missing acreage
+	•	missing product
+	•	missing note
+	•	missing compliance attachment
+
+Use user-friendly messaging like:
+	•	Almost complete
+	•	Needs one more detail
+	•	Missing acreage
+	•	Ready to print after one fix
+
+Allow one-tap repair from the flag.
+
+Photo capture
+
+Add photo capture anywhere it helps reduce typing or increase trust. Support photos for:
+	•	product label
+	•	handwritten note
+	•	field condition
+	•	irrigation leak
+	•	equipment issue
+	•	audit proof
+
+Photos should attach to logs and block timelines.
+
+Role-aware simplicity
+
+Keep one app, but support different default emphasis depending on user type:
+
+Grower default focus
+	•	today’s work
+	•	block cost
+	•	print packet
+
+PCA default focus
+	•	recommendations
+	•	spray history
+	•	materials used
+	•	compliance notes
+
+Irrigator default focus
+	•	irrigation logs
+	•	repairs
+	•	water event history
+	•	notes by block
+
+Office/admin default focus
+	•	packet completeness
+	•	record review
+	•	reporting
+	•	cost cleanup
+
+Do not make role management feel complicated. Just adapt default views.
+
+Language and tone
+
+Replace software words with ranch words everywhere.
+
+Use:
+	•	Ranches
+	•	Blocks
+	•	Products
+	•	Passes
+	•	Costs
+	•	Notes
+	•	Timeline
+	•	Proof
+	•	Season Packet
+
+Avoid:
+	•	data objects
+	•	workflow engine
+	•	analytics center
+	•	reporting suite
+	•	document generation module
+
+Truck-friendly design rules
+
+The entire app must feel usable:
+	•	one-handed
+	•	in bright sunlight
+	•	with dirty fingers
+	•	between tasks
+	•	with poor patience for typing
+
+Apply these UI rules:
+	•	large tap targets
+	•	large readable typography
+	•	strong contrast
+	•	short forms
+	•	sticky action buttons
+	•	autosave
+	•	clear back behavior
+	•	minimal typing
+	•	clear status labels
+	•	no dense tables on mobile unless reformatted as cards
+
+First-run user experience
+
+Do not lead with setup complexity. The fastest value path must be visible immediately.
+
+The first-use demo path should be:
+	1.	Choose a block
+	2.	Log one activity
+	3.	See the block cost update
+	4.	Preview or print proof
+
+The whole experience should be understandable in 90 seconds.
+
+Deliverables I want from this build
+
+Please implement or generate the following:
+	1.	A redesigned mobile-first home/dashboard
+	2.	A universal quick log flow
+	3.	A block detail page with:
+	•	cost summary
+	•	timeline
+	•	missing info flags
+	•	print actions
+	4.	A saved templates system
+	5.	A Guide Me Rail
+	6.	A product search / recent products UI
+	7.	A print packet preview flow
+	8.	A role-aware default view system
+	9.	Clean empty states for all major screens
+	10.	Demo seed data for a realistic Central Valley grower account
+
+Demo data requirements
+
+Create a demo grower that feels real to a skeptical Central Valley operator. Seed:
+	•	ranches
+	•	blocks
+	•	crops
+	•	varieties
+	•	activities
+	•	products
+	•	costs
+	•	photos
+	•	missing info flags
+	•	packet-ready records
+
+Use realistic permanent-crop context from stone fruit, citrus, almonds, pistachios, or walnuts.
+
+Build quality expectations
+	•	Keep it in mockup/demo mode if needed
+	•	Preserve current architecture where practical
+	•	Make UX much simpler and more intuitive
+	•	Optimize for mobile first, desktop second
+	•	Prefer clear interactions over feature density
+	•	Make the app feel like a trustworthy field tool, not a startup dashboard
+
+Product promise the UI should communicate
+
+The entire build should embody this message:
+
+Log the work. See the cost. Print the proof.
+
+Please execute this as a coherent UX refactor, not just scattered feature additions.
