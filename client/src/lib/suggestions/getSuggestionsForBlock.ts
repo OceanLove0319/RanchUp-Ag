@@ -41,7 +41,7 @@ export function getSuggestionsForBlock(
     isAfter(new Date(l.date), subDays(now, 21))
   );
 
-  if (!recentSpray && ["ALMONDS", "PISTACHIOS", "WALNUTS"].includes(block.crop)) {
+  if (!recentSpray && ["ALMONDS", "PISTACHIOS", "WALNUTS"].includes(block.crop || "")) {
     suggestions.push({
       id: `sug-prot-${block.id}-${Date.now()}`,
       blockId: block.id,

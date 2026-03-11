@@ -1,4 +1,3 @@
-import { HomeStep } from "./GuidedStepRail";
 import { Link } from "wouter";
 import { Settings, LogOut, FileText, PieChart } from "lucide-react";
 import { useStore } from "@/lib/store";

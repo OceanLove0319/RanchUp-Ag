@@ -86,7 +86,7 @@ export const pcaDemoApps: ChemicalApp[] = [
   { id: "app-r2", ranchId: "ranch-reedley", blockId: "b-r2", chemicalId: "c-12", chemicalName: "Foliar Zinc", category: "NUTRITION", dateApplied: formatDate(12), method: "SPRAY", estimatedCost: 400, costStatus: "ESTIMATED" },
 ];
 
-export const pcaDemoRecommendations = [
+export const pcaDemoRecommendations: any[] = [
   { id: "rec-1", ranchId: "ranch-neufeld", blockId: "b-n2", title: "Bloom protection", status: "ACKNOWLEDGED", date: formatDate(5), notes: "Grower asked whether second zinc pass is necessary.", cropStage: "Bloom", product: "Pristine" },
   { id: "rec-2", ranchId: "ranch-valley", blockId: "b-v1", title: "Hull split fungicide + insect", status: "PENDING", date: formatDate(2), notes: "Waiting on confirmation before applying hull split pass.", cropStage: "Hull Split", product: "Merivon + Intrepid" },
   { id: "rec-3", ranchId: "ranch-jackson", blockId: "b-j2", title: "Scale pressure monitoring", status: "DRAFT", date: formatDate(0), notes: "Need updated observation after rain event.", cropStage: "Fruit Development", product: "Movento" },

@@ -54,7 +54,7 @@ export default function VarianceFlags() {
         const ranchLogs = allLogs.filter(l => l.ranchId === ranch.id);
 
         ranchApps.forEach(app => {
-          if (app.costStatus === 'UNIT_MISMATCH' || !app.estimatedCost || !app.rateValue) {
+          if (app.costStatus === 'UNIT_MISMATCH' || !app.estimatedCost || !app.estimatedCost) {
             const block = allBlocks.find(b => b.id === app.blockId);
             issues[ranch.id].push({
               id: app.id,
@@ -62,7 +62,7 @@ export default function VarianceFlags() {
               blockName: block?.name || 'Unknown Block',
               date: app.dateApplied,
               type: 'Missing Information',
-              desc: `Application record for ${app.productName} is missing unit or cost data.`,
+              desc: `Application record for ${app.chemicalName} is missing unit or cost data.`,
               severity: 'high'
             });
           }

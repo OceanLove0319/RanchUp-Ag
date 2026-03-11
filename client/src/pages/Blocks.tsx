@@ -19,7 +19,6 @@ export default function Blocks() {
   const [variety, setVariety] = useState("");
   const [acreage, setAcreage] = useState("");
   const [yearPlanted, setYearPlanted] = useState("");
-  const [spacing, setSpacing] = useState("20x20");
   const [seasonGroup, setSeasonGroup] = useState("");
   const [yieldTargetBins, setYieldTargetBins] = useState("");
 
@@ -32,11 +31,13 @@ export default function Blocks() {
       crop,
       variety,
       acreage: parseFloat(acreage) || 0,
-      yearPlanted: parseInt(yearPlanted) || new Date().getFullYear(),
-      spacing,
+      
       seasonGroup: seasonGroup || "Standard",
       yieldTargetBins: parseFloat(yieldTargetBins) || 0,
-      geometry: null
+      geometry: null,
+      ranchId: "ranch-1", // default fallback or get from store
+      irrigationType: "Drip",
+      waterTargetAcreFeet: 3.0
     };
     
     addBlock(newBlock);

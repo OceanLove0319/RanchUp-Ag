@@ -28,6 +28,7 @@ export default function Onboarding() {
     setOnboarded(formData);
     addBlock({
       id: Date.now().toString(),
+      ranchId: "ranch-1",
       name: formData.blockName || "First Block",
       acreage: Number(formData.acreage) || 10,
       variety: formData.variety || "Unknown",

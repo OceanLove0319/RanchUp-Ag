@@ -29,6 +29,7 @@ export default function ChemicalNew() {
     
     addChemicalApp({
       id: Date.now().toString(),
+      ranchId: "ranch-1",
       blockId: formData.blockId,
       chemicalId: formData.chemicalId,
       chemicalName: chemical?.name || "Unknown",

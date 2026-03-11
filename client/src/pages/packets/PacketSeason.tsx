@@ -35,7 +35,7 @@ export default function PacketSeason() {
         const ranchApps = allApps.filter(a => a.ranchId === ranch.id);
         const ranchLogs = allLogs.filter(l => l.ranchId === ranch.id);
         
-        const issuesCount = ranchApps.filter(a => a.costStatus === 'UNIT_MISMATCH' || !a.estimatedCost || !a.rateValue).length + 
+        const issuesCount = ranchApps.filter(a => a.costStatus === 'UNIT_MISMATCH' || !a.estimatedCost ).length + 
                            ranchLogs.filter(l => !l.amount || l.amount <= 0).length;
 
         return {

@@ -1,5 +1,5 @@
 import { useRoute, useLocation } from "wouter";
-import { useStore } from "@/lib/store";
+import { useStore, Block } from "@/lib/store";
 import { Droplets, Sprout, ShieldAlert, ArrowLeft, Info, Lock, Edit2, Trash2, CheckCircle2 } from "lucide-react";
 import { Link } from "wouter";
 import { useState, useMemo } from "react";
@@ -13,6 +13,7 @@ import { useToast } from "@/hooks/use-toast";
 import BlockLogs from "@/components/BlockLogs";
 import { BlockSuggestionsCard } from "@/components/blocks/BlockSuggestionsCard";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 
 export default function BlockDetail() {
   const [, params] = useRoute("/app/blocks/:id");
@@ -31,12 +32,12 @@ export default function BlockDetail() {
   const { requireCostEngine } = useGating();
 
   const [isEditing, setIsEditing] = useState(false);
-  const [editForm, setEditForm] = useState<Partial<typeof block>>(block || {});
+  const [editForm, setEditForm] = useState<Partial<Block>>(block || {});
 
   const blockRecs = useMemo(() => recommendations?.filter(r => r.blockId === block?.id) || [], [recommendations, block?.id]);
   const latestRec = useMemo(() => [...blockRecs].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0], [blockRecs]);
   const blockApps = useMemo(() => chemicalApps.filter(a => a.blockId === block?.id), [chemicalApps, block?.id]);
-  const missingInfoApps = useMemo(() => blockApps.filter(a => a.costStatus === 'UNIT_MISMATCH' || !a.estimatedCost || !a.rateValue), [blockApps]);
+  const missingInfoApps = useMemo(() => blockApps.filter(a => a.costStatus === 'UNIT_MISMATCH' || !a.estimatedCost), [blockApps]);
 
   if (!block) return <div>Block not found</div>;
 
@@ -89,7 +90,7 @@ export default function BlockDetail() {
               <label className="block text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2">Block Name</label>
               <input 
                 type="text" 
-                value={editForm.name || ""}
+                value={editForm?.name || ""}
                 onChange={e => setEditForm({...editForm, name: e.target.value})}
                 className="w-full bg-background border border-border rounded px-3 py-2 text-foreground focus:outline-none focus:border-primary"
               />
@@ -100,7 +101,7 @@ export default function BlockDetail() {
                 <label className="block text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2">Acreage</label>
                 <input 
                   type="number" 
-                  value={editForm.acreage || ""}
+                  value={editForm?.acreage || ""}
                   onChange={e => setEditForm({...editForm, acreage: Number(e.target.value)})}
                   className="w-full bg-background border border-border rounded px-3 py-2 text-foreground focus:outline-none focus:border-primary"
                 />
@@ -109,7 +110,7 @@ export default function BlockDetail() {
                 <label className="block text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2">Variety</label>
                 <input 
                   type="text" 
-                  value={editForm.variety || ""}
+                  value={editForm?.variety || ""}
                   onChange={e => setEditForm({...editForm, variety: e.target.value})}
                   className="w-full bg-background border border-border rounded px-3 py-2 text-foreground focus:outline-none focus:border-primary"
                 />
@@ -120,7 +121,7 @@ export default function BlockDetail() {
               <div>
                 <label className="block text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2">Season Group</label>
                 <select 
-                  value={editForm.seasonGroup || ""}
+                  value={editForm?.seasonGroup || ""}
                   onChange={e => setEditForm({...editForm, seasonGroup: e.target.value})}
                   className="w-full bg-background border border-border rounded px-3 py-2 text-foreground focus:outline-none focus:border-primary appearance-none"
                 >
@@ -132,7 +133,7 @@ export default function BlockDetail() {
               <div>
                 <label className="block text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2">Irrigation Type</label>
                 <select 
-                  value={editForm.irrigationType || ""}
+                  value={editForm?.irrigationType || ""}
                   onChange={e => setEditForm({...editForm, irrigationType: e.target.value})}
                   className="w-full bg-background border border-border rounded px-3 py-2 text-foreground focus:outline-none focus:border-primary appearance-none"
                 >
@@ -149,7 +150,7 @@ export default function BlockDetail() {
                 <label className="block text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2">Yield Target (bins/ac)</label>
                 <input 
                   type="number" 
-                  value={editForm.yieldTargetBins || ""}
+                  value={editForm?.yieldTargetBins || ""}
                   onChange={e => setEditForm({...editForm, yieldTargetBins: Number(e.target.value)})}
                   className="w-full bg-background border border-border rounded px-3 py-2 text-foreground focus:outline-none focus:border-primary"
                 />
@@ -159,7 +160,7 @@ export default function BlockDetail() {
                 <input 
                   type="number" 
                   step="0.1"
-                  value={editForm.waterTargetAcreFeet || ""}
+                  value={editForm?.waterTargetAcreFeet || ""}
                   onChange={e => setEditForm({...editForm, waterTargetAcreFeet: Number(e.target.value)})}
                   className="w-full bg-background border border-border rounded px-3 py-2 text-foreground focus:outline-none focus:border-primary"
                 />

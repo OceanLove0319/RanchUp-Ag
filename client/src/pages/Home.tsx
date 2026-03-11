@@ -49,7 +49,7 @@ export default function Home() {
       const openRecs = ranchRecs.filter(r => r.status === 'DRAFT' || r.status === 'SENT').length;
       const pendingFollowThrough = ranchRecs.filter(r => r.status === 'PENDING' || r.status === 'ACKNOWLEDGED').length;
       
-      const missingInfoApps = ranchApps.filter(a => a.costStatus === 'UNIT_MISMATCH' || !a.estimatedCost || !a.rateValue || !a.targetPest).length;
+      const missingInfoApps = ranchApps.filter(a => a.costStatus === 'UNIT_MISMATCH' || !a.estimatedCost ).length;
       const missingInfoLogs = ranchLogs.filter(l => !l.amount || !l.unit).length;
       const recordIssues = missingInfoApps + missingInfoLogs;
 
@@ -177,7 +177,7 @@ export default function Home() {
     const activeRanchRecs = allRecommendations.filter(r => r.ranchId === activeRanch.id);
     const activeRanchApps = allApps.filter(a => a.ranchId === activeRanch.id);
     
-    const priorities = [];
+    const priorities: any[] = [];
     
     // Build priority list
     activeRanchRecs.filter(r => r.status === 'PENDING').forEach(rec => {
@@ -200,7 +200,7 @@ export default function Home() {
         id: `app-${app.id}`,
         type: 'record-issue',
         title: `${block?.name}: Record Issue`,
-        desc: `Application record for ${app.productName} is missing data.`,
+        desc: `Application record for ${app.chemicalName} is missing data.`,
         action: 'Fix',
         link: `/app/reports/variance`,
         color: 'text-red-400',

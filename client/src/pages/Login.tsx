@@ -32,7 +32,7 @@ export default function Login() {
     store.chemicalApps = pcaDemoApps;
     store.recommendations = pcaDemoRecommendations;
     store.activeRanchId = pcaDemoRanches[0].id;
-    store.isAuthenticated = true;
+    
     
     // Auto-enable pro plan to show all tools
     store.setPlan("PRO", false);

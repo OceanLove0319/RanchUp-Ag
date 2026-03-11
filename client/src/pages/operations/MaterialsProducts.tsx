@@ -67,9 +67,9 @@ export default function MaterialsProducts() {
     };
 
     if (editingProduct) {
-      updateProductLibraryItem(editingProduct.id, newItem);
+      updateProductLibraryItem(editingProduct.id, newItem as any);
     } else {
-      addProductLibraryItem(newItem);
+      addProductLibraryItem(newItem as any);
     }
     setIsAddOpen(false);
   };
