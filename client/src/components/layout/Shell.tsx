@@ -94,7 +94,10 @@ export default function Shell({ children }: { children: React.ReactNode }) {
           </div>
           
           <div className="mt-auto border-t border-border pt-4">
-            <button onClick={logout} className="flex items-center gap-3 p-3 text-muted-foreground hover:text-white transition-colors w-full">
+            <button onClick={() => {
+              logout();
+              setLocation('/');
+            }} className="flex items-center gap-3 p-3 text-muted-foreground hover:text-white transition-colors w-full">
               <LogOut className="w-5 h-5" />
               <span className="text-sm font-semibold tracking-wider uppercase">Log Out</span>
             </button>
