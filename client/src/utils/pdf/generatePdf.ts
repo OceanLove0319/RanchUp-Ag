@@ -1,5 +1,5 @@
 import { jsPDF } from "jspdf";
-import "jspdf-autotable";
+import autoTable from "jspdf-autotable";
 import { RenderBlock } from "@/lib/packets/packetSchemas";
 import { PDF_THEME } from "./pdfStyles";
 
@@ -127,9 +127,9 @@ export function generatePdfFromBlocks(blocks: RenderBlock[], filename: string = 
               });
             });
 
-            (doc as any).autoTable({
+            autoTable(doc, {
               startY: y,
-              head: [block.columns],
+              head: [block.columns || []],
               body: safeRows,
               theme: 'grid',
               headStyles: { 
