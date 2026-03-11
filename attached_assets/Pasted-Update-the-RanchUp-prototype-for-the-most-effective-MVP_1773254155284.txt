@@ -1,0 +1,654 @@
+Update the RanchUp prototype for the most effective MVP adoption and value.
+
+Core strategy:
+This MVP must not feel like broad farm software.
+It must feel like a tightly organized system that helps growers and PCAs:
+1. make fewer costly mistakes,
+2. follow through on recommendations,
+3. keep cleaner records,
+4. see simple cost impact before decisions,
+5. reduce phone-tag and confusion,
+6. prove small but meaningful operational wins.
+
+This MVP is the wedge.
+Post-MVP can expand into deeper budgeting, irrigation, labor, projections, procurement, and broader farm management.
+But right now, the product must win on clarity, trust, speed, and immediate usefulness.
+
+==================================================
+NEW MVP POSITIONING
+==================================================
+
+Product statement:
+RanchUp is a recommendation follow-through, clean-record, and cost-visibility system for Central Valley growers and PCAs.
+
+Do NOT position this as:
+- a full ERP
+- a broad farm management suite
+- a giant all-in-one platform
+- a complex budgeting engine
+- a chemical marketplace
+
+Do position it as:
+- a practical operational helper
+- a decision-support layer
+- a clean-record system
+- a cost-clarity tool
+- a way to reduce stress and tighten execution
+
+The product should feel:
+- simple
+- trustworthy
+- useful
+- truck-friendly
+- older-user friendly
+- elite in organization
+- low cognitive load
+- built for real Central Valley permanent-crop operations
+
+==================================================
+PRIMARY USERS
+==================================================
+
+1. Grower / Operator
+Needs to:
+- see what was recommended
+- see what it is expected to cost
+- understand approved alternatives
+- confirm what got done
+- fix missing record info
+- stay organized without more work
+
+2. PCA
+Needs to:
+- manage multiple ranches
+- send recommendations
+- guide product choice
+- show expected cost impact
+- see whether growers followed through
+- catch missing/incomplete records
+- export clean proof
+
+==================================================
+MVP PRODUCT PILLARS
+==================================================
+
+Build the MVP around only these 4 pillars:
+
+1. Recommendation Follow-Through
+2. Clean Records / Proof Readiness
+3. Simple Cost Visibility
+4. Ranch-First Organization
+
+Everything else should be secondary or hidden for now.
+
+==================================================
+INFORMATION ARCHITECTURE CHANGES
+==================================================
+
+Refactor the app to reduce clutter and focus on the MVP wedge.
+
+Top-level navigation should be simple.
+
+For PCA:
+- Home
+- Recommendations
+- Records Review
+- Export
+
+For Grower:
+- Home
+- My Recommendations
+- My Records
+- Costs
+
+Optional:
+- Ranch Overview
+
+Do NOT surface too many extra modules in primary navigation.
+
+==================================================
+PCA EXPERIENCE REFACTOR
+==================================================
+
+The PCA experience should be ranch-first and progressively focused.
+
+Hierarchy:
+1. All Ranches
+2. Selected Ranch
+3. Selected Block / Issue
+4. Action
+
+The PCA dashboard must NOT feel like a busy admin panel.
+
+--------------------------------------------------
+PCA HOME
+--------------------------------------------------
+
+Purpose:
+Show which ranch needs attention and why.
+
+Top summary strip:
+Only show:
+- Ranches Managed
+- Needs Attention
+- Pending Follow-Through
+- Records Blocking Export
+
+Main section:
+Ranch status cards or rows.
+
+Each ranch card includes:
+- Ranch name
+- Primary crop / crop mix
+- Open recommendations count
+- Pending follow-through count
+- Record issues count
+- Packet readiness
+- Last activity
+- Overall status label
+
+Status labels:
+- Clean
+- Needs Follow-Up
+- Needs Record Cleanup
+- Priority
+
+Each ranch card should have one dominant CTA:
+- Open Ranch
+
+Optional small links:
+- View Packet
+- View Issues
+
+--------------------------------------------------
+SELECTED RANCH VIEW
+--------------------------------------------------
+
+When a ranch is opened, show a focused ranch workspace.
+
+Top header:
+- Ranch name
+- Crop(s)
+- Total blocks
+- Open recs
+- Pending follow-through
+- Record issues
+- Export readiness
+
+Add one plain-language summary sentence:
+Examples:
+- 2 recommendations still need grower follow-through.
+- 3 issues are blocking a clean export.
+- This ranch is clean and export-ready.
+
+Top section:
+“What needs attention”
+
+Show only 3–5 actionable items max.
+
+Examples:
+- Block 14 recommendation still pending
+- Block 7 application missing rate
+- Block 9 marked complete but no clean record found
+
+Each item has one primary action:
+- Review
+- Fix
+- Close
+- View
+
+Below that:
+Block status list
+
+Each block row/card shows only:
+- Block name
+- Crop / variety
+- Latest recommendation status
+- Record status
+- Flag count
+- Open Block
+
+Do not overload with extra detail.
+
+--------------------------------------------------
+BLOCK DETAIL
+--------------------------------------------------
+
+The block page or drawer should be highly focused.
+
+Show:
+- Block name
+- Ranch
+- Crop / variety
+- Acres
+- Current stage if available
+
+Section 1:
+Latest recommendation
+- product
+- rate
+- date sent
+- status
+- grower response if any
+
+Section 2:
+Cost impact
+- estimated price per unit
+- estimated cost per acre
+- estimated cost for this block
+- approved alternatives if present
+
+Section 3:
+Record status
+- matching application record found / not found
+- missing fields if any
+- mismatch if any
+- clean / not clean
+
+Section 4:
+Recommended next action
+
+This is critical.
+Only one dominant action should lead the screen.
+
+Examples:
+- Fix missing rate
+- Review grower follow-through
+- Close recommendation
+- Link matching application record
+- Ready for export
+
+==================================================
+GROWER EXPERIENCE REFACTOR
+==================================================
+
+The grower dashboard must be simplified.
+Do NOT lead with a broad quick-action cockpit.
+
+The grower should immediately understand:
+- what needs doing
+- what was recommended
+- what it will roughly cost
+- what is missing
+- what needs confirmation
+
+--------------------------------------------------
+GROWER HOME
+--------------------------------------------------
+
+Top section:
+“What needs attention today”
+
+Show only a few cards:
+- 1 recommendation waiting on review
+- 1 application record missing details
+- 1 block ready for confirmation
+- 1 cost-impact alert or budget watch item
+
+Next section:
+Recommended for your ranch
+
+Show recommendation cards with:
+- Ranch
+- Block
+- Product
+- Rate
+- Estimated cost/acre
+- Estimated block cost
+- Status
+- Open Recommendation
+
+Next section:
+Records needing cleanup
+
+Show only missing or incomplete items.
+
+Next section:
+Simple cost watch
+
+Examples:
+- This pass is estimated at $42.80/acre
+- Alternative B could reduce cost by $6.20/acre
+- Block 7 spending is above similar blocks
+- 2 pending recs still have no linked application record
+
+Keep this simple and non-financially intimidating.
+
+==================================================
+RECOMMENDATIONS MODULE REFACTOR
+==================================================
+
+This is one of the core MVP modules.
+
+Purpose:
+Track recommendation creation, sending, grower follow-through, and clean closeout.
+
+Recommendation statuses:
+- Draft
+- Sent
+- Pending
+- Acknowledged
+- Applied
+- Closed
+
+Each recommendation should be tied to:
+- Ranch
+- Block
+- Crop
+- Crop stage
+- Date
+- Product
+- Rate
+- Unit
+- Target issue
+- Notes
+- Status
+
+Add simple filters:
+- Ranch
+- Status
+- Block
+- Crop
+
+Default organization:
+Group by ranch, then by status.
+
+Each recommendation card/row shows:
+- ranch
+- block
+- product
+- date
+- status
+- linked record? yes/no
+- estimated cost/acre
+- estimated block cost
+
+Primary actions:
+- Open
+- Send
+- Close
+
+Do not show excessive controls.
+
+==================================================
+ADD COST VISIBILITY TO RECOMMENDATIONS
+==================================================
+
+This is a major MVP addition.
+
+For each recommendation, let the PCA optionally add:
+
+Primary product fields:
+- Product name
+- Rate
+- Unit
+- Estimated price per unit
+- Estimated cost per acre
+- Estimated cost for block
+
+Alternatives:
+Allow up to 2 approved alternatives with:
+- alternative product name
+- estimated price per unit
+- estimated cost per acre
+- note / reason
+
+Alternative notes examples:
+- Lower-cost option
+- Preferred for current timing
+- Local availability option
+- Use only if approved
+- Check with PCA before substituting
+
+Grower-facing display should NOT feel like shopping.
+It should feel like PCA-guided decision support.
+
+Label all pricing clearly as:
+- Estimated Price
+- Estimated Cost
+- Last Updated
+
+Do NOT present these as live market prices unless explicitly supported later.
+
+==================================================
+RECORDS REVIEW MODULE REFACTOR
+==================================================
+
+Make this a clean exception queue.
+Do not make it look like a database dump.
+
+Purpose:
+Find and fix incomplete or mismatched records quickly.
+
+Issue types:
+- Missing rate
+- Missing unit
+- Missing product
+- Missing applicator info
+- Wrong unit for product type
+- Incomplete application record
+- Recommendation closed but no linked application record
+
+Group issues by:
+- ranch first
+- then severity or issue type
+
+Each issue card/row:
+- ranch
+- block
+- date
+- issue
+- why it matters
+- Fix button
+
+Optional small secondary action:
+- Mark reviewed
+
+Keep this fast and punch-list oriented.
+
+==================================================
+LINKED RECOMMENDATION-TO-RECORD LOGIC
+==================================================
+
+Build a lightweight matching system between recommendations and application records.
+
+Matching logic can use:
+- same ranch
+- same block
+- same product
+- similar date range
+
+If recommendation is marked complete but no matching record exists:
+show warning:
+- Recommendation marked complete, but no clean application record found.
+
+This logic is central to MVP value.
+
+==================================================
+EXPORT / PROOF MODULE REFACTOR
+==================================================
+
+Purpose:
+Generate clean proof with confidence.
+
+For each ranch show:
+- Ready to Export / Not Ready
+- blocking issues count
+- last export date if available
+
+If not ready:
+show exact blockers in a simple checklist.
+
+If ready:
+show one clear CTA:
+- Export Packet
+
+Packet contents for MVP:
+- Ranch summary
+- Block list
+- Recommendation summary
+- Application record summary
+- Open issues / missing info list
+- Clean / Not Clean pre-check status
+
+Before export:
+run pre-check and show:
+- ready
+or
+- issues blocking clean export
+
+Message language:
+- Clean records create clean proof.
+- This ranch is export-ready.
+- 2 issues need cleanup before export.
+
+==================================================
+WHAT TO DE-EMPHASIZE OR HIDE IN MVP
+==================================================
+
+Do not delete necessarily, but remove from primary story and navigation.
+
+De-emphasize:
+- deep program templates
+- advanced projections engine
+- irrigation logging as a major front-door workflow
+- labor logging as a major front-door workflow
+- heavy material-library management surfaces
+- too many grower quick actions
+- broad operational dashboards
+- ERP-like setup burden
+
+These can come later.
+Post-MVP can expand once trust and adoption are earned.
+
+==================================================
+WHAT NOT TO BUILD YET
+==================================================
+
+Do NOT build now:
+- full chemical bidding marketplace
+- live multi-supplier procurement engine
+- advanced irrigation optimization suite
+- deep labor analytics
+- equipment maintenance prediction
+- full profitability accounting system
+- complex forecasting engine
+- giant admin settings architecture
+- inventory / purchasing suite
+- chat-heavy collaboration tool
+
+These are post-MVP opportunities.
+
+==================================================
+ADD “WHY THIS MATTERS” MICROCOPY
+==================================================
+
+This is important for adoption.
+
+Throughout the UI, add simple helper lines like:
+- This pass is estimated at $42.80/acre.
+- 2 issues are blocking export.
+- This record needs cleanup before proof is clean.
+- Alternative B may reduce material cost.
+- Waiting on grower follow-through.
+- This ranch is export-ready.
+
+The app should feel like it is organizing the thinking for the user.
+
+==================================================
+DEMO DATA REQUIREMENTS
+==================================================
+
+Seed realistic Central Valley demo data.
+
+Ranches:
+- Neufeld Farms
+- Jackson Family Orchards
+- Valley Crest Nut Co.
+- Reedley Ridge Farms
+
+Use permanent-crop examples:
+- stone fruit
+- almonds
+- pistachios
+- citrus
+
+Ensure demo states differ:
+- one ranch clean and export-ready
+- one ranch waiting on grower follow-through
+- one ranch with multiple record issues
+- one ranch with cost visibility opportunities / approved alternatives
+
+Include:
+- multiple blocks
+- several recommendations in different statuses
+- linked and unlinked application records
+- several incomplete records
+- examples of estimated product cost and alternatives
+
+==================================================
+DESIGN / UX RULES
+==================================================
+
+Apply these everywhere:
+
+1. One dominant action per screen
+2. Show summary first, detail second
+3. Use progressive disclosure
+4. Limit visible choices
+5. Use plain language
+6. Reduce dashboard sprawl
+7. Keep tables lightweight
+8. Use large tap targets
+9. Avoid horizontal scrolling
+10. Maintain Ranch → Block → Action mental model
+11. Keep visual hierarchy calm and premium
+12. Do not create cognitive overload
+
+Tone:
+- practical
+- premium operational clarity
+- low-noise
+- trustworthy
+- Central Valley relevant
+
+Avoid:
+- flashy SaaS clutter
+- too many widgets
+- too many badges
+- dense admin panels
+- noisy color systems
+- tiny controls
+
+==================================================
+TECHNICAL PREFERENCE
+==================================================
+
+Use the current React + TypeScript + Tailwind + shadcn/ui architecture.
+Keep components modular.
+Use seeded mock data and lightweight mock persistence only.
+No backend required for this MVP update.
+
+==================================================
+SUCCESS TEST
+==================================================
+
+When this refactor is complete, the app should pass these tests:
+
+PCA can instantly tell:
+- which ranch needs attention
+- why
+- which block is driving the issue
+- what action to take
+- whether the ranch is ready to export
+
+Grower can instantly tell:
+- what was recommended
+- what it is expected to cost
+- whether alternatives are allowed
+- what record info is missing
+- what needs confirmation next
+
+Final litmus test:
+This MVP should feel like a tightly organized helper that proves small operational wins now,
+while clearly setting up more value layers after adoption.
