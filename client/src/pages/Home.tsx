@@ -5,6 +5,7 @@ import { format } from "date-fns";
 import { GuideMeRail } from "@/components/navigation/GuideMeRail";
 import { Droplets, Sprout, ShieldAlert, Users, Printer, DollarSign, Calendar, Map as MapIcon, CheckCircle2, ClipboardList, AlertCircle, ArrowRight, ArrowLeft, Plus } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { SavingsCenter } from "@/components/financials/SavingsCenter";
 
 export default function Home() {
   const user = useStore(s => s.user);
@@ -477,25 +478,10 @@ export default function Home() {
         {/* Simple Cost Watch */}
         <div className="mb-6">
           <h2 className="text-sm font-black uppercase tracking-widest text-muted-foreground mb-3 flex items-center gap-2">
-            <DollarSign className="w-4 h-4" /> Simple Cost Watch
+            <DollarSign className="w-4 h-4" /> Cost Optimization Opportunities
           </h2>
           
-          <div className="bg-card border border-border rounded-xl shadow-sm divide-y divide-border">
-            <div className="p-4 flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="w-2 h-2 rounded-full bg-amber-400"></div>
-                <p className="text-sm font-medium">Alternative available for Block 7 fungicide pass</p>
-              </div>
-              <span className="text-xs font-bold text-green-400">Save ~$6.20/ac</span>
-            </div>
-            <div className="p-4 flex items-center justify-between">
-               <div className="flex items-center gap-3">
-                <div className="w-2 h-2 rounded-full bg-blue-400"></div>
-                <p className="text-sm font-medium">Tulare Almonds overall spend tracking</p>
-              </div>
-              <span className="text-xs font-bold text-muted-foreground">On Budget</span>
-            </div>
-          </div>
+          <SavingsCenter ranchId={activeRanchId!} />
         </div>
 
       </div>

@@ -1,6 +1,6 @@
 import { useRoute, useLocation } from "wouter";
 import { useStore, Block } from "@/lib/store";
-import { Droplets, Sprout, ShieldAlert, ArrowLeft, Info, Lock, Edit2, Trash2, CheckCircle2 } from "lucide-react";
+import { Droplets, Sprout, ShieldAlert, ArrowLeft, Info, Lock, Edit2, Trash2, CheckCircle2, DollarSign } from "lucide-react";
 import { Link } from "wouter";
 import { useState, useMemo } from "react";
 import { getActiveSeasonWindow } from "@/utils/season";
@@ -14,6 +14,8 @@ import BlockLogs from "@/components/BlockLogs";
 import { BlockSuggestionsCard } from "@/components/blocks/BlockSuggestionsCard";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { BudgetTimeline } from "@/components/financials/BudgetTimeline";
+import { CostSimulator } from "@/components/financials/CostSimulator";
 
 export default function BlockDetail() {
   const [, params] = useRoute("/app/blocks/:id");
@@ -408,27 +410,28 @@ export default function BlockDetail() {
         </div>
       </div>
 
-      <div className="bg-[#111113] border border-white/10 p-6 md:p-8 rounded-lg flex flex-col md:flex-row items-center justify-between gap-6 mb-6">
-        <div>
-          <h3 className="text-xl font-black uppercase tracking-tight text-white mb-1">Season Spend</h3>
-          <p className="text-gray-400 font-medium mb-1">Total estimated cost based on active season window logs.</p>
-          <p className="text-xs text-muted-foreground flex items-center gap-1"><Info className="w-3 h-3" /> Totals reflect this block's active season window based on Early/Mid/Late timing.</p>
-        </div>
-        <div className="text-left w-full md:text-right md:w-auto">
-          {costEngine.allowed ? (
-            <>
-              <p className="text-4xl font-black text-white">{formattedSpend}</p>
-              <p className="text-xs font-bold uppercase tracking-widest text-primary mt-1">Total Spend</p>
-            </>
-          ) : (
-            <div className="bg-black/50 border border-border p-4 rounded-lg text-center min-w-[200px]">
-              <Lock className="w-5 h-5 text-primary mx-auto mb-2" />
-              <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-3">Cost Engine Locked</p>
-              <Link href={costEngine.upgradePath} className="text-[10px] bg-primary text-primary-foreground px-3 py-1.5 rounded font-black uppercase tracking-widest hover:bg-primary/90 transition-colors block w-full">
-                View Pricing
-              </Link>
-            </div>
-          )}
+      <div className="bg-[#111113] border border-white/10 p-6 md:p-8 rounded-lg mb-6">
+        <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+          <div className="flex-1 w-full">
+            <h3 className="text-xl font-black uppercase tracking-tight text-white mb-1">Season Spend</h3>
+            <p className="text-gray-400 font-medium mb-1">Total estimated cost vs expected PCA targets.</p>
+            <p className="text-xs text-muted-foreground flex items-center gap-1"><Info className="w-3 h-3" /> Chart reflects cumulative block spend dynamically generated for demo.</p>
+            
+            {costEngine.allowed && (
+              <BudgetTimeline block={block} apps={blockApps} recommendations={blockRecs} />
+            )}
+          </div>
+          <div className="text-left w-full md:text-right md:w-auto self-start mt-2">
+            {!costEngine.allowed && (
+              <div className="bg-black/50 border border-border p-4 rounded-lg text-center min-w-[200px]">
+                <Lock className="w-5 h-5 text-primary mx-auto mb-2" />
+                <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-3">Cost Engine Locked</p>
+                <Link href={costEngine.upgradePath} className="text-[10px] bg-primary text-primary-foreground px-3 py-1.5 rounded font-black uppercase tracking-widest hover:bg-primary/90 transition-colors block w-full">
+                  View Pricing
+                </Link>
+              </div>
+            )}
+          </div>
         </div>
       </div>
       
