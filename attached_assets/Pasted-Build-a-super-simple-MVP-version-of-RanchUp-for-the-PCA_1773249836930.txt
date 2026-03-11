@@ -1,0 +1,269 @@
+Build a super-simple MVP version of RanchUp for the PCA role only.
+
+Core product positioning:
+“RanchUp is a recommendation follow-through and clean-record system for the ranches you manage.”
+
+This is NOT a full farm management platform.
+This is NOT a bloated ERP.
+This MVP should feel like a fast, truck-friendly, mobile-first command layer for a Pest Control Adviser managing multiple grower accounts in California’s Central Valley.
+
+Primary user:
+Karl W.
+Role: PCA
+Company: Simplot Grower Solutions
+He manages multiple ranches and needs to:
+1. send recommendations,
+2. see whether growers followed through,
+3. catch missing or incorrect spray record details,
+4. generate clean proof when needed.
+
+Design requirements:
+- mobile responsive
+- no horizontal scrolling
+- large tap targets for older users / “fat finger” usability
+- high contrast
+- simple flows
+- minimal clicks
+- clear typography
+- clean, modern, practical UI
+- desktop and mobile both work well
+- avoid clutter
+- every screen should answer: “What does Karl need to do next?”
+
+Build only these MVP features:
+
+1. PCA Login + Role-Based Experience
+- Create a PCA demo login for:
+  Name: Karl W.
+  Company: Simplot Grower Solutions
+  Role: PCA
+- When logged in as PCA, route to a PCA-specific dashboard.
+- Do not show the grower-style quick log dashboard.
+
+2. Multi-Ranch Switcher
+- Karl manages multiple ranches.
+- Add a clear ranch switcher at the top of the app.
+- Demo ranches:
+  - Neufeld Farms
+  - Jackson Family Orchards
+  - Valley Crest Nut Co.
+  - Reedley Ridge Farms
+- Switching ranches should instantly refresh dashboard metrics, recommendations, flags, and packet data for that ranch.
+
+3. PCA Command Center Dashboard
+This is the most important screen.
+It should be a simple “what needs attention now” dashboard.
+
+Show these KPI cards:
+- Total Ranches Managed
+- Open Recommendations
+- Awaiting Grower Follow-Through
+- Records Needing Review
+
+Add a “Guide Me” / “Priority Rail” section at the top with urgent actions like:
+- Review 3 pending recommendations
+- Fix 2 incomplete spray logs
+- Generate clean packet for Neufeld Farms
+
+Below that, add:
+- Recent Recommendations
+- Recent Record Flags
+- Ranch Status Summary
+
+The dashboard should feel like a command center, not a generic admin panel.
+
+4. Recommendation Lifecycle Module
+Build a dedicated Recommendations page.
+
+Purpose:
+Allow Karl to create, send, track, and close recommendations for each ranch/block.
+
+Recommendation form fields:
+- Ranch
+- Block
+- Crop
+- Crop Stage
+- Date
+- Recommendation Type
+- Product
+- Rate
+- Unit
+- Target Pest / Issue
+- Notes / Instructions
+- REI / PHI optional field
+- Status
+
+Statuses:
+- Draft
+- Sent
+- Pending
+- Acknowledged
+- Applied / Closed
+
+Requirements:
+- Recommendations should be tied to a ranch and block
+- Make status visually obvious with clear badges
+- Add filters by ranch, status, crop, and block
+- Make it easy to see which recommendations are still waiting on grower action
+- Add a simple detail view for each recommendation
+- Add a “Mark as Sent” action
+- Add a “Mark as Closed” action
+
+5. Follow-Through Tracking
+This is a core MVP concept.
+
+On the Recommendations page and dashboard, clearly show:
+- recommendations sent
+- recommendations still pending
+- recommendations acknowledged by grower
+- recommendations marked applied/closed
+
+Build this as a simple operational follow-through view, not messaging-heavy collaboration software.
+
+Include:
+- Sent date
+- Applied date if completed
+- Whether the grower has responded
+- Whether proof/record exists
+
+6. Clean-Record / Variance Flags Module
+Build a lightweight Records Review page focused only on data cleanliness.
+
+This is not a full compliance engine.
+This is a simple “find what is missing or wrong” tool.
+
+Flag examples:
+- Missing rate
+- Missing unit
+- Missing product name
+- Missing applicator info
+- Wrong unit for product type
+- Incomplete application record
+- Recommendation closed but no linked application record
+
+Each flag row should show:
+- Ranch
+- Block
+- Date
+- Issue type
+- Severity
+- Suggested fix
+- Action button
+
+Actions:
+- View record
+- Fix issue
+- Mark reviewed
+
+Keep corrections simple and fast.
+
+7. Linked Recommendation-to-Record Logic
+Build a basic connection between recommendations and field records.
+
+Goal:
+If a grower says a recommendation was completed, Karl should be able to see whether a matching application record exists.
+
+Basic matching logic can use:
+- same ranch
+- same block
+- same product
+- similar date range
+
+If no matching record exists, show a warning like:
+“Recommendation marked complete, but no clean application record found.”
+
+8. Audit Packet / Clean Export MVP
+Build a simple PDF export feature for the selected ranch.
+
+This is an MVP “clean proof” packet, not a giant season binder.
+
+Packet should include:
+- Ranch summary
+- Block list
+- Recommendation summary
+- Application record summary
+- Open issues / missing info list
+- Clean/Not Clean pre-check status
+
+Before export:
+Run a pre-check:
+- if missing critical fields exist, show warning
+- if records are clean enough, show “Ready to Export”
+
+Make the export screen feel confidence-building:
+“Clean records create clean proof.”
+
+9. Demo Seed Data
+Seed the app with realistic Central Valley permanent-crop demo data.
+
+Use ranch examples like:
+- stone fruit
+- almonds
+- pistachios
+- citrus
+
+Include:
+- several ranches
+- multiple blocks per ranch
+- several recommendations in different statuses
+- several records with issues
+- at least one ranch that is clean and packet-ready
+- at least one ranch with obvious missing information
+
+The data should make the dashboard feel alive and immediately understandable.
+
+10. Navigation
+Keep navigation very simple:
+- Dashboard
+- Recommendations
+- Records Review
+- Export Packet
+
+Optional:
+- Ranch Overview
+
+Do not add unnecessary modules.
+
+11. Explicitly do NOT build these yet
+Do not build:
+- budgeting
+- invoicing
+- labor tracking
+- irrigation management
+- inventory management
+- tank math calculators
+- advanced agronomy planning
+- full grower ERP workflows
+- chat-heavy collaboration system
+- massive settings architecture
+
+This MVP should stay tight.
+
+12. UX tone
+The product should feel:
+- operational
+- trustworthy
+- simple
+- useful
+- direct
+- Central Valley relevant
+- built for PCA reality
+
+Not flashy startup software.
+Not corporate ERP.
+Not consumer social design.
+
+13. Product goal
+The app should make a PCA say:
+“This helps me manage recommendations across ranches, see what got done, catch bad records early, and print clean proof.”
+
+14. Technical preference
+Use a clean React + TypeScript + Tailwind + shadcn/ui stack.
+Keep components modular.
+Use seeded mock data only.
+No backend required for MVP.
+Use local state or lightweight mock persistence.
+
+15. Final requirement
+When complete, the first impression of the app should clearly communicate:
+This is a recommendation follow-through and clean-record command center for PCAs managing multiple ranches.
