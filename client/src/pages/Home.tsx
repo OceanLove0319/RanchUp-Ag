@@ -3,7 +3,7 @@ import { Link, useLocation } from "wouter";
 import { useStore } from "@/lib/store";
 import { format } from "date-fns";
 import { GuideMeRail } from "@/components/navigation/GuideMeRail";
-import { Droplets, Sprout, ShieldAlert, Users, Printer, DollarSign, Calendar, Map as MapIcon, CheckCircle2, ClipboardList, AlertCircle, ArrowRight, ArrowLeft } from "lucide-react";
+import { Droplets, Sprout, ShieldAlert, Users, Printer, DollarSign, Calendar, Map as MapIcon, CheckCircle2, ClipboardList, AlertCircle, ArrowRight, ArrowLeft, Plus } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 export default function Home() {
@@ -332,22 +332,13 @@ export default function Home() {
   const todayBlockIdsGrower = Array.from(new Set(todayLogsGrower.map(l => l.blockId)));
   const todayBlocksGrower = allBlocks.filter(b => todayBlockIdsGrower.includes(b.id));
 
-  const todayTotalsGrower = useMemo(() => {
-    let acres = 0;
-    let spend = 0;
-    todayBlocksGrower.forEach(b => acres += b.acreage);
-    todayLogsGrower.forEach(log => {
-      const app = allApps.find(a => a.id === `app-${log.id}`);
-      if (app && app.estimatedCost && app.costStatus !== 'UNIT_MISMATCH') {
-        spend += app.estimatedCost;
-      }
-    });
-    return { acres, spend };
-  }, [todayBlocksGrower, todayLogsGrower, allApps]);
+  // Find recommendations and issues for the grower
+  const pendingRecsGrower = allRecommendations.filter(r => r.ranchId === activeRanchId && (r.status === 'SENT' || r.status === 'PENDING'));
+  const missingInfoAppsGrower = allApps.filter(a => a.ranchId === activeRanchId && (a.costStatus === 'UNIT_MISMATCH' || !a.estimatedCost));
 
   return (
     <div className="animate-in fade-in duration-500 max-w-4xl mx-auto flex flex-col min-h-[calc(100vh-100px)] pb-12">
-      <header className="mb-4 flex justify-between items-start">
+      <header className="mb-6 flex justify-between items-start">
         <div>
           <h1 className="text-3xl font-black uppercase tracking-tighter text-foreground">
             Ranch Dashboard
@@ -356,98 +347,156 @@ export default function Home() {
             {activeRanch?.name || 'Loading Ranch...'}
           </p>
         </div>
+        <Link href="/app/log?action=SPRAY">
+          <button className="bg-primary text-primary-foreground px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-widest hover:bg-primary/90 transition-colors shadow-sm flex items-center gap-2">
+            <Plus className="w-4 h-4" /> Log Work
+          </button>
+        </Link>
       </header>
 
-      {/* Guide Me Rail */}
-      <div className="-mx-4 md:mx-0 mb-6">
-        <GuideMeRail />
-      </div>
-
-      {/* Primary Action Grid - Top (Grower Only) */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-        <Link href="/app/log?action=SPRAY" className="bg-[#1c1427] border border-[#3b2d50] p-6 rounded-xl flex flex-col items-center justify-center gap-3 hover:bg-[#251b34] transition-colors shadow-sm">
-          <div className="bg-purple-500/20 p-4 rounded-full text-purple-400">
-            <ShieldAlert className="w-8 h-8" />
-          </div>
-          <span className="font-black uppercase tracking-widest text-sm mt-1">Log Spray</span>
-        </Link>
+      {/* What Needs Attention Section */}
+      <div className="mb-8">
+        <h2 className="text-sm font-black uppercase tracking-widest text-muted-foreground mb-3 flex items-center gap-2">
+          <AlertCircle className="w-4 h-4" /> What needs attention today
+        </h2>
         
-        <Link href="/app/log?action=FERT" className="bg-[#271b14] border border-[#50352d] p-6 rounded-xl flex flex-col items-center justify-center gap-3 hover:bg-[#34241b] transition-colors shadow-sm">
-          <div className="bg-orange-500/20 p-4 rounded-full text-orange-400">
-            <Sprout className="w-8 h-8" />
-          </div>
-          <span className="font-black uppercase tracking-widest text-sm mt-1">Log Fert</span>
-        </Link>
+        <div className="grid grid-cols-1 gap-3">
+          {pendingRecsGrower.slice(0, 2).map(rec => {
+            const block = allBlocks.find(b => b.id === rec.blockId);
+            return (
+              <Link key={`rec-${rec.id}`} href={`/app/blocks/${rec.blockId}`} className="bg-card border border-border p-4 rounded-xl flex items-start gap-4 shadow-sm hover:border-primary/50 transition-colors group">
+                <div className="p-2 rounded-md bg-purple-500/10 text-purple-400 shrink-0 mt-0.5">
+                  <ClipboardList className="w-5 h-5" />
+                </div>
+                <div className="flex-1">
+                  <div className="flex justify-between items-start mb-1">
+                    <h3 className="font-bold text-sm text-foreground">{block?.name}: Recommendation Review</h3>
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-purple-400 bg-purple-500/10 px-2 py-0.5 rounded">Action Needed</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground">New recommendation for {rec.product}. Review and approve.</p>
+                </div>
+                <div className="hidden sm:flex items-center text-xs font-bold uppercase tracking-widest text-primary group-hover:text-primary/80 transition-colors mt-2">
+                  Review <ArrowRight className="w-4 h-4 ml-1" />
+                </div>
+              </Link>
+            );
+          })}
 
-        <Link href="/app/log?action=IRRIGATE" className="bg-[#141b27] border border-[#2d3b50] p-6 rounded-xl flex flex-col items-center justify-center gap-3 hover:bg-[#1b2434] transition-colors shadow-sm">
-          <div className="bg-blue-500/20 p-4 rounded-full text-blue-400">
-            <Droplets className="w-8 h-8" />
-          </div>
-          <span className="font-black uppercase tracking-widest text-sm mt-1">Log Irrigate</span>
-        </Link>
-
-        <Link href="/app/log?action=LABOR" className="bg-card border border-border p-6 rounded-xl flex flex-col items-center justify-center gap-3 hover:border-primary/50 transition-colors shadow-sm">
-          <div className="bg-muted p-4 rounded-full text-muted-foreground">
-            <Users className="w-8 h-8" />
-          </div>
-          <span className="font-black uppercase tracking-widest text-sm mt-1">Log Labor</span>
-        </Link>
-      </div>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
-        <Link href="/app/blocks" className="bg-card border border-border p-5 rounded-xl flex items-center justify-center gap-3 hover:border-primary/50 transition-colors">
-          <DollarSign className="w-6 h-6 text-green-400" />
-          <span className="font-bold uppercase tracking-widest text-sm">Block Costs</span>
-        </Link>
-        <Link href="/app/packets/season" className="bg-card border border-border p-5 rounded-xl flex items-center justify-center gap-3 hover:border-primary/50 transition-colors">
-          <Printer className="w-6 h-6 text-foreground" />
-          <span className="font-bold uppercase tracking-widest text-sm">Print Packet</span>
-        </Link>
-      </div>
-
-      {/* Today's Work Widget (Grower Only) */}
-      {todayLogsGrower.length > 0 && (
-        <div className="mt-2 animate-in fade-in duration-300">
-          <div className="flex justify-between items-end mb-3">
-            <h2 className="text-sm font-black uppercase tracking-widest text-muted-foreground">Today's Work</h2>
-            <Link href="/app/packets/today" className="text-[10px] font-bold text-primary hover:text-primary/80 uppercase tracking-widest">
-              View Packet
-            </Link>
-          </div>
+          {missingInfoAppsGrower.slice(0, 2).map(app => {
+            const block = allBlocks.find(b => b.id === app.blockId);
+            return (
+              <Link key={`app-${app.id}`} href={`/app/reports/variance`} className="bg-card border border-border p-4 rounded-xl flex items-start gap-4 shadow-sm hover:border-primary/50 transition-colors group">
+                <div className="p-2 rounded-md bg-red-500/10 text-red-400 shrink-0 mt-0.5">
+                  <AlertCircle className="w-5 h-5" />
+                </div>
+                <div className="flex-1">
+                  <div className="flex justify-between items-start mb-1">
+                    <h3 className="font-bold text-sm text-foreground">{block?.name}: Missing Record Info</h3>
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-red-400 bg-red-500/10 px-2 py-0.5 rounded">Fix Now</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground">Application record for {app.chemicalName} is missing data.</p>
+                </div>
+                <div className="hidden sm:flex items-center text-xs font-bold uppercase tracking-widest text-primary group-hover:text-primary/80 transition-colors mt-2">
+                  Fix <ArrowRight className="w-4 h-4 ml-1" />
+                </div>
+              </Link>
+            );
+          })}
           
-          <Link href="/app/packets/today" className="block bg-card border border-border p-4 rounded-xl hover:border-primary/50 transition-colors group shadow-sm">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-3 text-sm font-bold">
-                <span className="bg-background px-2 py-1 rounded border border-border">{todayBlocksGrower.length} Blocks</span>
-                <span className="text-muted-foreground">{todayTotalsGrower.acres.toFixed(1)} AC</span>
-                <span className="text-primary">${todayTotalsGrower.spend.toLocaleString()} est</span>
+          {pendingRecsGrower.length === 0 && missingInfoAppsGrower.length === 0 && (
+            <div className="bg-card border border-border border-dashed p-6 rounded-xl flex items-center gap-4 text-muted-foreground">
+              <div className="p-2 rounded-md bg-green-500/10 text-green-400 shrink-0">
+                <CheckCircle2 className="w-5 h-5" />
               </div>
-              <span className="text-[10px] uppercase tracking-widest text-muted-foreground group-hover:text-primary transition-colors">Details →</span>
+              <div>
+                <h3 className="font-bold text-sm text-foreground">You're all caught up</h3>
+                <p className="text-xs">No pending recommendations or record issues.</p>
+              </div>
             </div>
-            
-            <div className="flex flex-wrap gap-2">
-              {todayBlocksGrower.slice(0, 3).map(block => (
-                <div key={block.id} className="bg-background border border-border px-3 py-1.5 rounded-md text-xs font-bold whitespace-nowrap">
-                  {block.name}
-                </div>
-              ))}
-              {todayBlocksGrower.length > 3 && (
-                <div className="bg-background border border-border px-3 py-1.5 rounded-md text-xs font-bold text-muted-foreground">
-                  +{todayBlocksGrower.length - 3} more
-                </div>
-              )}
-            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Recommended For Your Ranch */}
+      <div className="mb-8">
+        <div className="flex justify-between items-end mb-3">
+          <h2 className="text-sm font-black uppercase tracking-widest text-muted-foreground">Recommended For Your Ranch</h2>
+          <Link href="/app/recommendations" className="text-[10px] font-bold text-primary hover:text-primary/80 uppercase tracking-widest">
+            View All
           </Link>
         </div>
-      )}
-      
-      {todayLogsGrower.length === 0 && (
-        <div className="mt-2 animate-in fade-in duration-300 bg-card/50 border border-border border-dashed p-8 rounded-xl text-center flex flex-col items-center justify-center">
-          <Calendar className="w-10 h-10 text-muted-foreground/30 mb-3" />
-          <p className="text-sm font-bold text-muted-foreground">No work logged today yet.</p>
-          <p className="text-xs text-muted-foreground/60 mt-1">Use the buttons above to log your first pass.</p>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {allRecommendations.filter(r => r.ranchId === activeRanchId).slice(0, 4).map(rec => {
+             const block = allBlocks.find(b => b.id === rec.blockId);
+             // Mock cost data for the prototype visualization
+             const estCostPerAcre = Math.floor(Math.random() * 20) + 30; 
+             const blockAcres = block?.acreage || 40;
+             const estTotalCost = estCostPerAcre * blockAcres;
+
+             return (
+               <div key={`rec-card-${rec.id}`} className="bg-card border border-border p-5 rounded-xl flex flex-col justify-between shadow-sm hover:border-primary/30 transition-colors">
+                 <div>
+                   <div className="flex justify-between items-start mb-2">
+                     <h3 className="font-bold text-lg leading-tight">{block?.name}</h3>
+                     <Badge variant="outline" className={`text-[10px] uppercase tracking-widest ${rec.status === 'APPLIED' ? 'text-green-400 border-green-400/30' : 'text-blue-400 border-blue-400/30'}`}>
+                       {rec.status}
+                     </Badge>
+                   </div>
+                   <p className="text-sm font-medium mb-4">{rec.product}</p>
+                   
+                   <div className="grid grid-cols-2 gap-2 mb-4 bg-background/50 p-3 rounded-lg border border-border/50">
+                     <div>
+                       <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-0.5">Est. Cost/Ac</p>
+                       <p className="text-sm font-bold text-foreground">${estCostPerAcre.toFixed(2)}</p>
+                     </div>
+                     <div>
+                       <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-0.5">Est. Block Total</p>
+                       <p className="text-sm font-bold text-primary">${estTotalCost.toLocaleString()}</p>
+                     </div>
+                   </div>
+                 </div>
+                 
+                 <Link href={`/app/blocks/${rec.blockId}`}>
+                   <button className="w-full bg-background border border-border py-2 rounded-lg text-xs font-black uppercase tracking-widest hover:border-primary hover:text-primary transition-colors">
+                     Open Recommendation
+                   </button>
+                 </Link>
+               </div>
+             )
+          })}
+          {allRecommendations.filter(r => r.ranchId === activeRanchId).length === 0 && (
+             <div className="col-span-full py-8 text-center text-muted-foreground border border-border border-dashed rounded-xl">
+               No active recommendations for this ranch.
+             </div>
+          )}
         </div>
-      )}
+      </div>
+
+      {/* Simple Cost Watch */}
+      <div className="mb-6">
+        <h2 className="text-sm font-black uppercase tracking-widest text-muted-foreground mb-3 flex items-center gap-2">
+          <DollarSign className="w-4 h-4" /> Simple Cost Watch
+        </h2>
+        
+        <div className="bg-card border border-border rounded-xl shadow-sm divide-y divide-border">
+          <div className="p-4 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-2 h-2 rounded-full bg-amber-400"></div>
+              <p className="text-sm font-medium">Alternative available for Block 7 fungicide pass</p>
+            </div>
+            <span className="text-xs font-bold text-green-400">Save ~$6.20/ac</span>
+          </div>
+          <div className="p-4 flex items-center justify-between">
+             <div className="flex items-center gap-3">
+              <div className="w-2 h-2 rounded-full bg-blue-400"></div>
+              <p className="text-sm font-medium">Tulare Almonds overall spend tracking</p>
+            </div>
+            <span className="text-xs font-bold text-muted-foreground">On Budget</span>
+          </div>
+        </div>
+      </div>
+
     </div>
   );
 }
