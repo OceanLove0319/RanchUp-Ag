@@ -220,7 +220,42 @@ export default function BlockDetail() {
               {latestRec ? (
                 <div className="mb-6 flex-1">
                   <p className="font-bold text-lg text-foreground mb-1">{latestRec.product}</p>
-                  <p className="text-sm text-muted-foreground">{(latestRec as any).rate} • Target: {(latestRec as any).targetPest || 'N/A'}</p>
+                  <p className="text-sm text-muted-foreground">{(latestRec as any).rate} {(latestRec as any).rateUnit} • Target: {(latestRec as any).targetPest || 'N/A'}</p>
+                  
+                  {latestRec.estimatedCostPerAcre && (
+                    <div className="mt-4 bg-background/50 border border-border rounded-lg p-3 grid grid-cols-2 gap-2">
+                      <div>
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-1">Est. Cost / Ac</p>
+                        <p className="text-sm font-bold">${latestRec.estimatedCostPerAcre.toFixed(2)}</p>
+                      </div>
+                      <div>
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-1">Est. Total</p>
+                        <p className="text-sm font-bold text-primary">${latestRec.estimatedTotalCost?.toLocaleString()}</p>
+                      </div>
+                    </div>
+                  )}
+                  
+                  {latestRec.alternatives && latestRec.alternatives.length > 0 && (
+                    <div className="mt-4">
+                      <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2">Approved Alternatives</p>
+                      <div className="space-y-2">
+                        {latestRec.alternatives.map((alt: any, idx: number) => {
+                          const savings = (latestRec.estimatedCostPerAcre || 0) - alt.estimatedCostPerAcre;
+                          return (
+                            <div key={idx} className="bg-background/30 border border-border/50 rounded-lg p-3 text-sm">
+                              <div className="flex justify-between items-start mb-1">
+                                <span className="font-bold">{alt.productName}</span>
+                                <span className={`text-xs font-bold ${savings > 0 ? 'text-green-400' : 'text-muted-foreground'}`}>
+                                  {savings > 0 ? `Save $${savings.toFixed(2)}/ac` : `+$${Math.abs(savings).toFixed(2)}/ac`}
+                                </span>
+                              </div>
+                              {alt.note && <p className="text-xs text-muted-foreground">{alt.note}</p>}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
                 </div>
               ) : (
                 <div className="mb-6 flex-1 flex items-center justify-center border border-dashed border-border rounded-lg p-4">
@@ -396,6 +431,63 @@ export default function BlockDetail() {
           )}
         </div>
       </div>
+      
+      {/* Latest Recommendation Cost Info (Grower View) */}
+      {latestRec && latestRec.status !== 'CLOSED' && (
+        <div className="bg-[#111113] border border-white/10 p-6 rounded-lg mb-6">
+          <div className="flex justify-between items-start mb-4">
+             <h3 className="text-xl font-black uppercase tracking-tight text-white flex items-center gap-2">
+               <ShieldAlert className="w-5 h-5 text-purple-400" /> Latest Recommendation
+             </h3>
+             <Badge className="bg-purple-500/20 text-purple-400 border-purple-500/30 uppercase tracking-widest text-[10px]">
+               {latestRec.status}
+             </Badge>
+          </div>
+          
+          <div className="mb-4">
+             <p className="text-2xl font-bold text-white mb-1">{latestRec.product}</p>
+             <p className="text-sm text-gray-400">{latestRec.rate} {latestRec.rateUnit} • Target: {latestRec.targetPest || 'N/A'}</p>
+             {latestRec.notes && <p className="text-sm text-gray-300 mt-2 p-3 bg-white/5 rounded italic">"{latestRec.notes}"</p>}
+          </div>
+
+          {(latestRec.estimatedCostPerAcre || (latestRec.alternatives && latestRec.alternatives.length > 0)) && (
+            <div className="border-t border-white/10 pt-4 mt-4">
+              <h4 className="text-xs font-bold uppercase tracking-widest text-gray-500 mb-3">Cost Visibility</h4>
+              
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {/* Primary Cost */}
+                {latestRec.estimatedCostPerAcre && (
+                  <div className="bg-white/5 p-4 rounded-lg border border-white/10">
+                    <p className="text-[10px] uppercase tracking-widest text-gray-400 mb-1">Estimated Cost</p>
+                    <p className="text-lg font-black text-white">${latestRec.estimatedCostPerAcre.toFixed(2)}<span className="text-xs font-normal text-gray-500 ml-1">/ac</span></p>
+                    {latestRec.estimatedTotalCost && (
+                      <p className="text-xs text-primary font-bold mt-1">${latestRec.estimatedTotalCost.toLocaleString()} Block Total</p>
+                    )}
+                  </div>
+                )}
+                
+                {/* Alternatives */}
+                {latestRec.alternatives && latestRec.alternatives.map((alt: any, idx: number) => {
+                  const savings = (latestRec.estimatedCostPerAcre || 0) - alt.estimatedCostPerAcre;
+                  return (
+                    <div key={idx} className="bg-white/5 p-4 rounded-lg border border-white/10">
+                      <div className="flex justify-between items-start mb-1">
+                        <p className="text-[10px] uppercase tracking-widest text-gray-400">Alternative</p>
+                        <span className={`text-[10px] font-bold ${savings > 0 ? 'text-green-400' : 'text-gray-500'}`}>
+                          {savings > 0 ? `Save $${savings.toFixed(2)}/ac` : `+$${Math.abs(savings).toFixed(2)}/ac`}
+                        </span>
+                      </div>
+                      <p className="text-sm font-bold text-white mb-1">{alt.productName}</p>
+                      {alt.note && <p className="text-[10px] text-gray-400 leading-tight">{alt.note}</p>}
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
       
       {/* Missing Info Flags Section (Mocked for UX) */}
       <div className="bg-amber-500/10 border border-amber-500/30 p-4 rounded-lg flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">

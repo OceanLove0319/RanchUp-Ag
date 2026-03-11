@@ -87,9 +87,138 @@ export const pcaDemoApps: ChemicalApp[] = [
 ];
 
 export const pcaDemoRecommendations: any[] = [
-  { id: "rec-1", ranchId: "ranch-neufeld", blockId: "b-n2", title: "Bloom protection", status: "ACKNOWLEDGED", date: formatDate(5), notes: "Grower asked whether second zinc pass is necessary.", cropStage: "Bloom", product: "Pristine" },
-  { id: "rec-2", ranchId: "ranch-valley", blockId: "b-v1", title: "Hull split fungicide + insect", status: "PENDING", date: formatDate(2), notes: "Waiting on confirmation before applying hull split pass.", cropStage: "Hull Split", product: "Merivon + Intrepid" },
-  { id: "rec-3", ranchId: "ranch-jackson", blockId: "b-j2", title: "Scale pressure monitoring", status: "DRAFT", date: formatDate(0), notes: "Need updated observation after rain event.", cropStage: "Fruit Development", product: "Movento" },
-  { id: "rec-4", ranchId: "ranch-valley", blockId: "b-v2", title: "Mite threshold watch", status: "SENT", date: formatDate(1), notes: "Watch threshold carefully this week.", cropStage: "Nut Fill", product: "Acramite" },
-  { id: "rec-5", ranchId: "ranch-reedley", blockId: "b-r3", title: "Post-rain disease prevention", status: "PENDING", date: formatDate(3), notes: "Apply within 48h of next rain.", cropStage: "Pre-harvest", product: "Luna Sensation" },
+  { 
+    id: "rec-1", 
+    ranchId: "ranch-neufeld", 
+    blockId: "b-n2", 
+    title: "Bloom protection", 
+    status: "ACKNOWLEDGED", 
+    date: formatDate(5), 
+    notes: "Grower asked whether second zinc pass is necessary.", 
+    cropStage: "Bloom", 
+    product: "Pristine",
+    rate: 14.5,
+    rateUnit: "oz/ac",
+    estimatedPricePerUnit: 2.15,
+    estimatedCostPerAcre: 31.18,
+    estimatedTotalCost: 779.50, // 25 acres
+    alternatives: [
+      {
+        productName: "Merivon",
+        estimatedPricePerUnit: 6.20,
+        estimatedCostPerAcre: 40.30,
+        note: "Higher cost but longer residual if rain is expected."
+      }
+    ]
+  },
+  { 
+    id: "rec-2", 
+    ranchId: "ranch-valley", 
+    blockId: "b-v1", 
+    title: "Hull split fungicide + insect", 
+    status: "PENDING", 
+    date: formatDate(2), 
+    notes: "Waiting on confirmation before applying hull split pass.", 
+    cropStage: "Hull Split", 
+    product: "Merivon + Intrepid",
+    rate: 6.5,
+    rateUnit: "fl oz/ac",
+    estimatedPricePerUnit: 6.20,
+    estimatedCostPerAcre: 40.30,
+    estimatedTotalCost: 2418.00 // 60 acres
+  },
+  { 
+    id: "rec-3", 
+    ranchId: "ranch-jackson", 
+    blockId: "b-j2", 
+    title: "Scale pressure monitoring", 
+    status: "DRAFT", 
+    date: formatDate(0), 
+    notes: "Need updated observation after rain event.", 
+    cropStage: "Fruit Development", 
+    product: "Movento",
+    rate: 10,
+    rateUnit: "fl oz/ac",
+    estimatedPricePerUnit: 3.45,
+    estimatedCostPerAcre: 34.50,
+    estimatedTotalCost: 1207.50 // 35 acres
+  },
+  { 
+    id: "rec-4", 
+    ranchId: "ranch-valley", 
+    blockId: "b-v2", 
+    title: "Mite threshold watch", 
+    status: "SENT", 
+    date: formatDate(1), 
+    notes: "Watch threshold carefully this week.", 
+    cropStage: "Nut Fill", 
+    product: "Acramite",
+    rate: 1.0,
+    rateUnit: "lb/ac",
+    estimatedPricePerUnit: 45.00,
+    estimatedCostPerAcre: 45.00,
+    estimatedTotalCost: 2700.00, // 60 acres
+    alternatives: [
+      {
+        productName: "FujiMite",
+        estimatedPricePerUnit: 48.50,
+        estimatedCostPerAcre: 48.50,
+        note: "Faster knockdown if pressure spikes."
+      },
+      {
+        productName: "Generic Bifen",
+        estimatedPricePerUnit: 12.00,
+        estimatedCostPerAcre: 12.00,
+        note: "Lower-cost option, but risk of flaring other pests."
+      }
+    ]
+  },
+  { 
+    id: "rec-5", 
+    ranchId: "ranch-reedley", 
+    blockId: "b-r3", 
+    title: "Post-rain disease prevention", 
+    status: "PENDING", 
+    date: formatDate(3), 
+    notes: "Apply within 48h of next rain.", 
+    cropStage: "Pre-harvest", 
+    product: "Luna Sensation",
+    rate: 5.0,
+    rateUnit: "fl oz/ac",
+    estimatedPricePerUnit: 7.80,
+    estimatedCostPerAcre: 39.00,
+    estimatedTotalCost: 975.00 // 25 acres
+  },
+  { 
+    id: "rec-6", 
+    ranchId: "ranch-neufeld", 
+    blockId: "b-n1", 
+    title: "Dormant weed control", 
+    status: "APPLIED", 
+    date: formatDate(10), 
+    notes: "Applied before rain.", 
+    cropStage: "Dormant", 
+    product: "Gramoxone",
+    rate: 2.0,
+    rateUnit: "pt/ac",
+    estimatedPricePerUnit: 5.50,
+    estimatedCostPerAcre: 11.00,
+    estimatedTotalCost: 220.00 // 20 acres
+  },
+  { 
+    id: "rec-7", 
+    ranchId: "ranch-neufeld", 
+    blockId: "b-n1", 
+    title: "Bloom protection", 
+    status: "CLOSED", 
+    date: formatDate(48), 
+    notes: "Bloom spray.", 
+    cropStage: "Bloom", 
+    product: "Pristine",
+    rate: 1.0,
+    rateUnit: "lb/ac",
+    estimatedPricePerUnit: 25.00,
+    estimatedCostPerAcre: 25.00,
+    estimatedTotalCost: 500.00 // 20 acres
+  }
 ];

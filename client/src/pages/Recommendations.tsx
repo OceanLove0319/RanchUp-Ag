@@ -43,7 +43,8 @@ export default function Recommendations() {
       date: new Date().toISOString(),
       product: newRecProduct,
       notes: newRecNotes,
-      rate: newRecRate,
+      rate: parseFloat(newRecRate) || undefined,
+      rateUnit: "amount/ac", // Default unit for new drafts
       targetPest: newRecPest
     };
 

@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import { useStore } from "@/lib/store";
 import { Link, useLocation } from "wouter";
-import { ArrowLeft, AlertTriangle, TrendingUp, DollarSign, CheckCircle2, ChevronRight } from "lucide-react";
+import { ArrowLeft, AlertTriangle, TrendingUp, DollarSign, CheckCircle2, ChevronRight, ClipboardX } from "lucide-react";
 import { format, subMonths } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
@@ -15,6 +15,7 @@ export default function VarianceFlags() {
   const allBlocks = useStore(s => s.blocks);
   const allApps = useStore(s => s.chemicalApps);
   const allLogs = useStore(s => s.logs);
+  const allRecs = useStore(s => s.recommendations);
   
   const [, setLocation] = useLocation();
   const { toast } = useToast();
@@ -52,6 +53,7 @@ export default function VarianceFlags() {
         
         const ranchApps = allApps.filter(a => a.ranchId === ranch.id);
         const ranchLogs = allLogs.filter(l => l.ranchId === ranch.id);
+        const ranchRecs = allRecs.filter(r => r.ranchId === ranch.id);
 
         ranchApps.forEach(app => {
           if (app.costStatus === 'UNIT_MISMATCH' || !app.estimatedCost || !app.estimatedCost) {
@@ -82,10 +84,34 @@ export default function VarianceFlags() {
             });
           }
         });
+
+        // Recommendation-to-Record Linking
+        ranchRecs.forEach(rec => {
+          if (rec.status === 'APPLIED' || rec.status === 'CLOSED') {
+            const hasMatch = ranchApps.some(a => 
+              a.blockId === rec.blockId && 
+              a.chemicalName.toLowerCase().includes(rec.product?.toLowerCase() || '')
+            );
+            
+            if (!hasMatch) {
+               const block = allBlocks.find(b => b.id === rec.blockId);
+               issues[ranch.id].push({
+                 id: rec.id,
+                 blockId: block?.id,
+                 blockName: block?.name || 'Unknown Block',
+                 date: rec.date,
+                 type: 'Missing Application Record',
+                 desc: `Recommendation for ${rec.product} was marked ${rec.status.toLowerCase()} but no matching application log was found.`,
+                 severity: 'medium'
+               });
+            }
+          }
+        });
+
       });
 
       return issues;
-    }, [allRanches, allApps, allLogs, allBlocks]);
+    }, [allRanches, allApps, allLogs, allRecs, allBlocks]);
 
     return (
       <div className="animate-in fade-in duration-500 max-w-4xl mx-auto pb-20">
@@ -118,7 +144,7 @@ export default function VarianceFlags() {
                     <div key={issue.id} className="bg-card border border-red-500/20 p-4 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-sm hover:border-red-500/50 transition-colors">
                       <div>
                         <div className="flex items-center gap-2 mb-1">
-                          <Badge variant="outline" className="text-[10px] uppercase tracking-widest border-red-500/30 text-red-400 bg-red-500/10">
+                          <Badge variant="outline" className={`text-[10px] uppercase tracking-widest ${issue.type === 'Missing Application Record' ? 'border-purple-500/30 text-purple-400 bg-purple-500/10' : 'border-red-500/30 text-red-400 bg-red-500/10'}`}>
                             {issue.type}
                           </Badge>
                           <span className="text-xs font-bold text-muted-foreground">{format(new Date(issue.date), 'MMM d')}</span>
@@ -167,6 +193,7 @@ export default function VarianceFlags() {
   const activeRanch = allRanches.find(r => r.id === activeRanchId);
   const blocks = useMemo(() => allBlocks.filter(b => b.ranchId === activeRanchId), [allBlocks, activeRanchId]);
   const ranchApps = useMemo(() => allApps.filter(a => a.ranchId === activeRanchId), [allApps, activeRanchId]);
+  const ranchRecs = useMemo(() => allRecs.filter(r => r.ranchId === activeRanchId), [allRecs, activeRanchId]);
 
   // 1. Calculate Month-over-Month Cost Spikes per Block
   const blockVariances = blocks.map(block => {
@@ -212,6 +239,18 @@ export default function VarianceFlags() {
     return acc;
   }, {} as Record<string, number>);
 
+  // 3. Recommendation-to-Record Linking
+  const unlinkedRecs = ranchRecs.filter(rec => {
+    if (rec.status === 'APPLIED' || rec.status === 'CLOSED') {
+      const hasMatch = ranchApps.some(a => 
+        a.blockId === rec.blockId && 
+        a.chemicalName.toLowerCase().includes(rec.product?.toLowerCase() || '')
+      );
+      return !hasMatch;
+    }
+    return false;
+  }).filter(rec => !resolvedIssues.includes(rec.blockId));
+
   return (
     <div className="animate-in fade-in duration-500 max-w-4xl mx-auto pb-20">
       <div className="flex justify-between items-center mb-6">
@@ -232,6 +271,46 @@ export default function VarianceFlags() {
       </header>
 
       <div className="space-y-8">
+        {/* Section 3: Recommendation-to-Record Linking (Grower View) */}
+        <section>
+          <div className="flex items-center gap-2 border-b border-border pb-2 mb-4">
+            <ClipboardX className="w-5 h-5 text-purple-400" />
+            <h2 className="text-xl font-black uppercase tracking-tight text-white">Missing Application Records</h2>
+          </div>
+
+          {unlinkedRecs.length > 0 ? (
+            <div className="space-y-4">
+              {unlinkedRecs.map(rec => {
+                const block = blocks.find(b => b.id === rec.blockId);
+                return (
+                  <div key={rec.id} className="bg-card border border-purple-500/30 p-5 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-sm">
+                    <div>
+                      <div className="flex items-center gap-2 mb-1">
+                        <Badge variant="outline" className="text-[10px] uppercase tracking-widest border-purple-500/30 text-purple-400 bg-purple-500/10">
+                          {rec.status}
+                        </Badge>
+                      </div>
+                      <h3 className="font-bold text-white text-lg">{block?.name || 'Unknown Block'}</h3>
+                      <p className="text-sm text-muted-foreground">Recommendation for <span className="font-bold text-white">{rec.product}</span> was marked applied but has no corresponding log.</p>
+                    </div>
+                    <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
+                      <Button onClick={() => handleResolveIssue(rec.blockId)} className="font-bold uppercase tracking-widest text-sm w-full sm:w-auto py-6 bg-purple-600/20 text-purple-400 hover:bg-purple-600/30">
+                        Log Application
+                      </Button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="bg-[#111113] border border-white/10 p-8 rounded-xl text-center flex flex-col items-center">
+              <CheckCircle2 className="w-12 h-12 text-primary mb-4" />
+              <span className="font-bold uppercase tracking-widest text-base text-white mb-2">No missing applications</span>
+              <p className="text-sm text-muted-foreground">All completed recommendations have been logged.</p>
+            </div>
+          )}
+        </section>
+
         {/* Section 2: Data Integrity (Unit Mismatches) */}
         <section>
           <div className="flex items-center gap-2 border-b border-border pb-2 mb-4">

@@ -120,6 +120,13 @@ export type ChemicalApp = {
   notes?: string;
 };
 
+export type RecommendationAlternative = {
+  productName: string;
+  estimatedPricePerUnit: number;
+  estimatedCostPerAcre: number;
+  note?: string;
+};
+
 export type Recommendation = {
   id: string;
   ranchId: string;
@@ -130,6 +137,13 @@ export type Recommendation = {
   notes?: string;
   cropStage?: string;
   product?: string;
+  targetPest?: string;
+  rate?: number;
+  rateUnit?: string;
+  estimatedPricePerUnit?: number;
+  estimatedCostPerAcre?: number;
+  estimatedTotalCost?: number;
+  alternatives?: RecommendationAlternative[];
 };
 
 export type BillingState = {
