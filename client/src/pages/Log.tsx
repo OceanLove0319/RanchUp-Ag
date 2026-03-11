@@ -80,6 +80,8 @@ export default function Log() {
   const allBlocks = useStore(s => s.blocks);
   const blocks = allBlocks.filter(b => b.ranchId === activeRanchId);
   const addLog = useStore(s => s.addLog);
+  const productLibrary = useStore(s => s.productLibrary);
+  const chemicals = useStore(s => s.chemicals);
   const { toast } = useToast();
 
   const [selectedBlock, setSelectedBlock] = useState(blocks[0]?.id || "");
@@ -536,13 +538,37 @@ export default function Log() {
             {action !== 'IRRIGATE' && (
               <div>
                 <label className="block text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2">Material / Product</label>
-                <input 
-                  type="text" 
-                  value={formData.material}
-                  onChange={e => setFormData({...formData, material: e.target.value})}
-                  placeholder={action === 'FERT' ? "e.g. CAN 17" : "e.g. Oil"}
-                  className="w-full bg-background border border-border rounded px-3 py-3 text-base text-foreground focus:outline-none focus:border-primary"
-                />
+                {action === 'LABOR' ? (
+                  <input 
+                    type="text" 
+                    value={formData.material}
+                    onChange={e => setFormData({...formData, material: e.target.value})}
+                    placeholder="e.g. Thinning, Pruning"
+                    className="w-full bg-background border border-border rounded px-3 py-3 text-base text-foreground focus:outline-none focus:border-primary"
+                  />
+                ) : (
+                  <div className="relative">
+                    <input 
+                      type="text" 
+                      value={formData.material}
+                      onChange={e => setFormData({...formData, material: e.target.value})}
+                      placeholder={action === 'FERT' ? "e.g. CAN 17" : "e.g. Oil"}
+                      className="w-full bg-background border border-border rounded px-3 py-3 text-base text-foreground focus:outline-none focus:border-primary"
+                      list="materials-list"
+                    />
+                    <datalist id="materials-list">
+                      {action === 'SPRAY' && chemicals.map(c => (
+                        <option key={c.id} value={c.name} />
+                      ))}
+                      {action === 'FERT' && chemicals.filter(c => c.category === 'FERTILIZER' || c.category === 'NUTRITION' || c.category === 'AMENDMENT').map(c => (
+                        <option key={c.id} value={c.name} />
+                      ))}
+                      {productLibrary.filter(p => action === 'FERT' ? ['NUTRITION', 'AMENDMENT', 'BIOLOGICAL'].includes(p.category) : true).map(p => (
+                        <option key={`lib-${p.id}`} value={p.name} />
+                      ))}
+                    </datalist>
+                  </div>
+                )}
               </div>
             )}
 
