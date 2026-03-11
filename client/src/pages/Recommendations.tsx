@@ -1,18 +1,71 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { Link } from "wouter";
 import { useStore } from "@/lib/store";
 import { format } from "date-fns";
-import { ClipboardList, ArrowLeft, CheckCircle2, AlertCircle, Clock, Map } from "lucide-react";
+import { ClipboardList, ArrowLeft, CheckCircle2, AlertCircle, Clock, Map, Filter, Plus } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
 
 export default function Recommendations() {
   const allRecommendations = useStore(s => s.recommendations) || [];
   const allRanches = useStore(s => s.ranches);
   const allBlocks = useStore(s => s.blocks);
+  const updateRecommendation = useStore(s => s.updateRecommendation);
+  const addRecommendation = useStore(s => s.addRecommendation);
+  const { toast } = useToast();
   
+  const [statusFilter, setStatusFilter] = useState<string>("ALL");
+  const [isNewRecOpen, setIsNewRecOpen] = useState(false);
+
+  // New Rec Form State
+  const [newRecRanch, setNewRecRanch] = useState<string>(allRanches[0]?.id || "");
+  const [newRecBlock, setNewRecBlock] = useState<string>("");
+  const [newRecProduct, setNewRecProduct] = useState<string>("");
+  const [newRecRate, setNewRecRate] = useState<string>("");
+  const [newRecPest, setNewRecPest] = useState<string>("");
+  const [newRecNotes, setNewRecNotes] = useState<string>("");
+
+  const activeRanchBlocks = useMemo(() => allBlocks.filter(b => b.ranchId === newRecRanch), [allBlocks, newRecRanch]);
+
+  const handleCreateRec = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newRecRanch || !newRecBlock || !newRecProduct) return;
+
+    const newRec = {
+      id: `rec-${Date.now()}`,
+      ranchId: newRecRanch,
+      blockId: newRecBlock,
+      title: `Apply ${newRecProduct}`,
+      status: "DRAFT" as any,
+      date: new Date().toISOString(),
+      product: newRecProduct,
+      notes: newRecNotes,
+      rate: newRecRate,
+      targetPest: newRecPest
+    };
+
+    addRecommendation(newRec);
+    setIsNewRecOpen(false);
+    toast({ title: "Draft Recommendation Created", description: "You can now send it to the grower." });
+    
+    // Reset form
+    setNewRecProduct("");
+    setNewRecRate("");
+    setNewRecPest("");
+    setNewRecNotes("");
+  };
+
   // Sort recommendations: pending/draft first, then by date
-  const sortedRecs = useMemo(() => {
-    return [...allRecommendations].sort((a, b) => {
+  const filteredAndSortedRecs = useMemo(() => {
+    let filtered = allRecommendations;
+    
+    if (statusFilter !== "ALL") {
+      filtered = filtered.filter(r => r.status === statusFilter);
+    }
+    
+    return [...filtered].sort((a, b) => {
       const statusWeight = {
         'DRAFT': 0,
         'SENT': 1,
@@ -29,7 +82,7 @@ export default function Recommendations() {
       
       return new Date(b.date).getTime() - new Date(a.date).getTime();
     });
-  }, [allRecommendations]);
+  }, [allRecommendations, statusFilter]);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -55,15 +108,113 @@ export default function Recommendations() {
     }
   };
 
+  const handleUpdateStatus = (id: string, newStatus: any) => {
+    updateRecommendation(id, { status: newStatus });
+  };
+
   return (
     <div className="animate-in fade-in duration-500 max-w-4xl mx-auto pb-20">
       <div className="flex justify-between items-center mb-6">
         <Link href="/app" className="inline-flex items-center text-xs font-bold uppercase tracking-widest text-muted-foreground hover:text-foreground">
           <ArrowLeft className="w-4 h-4 mr-2" /> Back to Dashboard
         </Link>
-        <button className="bg-primary text-primary-foreground px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-widest hover:bg-primary/90 transition-colors">
-          New Rec
-        </button>
+        
+        <Dialog open={isNewRecOpen} onOpenChange={setIsNewRecOpen}>
+          <DialogTrigger asChild>
+            <button className="bg-primary text-primary-foreground px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-widest hover:bg-primary/90 transition-colors flex items-center gap-1">
+              <Plus className="w-4 h-4" /> New Rec
+            </button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-[425px]">
+            <DialogHeader>
+              <DialogTitle className="text-xl font-black uppercase tracking-widest">Create Recommendation</DialogTitle>
+            </DialogHeader>
+            <form onSubmit={handleCreateRec} className="space-y-4 mt-4">
+              <div>
+                <label className="block text-xs font-bold text-muted-foreground uppercase tracking-widest mb-1">Ranch</label>
+                <select 
+                  className="w-full bg-background border border-border rounded-lg p-3 text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"
+                  value={newRecRanch}
+                  onChange={(e) => {
+                    setNewRecRanch(e.target.value);
+                    setNewRecBlock("");
+                  }}
+                  required
+                >
+                  <option value="" disabled>Select a ranch...</option>
+                  {allRanches.map(r => (
+                    <option key={r.id} value={r.id}>{r.name}</option>
+                  ))}
+                </select>
+              </div>
+              
+              <div>
+                <label className="block text-xs font-bold text-muted-foreground uppercase tracking-widest mb-1">Block</label>
+                <select 
+                  className="w-full bg-background border border-border rounded-lg p-3 text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"
+                  value={newRecBlock}
+                  onChange={(e) => setNewRecBlock(e.target.value)}
+                  required
+                  disabled={!newRecRanch}
+                >
+                  <option value="" disabled>Select a block...</option>
+                  {activeRanchBlocks.map(b => (
+                    <option key={b.id} value={b.id}>{b.name} ({b.acreage} ac)</option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-muted-foreground uppercase tracking-widest mb-1">Product</label>
+                <input 
+                  type="text" 
+                  placeholder="e.g. Roundup PowerMAX"
+                  className="w-full bg-background border border-border rounded-lg p-3 text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"
+                  value={newRecProduct}
+                  onChange={(e) => setNewRecProduct(e.target.value)}
+                  required
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-bold text-muted-foreground uppercase tracking-widest mb-1">Rate</label>
+                  <input 
+                    type="text" 
+                    placeholder="e.g. 32 fl oz/ac"
+                    className="w-full bg-background border border-border rounded-lg p-3 text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"
+                    value={newRecRate}
+                    onChange={(e) => setNewRecRate(e.target.value)}
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-muted-foreground uppercase tracking-widest mb-1">Target</label>
+                  <input 
+                    type="text" 
+                    placeholder="e.g. Weeds"
+                    className="w-full bg-background border border-border rounded-lg p-3 text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"
+                    value={newRecPest}
+                    onChange={(e) => setNewRecPest(e.target.value)}
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-muted-foreground uppercase tracking-widest mb-1">Notes / Instructions</label>
+                <textarea 
+                  placeholder="Special instructions for the grower..."
+                  className="w-full bg-background border border-border rounded-lg p-3 text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all min-h-[80px]"
+                  value={newRecNotes}
+                  onChange={(e) => setNewRecNotes(e.target.value)}
+                />
+              </div>
+
+              <Button type="submit" className="w-full py-6 text-sm font-bold uppercase tracking-widest mt-2">
+                Create Draft
+              </Button>
+            </form>
+          </DialogContent>
+        </Dialog>
       </div>
 
       <header className="mb-8">
@@ -73,9 +224,29 @@ export default function Recommendations() {
         </div>
         <p className="text-muted-foreground font-medium text-lg">Manage open recommendations and track grower progress.</p>
       </header>
+      
+      <div className="flex overflow-x-auto gap-2 pb-4 mb-4 no-scrollbar">
+        <div className="flex items-center gap-2 mr-2 text-muted-foreground">
+          <Filter className="w-4 h-4" />
+          <span className="text-xs font-bold uppercase tracking-widest">Filter:</span>
+        </div>
+        {['ALL', 'DRAFT', 'SENT', 'PENDING', 'ACKNOWLEDGED', 'APPLIED', 'CLOSED'].map(status => (
+          <button
+            key={status}
+            onClick={() => setStatusFilter(status)}
+            className={`px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest whitespace-nowrap transition-colors ${
+              statusFilter === status 
+                ? 'bg-primary text-primary-foreground' 
+                : 'bg-card border border-border text-muted-foreground hover:text-foreground'
+            }`}
+          >
+            {status}
+          </button>
+        ))}
+      </div>
 
       <div className="space-y-4">
-        {sortedRecs.map(rec => {
+        {filteredAndSortedRecs.map(rec => {
           const ranch = allRanches.find(r => r.id === rec.ranchId);
           const block = allBlocks.find(b => b.id === rec.blockId);
           
@@ -111,6 +282,16 @@ export default function Recommendations() {
                       {rec.product}
                     </Badge>
                   )}
+                  {(rec as any).rate && (
+                    <Badge variant="outline" className="bg-background py-1.5 px-3 text-sm">
+                      Rate: {(rec as any).rate}
+                    </Badge>
+                  )}
+                  {(rec as any).targetPest && (
+                    <Badge variant="outline" className="bg-background py-1.5 px-3 text-sm text-amber-500 border-amber-500/30">
+                      Target: {(rec as any).targetPest}
+                    </Badge>
+                  )}
                 </div>
               </div>
               
@@ -126,13 +307,27 @@ export default function Recommendations() {
                   Edit
                 </button>
                 {rec.status === 'DRAFT' && (
-                  <button className="bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 px-6 py-4 sm:py-2 rounded-lg text-sm font-bold uppercase tracking-widest transition-colors w-full sm:w-auto">
+                  <button 
+                    onClick={() => handleUpdateStatus(rec.id, 'SENT')}
+                    className="bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 px-6 py-4 sm:py-2 rounded-lg text-sm font-bold uppercase tracking-widest transition-colors w-full sm:w-auto"
+                  >
                     Send to Grower
                   </button>
                 )}
-                {(rec.status === 'SENT' || rec.status === 'PENDING') && (
-                  <button className="bg-primary text-primary-foreground hover:bg-primary/90 px-6 py-4 sm:py-2 rounded-lg text-sm font-bold uppercase tracking-widest transition-colors w-full sm:w-auto shadow-sm">
+                {(rec.status === 'SENT' || rec.status === 'PENDING' || rec.status === 'ACKNOWLEDGED') && (
+                  <button 
+                    onClick={() => handleUpdateStatus(rec.id, 'APPLIED')}
+                    className="bg-primary text-primary-foreground hover:bg-primary/90 px-6 py-4 sm:py-2 rounded-lg text-sm font-bold uppercase tracking-widest transition-colors w-full sm:w-auto shadow-sm"
+                  >
                     Mark Applied
+                  </button>
+                )}
+                {rec.status === 'APPLIED' && (
+                  <button 
+                    onClick={() => handleUpdateStatus(rec.id, 'CLOSED')}
+                    className="bg-green-500/20 text-green-400 hover:bg-green-500/30 px-6 py-4 sm:py-2 rounded-lg text-sm font-bold uppercase tracking-widest transition-colors w-full sm:w-auto"
+                  >
+                    Close Record
                   </button>
                 )}
               </div>
@@ -140,11 +335,13 @@ export default function Recommendations() {
           );
         })}
         
-        {sortedRecs.length === 0 && (
+        {filteredAndSortedRecs.length === 0 && (
           <div className="text-center p-12 bg-card border border-border border-dashed rounded-xl">
             <ClipboardList className="w-12 h-12 text-muted-foreground mx-auto mb-4 opacity-50" />
             <h3 className="text-lg font-bold text-foreground mb-1">No Recommendations</h3>
-            <p className="text-muted-foreground text-sm">You haven't created any recommendations yet.</p>
+            <p className="text-muted-foreground text-sm">
+              {statusFilter !== 'ALL' ? `No recommendations in ${statusFilter} status.` : "You haven't created any recommendations yet."}
+            </p>
           </div>
         )}
       </div>

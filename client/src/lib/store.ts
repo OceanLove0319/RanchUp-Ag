@@ -165,6 +165,12 @@ type AppState = GuidedFlowState & {
   deleteLog: (id: string) => void;
   addChemicalApp: (app: ChemicalApp) => void;
   deleteChemicalApp: (id: string) => void;
+  
+  // Recommendation Actions
+  addRecommendation: (rec: Recommendation) => void;
+  updateRecommendation: (id: string, patch: Partial<Recommendation>) => void;
+  deleteRecommendation: (id: string) => void;
+
   setOnboarded: (data: any) => void;
 
   setProjection: (blockId: string, templateId: string) => void;
@@ -259,6 +265,14 @@ export const useStore = create<AppState>((set) => ({
   deleteLog: (id) => set((state) => ({ logs: state.logs.filter(l => l.id !== id) })),
   addChemicalApp: (app) => set((state) => ({ chemicalApps: [app, ...state.chemicalApps] })),
   deleteChemicalApp: (id) => set((state) => ({ chemicalApps: state.chemicalApps.filter(c => c.id !== id) })),
+  
+  // Recommendation Implementations
+  addRecommendation: (rec) => set((state) => ({ recommendations: [rec, ...state.recommendations] })),
+  updateRecommendation: (id, patch) => set((state) => ({
+    recommendations: state.recommendations.map(r => r.id === id ? { ...r, ...patch } : r)
+  })),
+  deleteRecommendation: (id) => set((state) => ({ recommendations: state.recommendations.filter(r => r.id !== id) })),
+
   setOnboarded: (data) => set({ user: { name: 'Grower', org: data.operationName } }),
 
   setProjection: (blockId, templateId) => set((state) => {
