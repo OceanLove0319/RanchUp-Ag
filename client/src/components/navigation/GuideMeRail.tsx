@@ -5,7 +5,11 @@ import { isWithin } from "@/utils/dates";
 import { getActiveSeasonWindow } from "@/utils/season";
 import { useMemo, useState } from "react";
 
-export function GuideMeRail() {
+interface GuideMeRailProps {
+  compact?: boolean;
+}
+
+export function GuideMeRail({ compact = false }: GuideMeRailProps) {
   const activeRanchId = useStore(s => s.activeRanchId);
   const user = useStore(s => s.user);
   const allBlocks = useStore(s => s.blocks);
@@ -34,11 +38,13 @@ export function GuideMeRail() {
     if (pendingRecs.length > 0) {
        tasks.push({
           id: "review-recs",
-          title: `${pendingRecs.length} Pending Recs`,
+          title: `Review Approvals`,
+          subtitle: `${pendingRecs.length} Pending Recs Across Ranches`,
           icon: ClipboardList,
           link: "/app/recommendations",
           color: "text-blue-400",
-          bg: "bg-blue-400/10"
+          bg: "bg-blue-400/10",
+          border: "border-blue-400/20"
        });
     }
     
@@ -46,11 +52,13 @@ export function GuideMeRail() {
     if (incompleteApps.length > 0) {
       tasks.push({
         id: "fix-missing",
-        title: `${incompleteApps.length} Missing Info Flags`,
+        title: `Fix Missing Info`,
+        subtitle: `${incompleteApps.length} Flagged Records`,
         icon: AlertCircle,
         link: "/app/reports/variance",
         color: "text-amber-400",
-        bg: "bg-amber-400/10"
+        bg: "bg-amber-400/10",
+        border: "border-amber-400/20"
       });
     }
 
@@ -58,10 +66,12 @@ export function GuideMeRail() {
     tasks.push({
       id: "print-packet",
       title: "Print PCA Packet",
+      subtitle: "Ready for Export",
       icon: FileText,
       link: "/app/packets/season",
       color: "text-green-400",
-      bg: "bg-green-400/10"
+      bg: "bg-green-400/10",
+      border: "border-green-400/20"
     });
   } else {
     // Grower Tasks
@@ -70,21 +80,25 @@ export function GuideMeRail() {
     tasks.push({
       id: "log-today",
       title: "Log Today's Work",
+      subtitle: "Pending Entry",
       icon: SprayCan,
       link: "/app/log",
       color: "text-purple-400",
-      bg: "bg-purple-400/10"
+      bg: "bg-purple-400/10",
+      border: "border-purple-400/20"
     });
 
     // If there are incomplete apps, suggest fixing them
     if (incompleteApps.length > 0) {
       tasks.push({
         id: "fix-missing",
-        title: `${incompleteApps.length} Missing Info Flags`,
+        title: `Fix Missing Info`,
+        subtitle: `${incompleteApps.length} Flagged Records`,
         icon: AlertCircle,
         link: "/app/reports/variance",
         color: "text-amber-400",
-        bg: "bg-amber-400/10"
+        bg: "bg-amber-400/10",
+        border: "border-amber-400/20"
       });
     }
 
@@ -93,11 +107,13 @@ export function GuideMeRail() {
       const recentBlock = blocks[0]; // Just demo logic
       tasks.push({
         id: "review-block",
-        title: `Review ${recentBlock.name} Cost`,
+        title: `Review Block Cost`,
+        subtitle: `${recentBlock.name} • ${recentBlock.seasonGroup} Season`,
         icon: Map,
         link: `/app/blocks/${recentBlock.id}`,
         color: "text-blue-400",
-        bg: "bg-blue-400/10"
+        bg: "bg-blue-400/10",
+        border: "border-blue-400/20"
       });
     }
 
@@ -105,35 +121,72 @@ export function GuideMeRail() {
     tasks.push({
       id: "print-packet",
       title: "Print Season Packet",
+      subtitle: "Ready for Export",
       icon: FileText,
       link: "/app/packets/season",
       color: "text-green-400",
-      bg: "bg-green-400/10"
+      bg: "bg-green-400/10",
+      border: "border-green-400/20"
     });
   }
 
+  if (compact) {
+    return (
+      <div className="flex items-center gap-4 relative py-1 px-2">
+        {/* Timeline connector line behind items */}
+        <div className="absolute left-6 right-6 h-px bg-white/10 top-1/2 -translate-y-1/2 z-0" />
+        
+        {tasks.map((task, i) => {
+          const Icon = task.icon;
+          const isCompleted = i === 0 && !isPCA; // Mock completion for the first item for grower
+          
+          if (isCompleted && task.id === 'log-today') {
+            task.subtitle = "Completed at 10:42 AM";
+          }
+          
+          return (
+            <div key={task.id} className="relative z-10 flex items-center group">
+              <Link href={task.link} className={`flex items-center gap-3 bg-[#111113] border ${isCompleted ? 'border-green-500/30' : task.border} px-4 py-2.5 rounded-xl hover:border-white/30 hover:bg-[#1A1A1C] transition-all shadow-sm shrink-0 min-w-[220px]`}>
+                <div className={`flex items-center justify-center w-8 h-8 rounded-full border ${isCompleted ? 'bg-green-500/10 text-green-500 border-green-500/20' : `${task.bg} ${task.color} ${task.border}`}`}>
+                  {isCompleted ? <CheckCircle2 className="w-4 h-4" /> : <Icon className="w-4 h-4" />}
+                </div>
+                <div className="flex flex-col">
+                  <span className={`text-sm font-bold ${isCompleted ? 'text-gray-400' : 'text-gray-100'} whitespace-nowrap leading-tight`}>{task.title}</span>
+                  <span className={`text-[10px] uppercase tracking-widest leading-tight mt-1 ${isCompleted ? 'text-green-500/70' : 'text-muted-foreground'}`}>
+                    {task.subtitle}
+                  </span>
+                </div>
+              </Link>
+            </div>
+          );
+        })}
+      </div>
+    );
+  }
+
   return (
-    <div className="bg-card border-y border-border overflow-hidden">
+    <div className="bg-transparent mb-8">
       <div 
-        className="px-4 py-3 bg-muted/30 border-b border-border flex justify-between items-center cursor-pointer md:cursor-default"
+        className="flex items-center gap-3 mb-4"
         onClick={() => setIsExpanded(!isExpanded)}
       >
-        <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">{isPCA ? 'PCA Priorities' : 'Keep Me On Track'}</span>
-        <button className="md:hidden text-muted-foreground hover:text-foreground transition-colors">
-          {isExpanded ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
-        </button>
+        <span className="text-[10px] font-black uppercase tracking-widest text-gray-500">{isPCA ? 'PCA Priorities' : 'Keep Me On Track'}</span>
+        <div className="h-px bg-white/5 flex-1" />
       </div>
       
       <div className={`md:block ${isExpanded ? 'block' : 'hidden'}`}>
-        <div className="flex flex-col sm:flex-row py-3 px-4 gap-3">
+        <div className="flex flex-col sm:flex-row gap-3">
           {tasks.map(task => {
             const Icon = task.icon;
             return (
-              <Link key={task.id} href={task.link} className="flex items-center gap-3 bg-background border border-border p-3 rounded-lg hover:border-primary/50 transition-colors w-full sm:w-auto">
-                <div className={`p-2 rounded-md ${task.bg} ${task.color} flex-shrink-0`}>
-                  <Icon className="w-5 h-5" />
+              <Link key={task.id} href={task.link} className={`flex items-center gap-3 bg-[#111113] border ${task.border} p-3 rounded-lg hover:bg-white/5 transition-colors w-full sm:w-auto shrink-0 shadow-sm group`}>
+                <div className={`p-2 rounded-md ${task.bg} ${task.color}`}>
+                  <Icon className="w-4 h-4" />
                 </div>
-                <span className="text-sm font-bold tracking-tight">{task.title}</span>
+                <div className="flex flex-col">
+                  <span className="text-sm font-bold text-gray-200 group-hover:text-white transition-colors">{task.title}</span>
+                  {task.subtitle && <span className="text-[10px] uppercase tracking-widest text-muted-foreground mt-0.5">{task.subtitle}</span>}
+                </div>
               </Link>
             );
           })}
