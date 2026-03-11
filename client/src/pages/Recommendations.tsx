@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import { Link } from "wouter";
 import { useStore } from "@/lib/store";
 import { format } from "date-fns";
-import { ClipboardList, ArrowLeft, CheckCircle2, AlertCircle, Clock, Map, Filter, Plus } from "lucide-react";
+import { ClipboardList, ArrowLeft, CheckCircle2, AlertCircle, Clock, Map as MapIcon, Filter, Plus, ChevronRight } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -17,6 +17,7 @@ export default function Recommendations() {
   const { toast } = useToast();
   
   const [statusFilter, setStatusFilter] = useState<string>("ALL");
+  const [ranchFilter, setRanchFilter] = useState<string>("ALL");
   const [isNewRecOpen, setIsNewRecOpen] = useState(false);
 
   // New Rec Form State
@@ -57,33 +58,6 @@ export default function Recommendations() {
     setNewRecNotes("");
   };
 
-  // Sort recommendations: pending/draft first, then by date
-  const filteredAndSortedRecs = useMemo(() => {
-    let filtered = allRecommendations;
-    
-    if (statusFilter !== "ALL") {
-      filtered = filtered.filter(r => r.status === statusFilter);
-    }
-    
-    return [...filtered].sort((a, b) => {
-      const statusWeight = {
-        'DRAFT': 0,
-        'SENT': 1,
-        'PENDING': 2,
-        'ACKNOWLEDGED': 3,
-        'APPLIED': 4,
-        'CLOSED': 5
-      };
-      
-      const weightA = statusWeight[a.status as keyof typeof statusWeight] ?? 99;
-      const weightB = statusWeight[b.status as keyof typeof statusWeight] ?? 99;
-      
-      if (weightA !== weightB) return weightA - weightB;
-      
-      return new Date(b.date).getTime() - new Date(a.date).getTime();
-    });
-  }, [allRecommendations, statusFilter]);
-
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'DRAFT': return 'bg-gray-500/20 text-gray-400 border-gray-500/30';
@@ -112,16 +86,55 @@ export default function Recommendations() {
     updateRecommendation(id, { status: newStatus });
   };
 
+  // Group recommendations by ranch first
+  const groupedRecs = useMemo(() => {
+    let filtered = allRecommendations;
+    
+    if (statusFilter !== "ALL") {
+      filtered = filtered.filter(r => r.status === statusFilter);
+    }
+
+    if (ranchFilter !== "ALL") {
+      filtered = filtered.filter(r => r.ranchId === ranchFilter);
+    }
+    
+    const sorted = [...filtered].sort((a, b) => {
+      const statusWeight = {
+        'DRAFT': 0,
+        'SENT': 1,
+        'PENDING': 2,
+        'ACKNOWLEDGED': 3,
+        'APPLIED': 4,
+        'CLOSED': 5
+      };
+      
+      const weightA = statusWeight[a.status as keyof typeof statusWeight] ?? 99;
+      const weightB = statusWeight[b.status as keyof typeof statusWeight] ?? 99;
+      
+      if (weightA !== weightB) return weightA - weightB;
+      
+      return new Date(b.date).getTime() - new Date(a.date).getTime();
+    });
+
+    const groups: Record<string, typeof sorted> = {};
+    sorted.forEach(rec => {
+      if (!groups[rec.ranchId]) groups[rec.ranchId] = [];
+      groups[rec.ranchId].push(rec);
+    });
+
+    return groups;
+  }, [allRecommendations, statusFilter, ranchFilter]);
+
   return (
     <div className="animate-in fade-in duration-500 max-w-4xl mx-auto pb-20">
       <div className="flex justify-between items-center mb-6">
         <Link href="/app" className="inline-flex items-center text-xs font-bold uppercase tracking-widest text-muted-foreground hover:text-foreground">
-          <ArrowLeft className="w-4 h-4 mr-2" /> Back to Dashboard
+          <ArrowLeft className="w-4 h-4 mr-2" /> Command Center
         </Link>
         
         <Dialog open={isNewRecOpen} onOpenChange={setIsNewRecOpen}>
           <DialogTrigger asChild>
-            <button className="bg-primary text-primary-foreground px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-widest hover:bg-primary/90 transition-colors flex items-center gap-1">
+            <button className="bg-primary text-primary-foreground px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-widest hover:bg-primary/90 transition-colors flex items-center gap-1 shadow-sm">
               <Plus className="w-4 h-4" /> New Rec
             </button>
           </DialogTrigger>
@@ -218,129 +231,155 @@ export default function Recommendations() {
       </div>
 
       <header className="mb-8">
-        <div className="flex items-center gap-3 text-blue-400 mb-2">
-          <ClipboardList className="w-8 h-8" />
-          <h1 className="text-3xl md:text-4xl font-black uppercase tracking-tighter text-foreground">Recommendations</h1>
-        </div>
+        <h1 className="text-3xl md:text-4xl font-black uppercase tracking-tighter text-foreground mb-2">Recommendations</h1>
         <p className="text-muted-foreground font-medium text-lg">Manage open recommendations and track grower progress.</p>
       </header>
       
-      <div className="flex overflow-x-auto gap-2 pb-4 mb-4 no-scrollbar">
-        <div className="flex items-center gap-2 mr-2 text-muted-foreground">
+      <div className="flex flex-col gap-4 mb-6">
+        <div className="flex items-center gap-2 text-muted-foreground">
           <Filter className="w-4 h-4" />
-          <span className="text-xs font-bold uppercase tracking-widest">Filter:</span>
+          <span className="text-xs font-bold uppercase tracking-widest">Filter By Ranch:</span>
         </div>
-        {['ALL', 'DRAFT', 'SENT', 'PENDING', 'ACKNOWLEDGED', 'APPLIED', 'CLOSED'].map(status => (
+        <div className="flex overflow-x-auto gap-2 pb-2 no-scrollbar">
           <button
-            key={status}
-            onClick={() => setStatusFilter(status)}
-            className={`px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest whitespace-nowrap transition-colors ${
-              statusFilter === status 
+            onClick={() => setRanchFilter('ALL')}
+            className={`px-4 py-2 rounded-lg text-xs font-black uppercase tracking-widest whitespace-nowrap transition-colors ${
+              ranchFilter === 'ALL' 
                 ? 'bg-primary text-primary-foreground' 
                 : 'bg-card border border-border text-muted-foreground hover:text-foreground'
             }`}
           >
-            {status}
+            All Ranches
           </button>
-        ))}
+          {allRanches.map(ranch => (
+            <button
+              key={ranch.id}
+              onClick={() => setRanchFilter(ranch.id)}
+              className={`px-4 py-2 rounded-lg text-xs font-black uppercase tracking-widest whitespace-nowrap transition-colors ${
+                ranchFilter === ranch.id 
+                  ? 'bg-primary text-primary-foreground' 
+                  : 'bg-card border border-border text-muted-foreground hover:text-foreground'
+              }`}
+            >
+              {ranch.name}
+            </button>
+          ))}
+        </div>
+
+        <div className="flex overflow-x-auto gap-2 pb-2 no-scrollbar">
+          {['ALL', 'DRAFT', 'SENT', 'PENDING', 'ACKNOWLEDGED', 'APPLIED', 'CLOSED'].map(status => (
+            <button
+              key={status}
+              onClick={() => setStatusFilter(status)}
+              className={`px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest whitespace-nowrap transition-colors ${
+                statusFilter === status 
+                  ? 'bg-white/20 text-foreground' 
+                  : 'bg-transparent border border-border text-muted-foreground hover:text-foreground'
+              }`}
+            >
+              {status}
+            </button>
+          ))}
+        </div>
       </div>
 
-      <div className="space-y-4">
-        {filteredAndSortedRecs.map(rec => {
-          const ranch = allRanches.find(r => r.id === rec.ranchId);
-          const block = allBlocks.find(b => b.id === rec.blockId);
-          
+      <div className="space-y-8">
+        {Object.entries(groupedRecs).map(([ranchId, recs]) => {
+          const ranch = allRanches.find(r => r.id === ranchId);
+          if (!ranch) return null;
+
           return (
-            <div key={rec.id} className="bg-card border border-border p-5 rounded-xl hover:border-primary/50 transition-colors">
-              <div className="flex flex-col md:flex-row md:items-start justify-between gap-4 mb-4">
-                <div>
-                  <div className="flex flex-wrap items-center gap-2 mb-3">
-                    <div className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest border ${getStatusColor(rec.status)}`}>
-                      {getStatusIcon(rec.status)}
-                      {rec.status}
-                    </div>
-                    <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest">
-                      {format(new Date(rec.date), 'MMM d, yyyy')}
-                    </span>
-                  </div>
-                  <h3 className="font-bold text-foreground text-xl leading-tight">{rec.title}</h3>
+            <div key={ranch.id} className="space-y-4">
+              <h2 className="text-lg font-black uppercase tracking-widest text-foreground border-b border-border pb-2">
+                {ranch.name}
+              </h2>
+              
+              <div className="grid grid-cols-1 gap-3">
+                {recs.map(rec => {
+                  const block = allBlocks.find(b => b.id === rec.blockId);
+                  const isLinked = rec.status === 'APPLIED' || rec.status === 'CLOSED';
                   
-                  <div className="flex items-center gap-1.5 text-sm text-muted-foreground mt-2">
-                    <Map className="w-4 h-4 flex-shrink-0" />
-                    <span>{ranch?.name} • {block?.name}</span>
-                  </div>
-                </div>
-                
-                <div className="flex flex-wrap gap-2 w-full md:w-auto md:justify-end">
-                  {rec.cropStage && (
-                    <Badge variant="outline" className="bg-background py-1.5 px-3 text-sm">
-                      Stage: {rec.cropStage}
-                    </Badge>
-                  )}
-                  {rec.product && (
-                    <Badge variant="outline" className="bg-background text-primary border-primary/30 py-1.5 px-3 text-sm">
-                      {rec.product}
-                    </Badge>
-                  )}
-                  {(rec as any).rate && (
-                    <Badge variant="outline" className="bg-background py-1.5 px-3 text-sm">
-                      Rate: {(rec as any).rate}
-                    </Badge>
-                  )}
-                  {(rec as any).targetPest && (
-                    <Badge variant="outline" className="bg-background py-1.5 px-3 text-sm text-amber-500 border-amber-500/30">
-                      Target: {(rec as any).targetPest}
-                    </Badge>
-                  )}
-                </div>
-              </div>
-              
-              {rec.notes && (
-                <div className="bg-background border border-border p-4 rounded-lg text-base text-muted-foreground">
-                  <span className="font-bold text-foreground mr-2">Note:</span>
-                  {rec.notes}
-                </div>
-              )}
-              
-              <div className="mt-4 pt-4 border-t border-border flex flex-col sm:flex-row justify-end gap-3">
-                <button className="px-4 py-4 sm:py-2 text-sm font-bold uppercase tracking-widest text-muted-foreground hover:text-foreground transition-colors border border-border sm:border-none rounded-lg sm:rounded-none w-full sm:w-auto">
-                  Edit
-                </button>
-                {rec.status === 'DRAFT' && (
-                  <button 
-                    onClick={() => handleUpdateStatus(rec.id, 'SENT')}
-                    className="bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 px-6 py-4 sm:py-2 rounded-lg text-sm font-bold uppercase tracking-widest transition-colors w-full sm:w-auto"
-                  >
-                    Send to Grower
-                  </button>
-                )}
-                {(rec.status === 'SENT' || rec.status === 'PENDING' || rec.status === 'ACKNOWLEDGED') && (
-                  <button 
-                    onClick={() => handleUpdateStatus(rec.id, 'APPLIED')}
-                    className="bg-primary text-primary-foreground hover:bg-primary/90 px-6 py-4 sm:py-2 rounded-lg text-sm font-bold uppercase tracking-widest transition-colors w-full sm:w-auto shadow-sm"
-                  >
-                    Mark Applied
-                  </button>
-                )}
-                {rec.status === 'APPLIED' && (
-                  <button 
-                    onClick={() => handleUpdateStatus(rec.id, 'CLOSED')}
-                    className="bg-green-500/20 text-green-400 hover:bg-green-500/30 px-6 py-4 sm:py-2 rounded-lg text-sm font-bold uppercase tracking-widest transition-colors w-full sm:w-auto"
-                  >
-                    Close Record
-                  </button>
-                )}
+                  return (
+                    <div key={rec.id} className="bg-card border border-border p-4 rounded-xl flex flex-col md:flex-row justify-between md:items-center gap-4 hover:border-primary/50 transition-colors">
+                      <div className="flex-1">
+                        <div className="flex flex-wrap items-center gap-2 mb-2">
+                          <div className={`flex items-center gap-1.5 px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-widest border ${getStatusColor(rec.status)}`}>
+                            {getStatusIcon(rec.status)}
+                            {rec.status}
+                          </div>
+                          <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest">
+                            {format(new Date(rec.date), 'MMM d, yyyy')}
+                          </span>
+                        </div>
+                        
+                        <h3 className="font-bold text-lg leading-tight mb-1">{rec.title}</h3>
+                        <p className="text-sm text-muted-foreground mb-1">
+                          Block: <span className="font-bold text-foreground">{block?.name}</span>
+                        </p>
+                        <div className="flex flex-wrap gap-2 mt-2">
+                          {(rec as any).rate && (
+                            <Badge variant="outline" className="text-xs bg-background">
+                              {(rec as any).rate}
+                            </Badge>
+                          )}
+                          {(rec as any).targetPest && (
+                            <Badge variant="outline" className="text-xs bg-background text-amber-500 border-amber-500/30">
+                              {(rec as any).targetPest}
+                            </Badge>
+                          )}
+                          {isLinked && (
+                            <Badge variant="outline" className="text-xs bg-background text-green-500 border-green-500/30">
+                              Record Linked
+                            </Badge>
+                          )}
+                        </div>
+                      </div>
+                      
+                      <div className="flex flex-col sm:flex-row gap-2 w-full md:w-auto shrink-0 mt-2 md:mt-0">
+                        {rec.status === 'DRAFT' && (
+                          <button 
+                            onClick={() => handleUpdateStatus(rec.id, 'SENT')}
+                            className="bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 px-6 py-3 rounded-lg text-xs font-black uppercase tracking-widest transition-colors text-center w-full sm:w-auto"
+                          >
+                            Send
+                          </button>
+                        )}
+                        {(rec.status === 'SENT' || rec.status === 'PENDING' || rec.status === 'ACKNOWLEDGED') && (
+                          <button 
+                            onClick={() => handleUpdateStatus(rec.id, 'APPLIED')}
+                            className="bg-primary text-primary-foreground hover:bg-primary/90 px-6 py-3 rounded-lg text-xs font-black uppercase tracking-widest transition-colors text-center w-full sm:w-auto shadow-sm"
+                          >
+                            Mark Applied
+                          </button>
+                        )}
+                        {rec.status === 'APPLIED' && (
+                          <button 
+                            onClick={() => handleUpdateStatus(rec.id, 'CLOSED')}
+                            className="bg-green-500/20 text-green-400 hover:bg-green-500/30 px-6 py-3 rounded-lg text-xs font-black uppercase tracking-widest transition-colors text-center w-full sm:w-auto"
+                          >
+                            Close
+                          </button>
+                        )}
+                        <Link href={`/app/blocks/${rec.blockId}`}>
+                          <button className="bg-background border border-border hover:border-primary/50 text-foreground px-6 py-3 rounded-lg text-xs font-black uppercase tracking-widest transition-colors flex items-center justify-center gap-1 w-full sm:w-auto">
+                            Open Block
+                          </button>
+                        </Link>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           );
         })}
         
-        {filteredAndSortedRecs.length === 0 && (
+        {Object.keys(groupedRecs).length === 0 && (
           <div className="text-center p-12 bg-card border border-border border-dashed rounded-xl">
             <ClipboardList className="w-12 h-12 text-muted-foreground mx-auto mb-4 opacity-50" />
-            <h3 className="text-lg font-bold text-foreground mb-1">No Recommendations</h3>
+            <h3 className="text-lg font-bold text-foreground mb-1">No Recommendations Found</h3>
             <p className="text-muted-foreground text-sm">
-              {statusFilter !== 'ALL' ? `No recommendations in ${statusFilter} status.` : "You haven't created any recommendations yet."}
+              Try adjusting your filters or create a new recommendation.
             </p>
           </div>
         )}

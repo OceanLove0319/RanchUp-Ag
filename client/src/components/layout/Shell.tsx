@@ -1,5 +1,5 @@
 import { Link, useLocation } from "wouter";
-import { Home, Map, ClipboardEdit, Archive, Settings, LogOut, FlaskConical, LineChart, Plus, Menu, X, BookOpen, Package, FileText, ClipboardList } from "lucide-react";
+import { Home, Map as MapIcon, ClipboardEdit, Archive, Settings, LogOut, FlaskConical, LineChart, Plus, Menu, X, BookOpen, Package, FileText, ClipboardList, AlertTriangle } from "lucide-react";
 import { useStore } from "@/lib/store";
 import { useState } from "react";
 import { useIsMobile } from "@/hooks/useIsMobile";
@@ -18,11 +18,15 @@ export default function Shell({ children }: { children: React.ReactNode }) {
 
   const mainNavItems = [
     { href: "/app", icon: Home, label: "Home" },
-    { href: "/app/blocks", icon: Map, label: "Blocks" },
-    // Log is a FAB on mobile, so we don't include it in bottom nav
-    ...(isMobile ? [] : [{ href: "/app/log", icon: ClipboardEdit, label: "Log" }]),
-    ...(isPCA ? [{ href: "/app/recommendations", icon: ClipboardList, label: "Recs" }] : []),
-    { href: "/app/packets/season", icon: FileText, label: "Print Packet" },
+    ...(!isPCA ? [{ href: "/app/blocks", icon: MapIcon, label: "Blocks" }] : []),
+    ...(isMobile || isPCA ? [] : [{ href: "/app/log", icon: ClipboardEdit, label: "Log" }]),
+    ...(isPCA ? [
+      { href: "/app/recommendations", icon: ClipboardList, label: "Recs" },
+      { href: "/app/reports/variance", icon: AlertTriangle, label: "Review" },
+      { href: "/app/packets/season", icon: FileText, label: "Export" }
+    ] : [
+      { href: "/app/packets/season", icon: FileText, label: "Print Packet" }
+    ]),
   ];
 
   const secondaryNavItems = [
@@ -137,13 +141,15 @@ export default function Shell({ children }: { children: React.ReactNode }) {
             </button>
           </nav>
 
-          {/* Quick Log FAB for Mobile */}
-          <Link 
-            href="/app/log" 
-            className="fixed bottom-24 right-4 bg-primary text-primary-foreground p-4 rounded-full shadow-[0_4px_20px_rgba(234,153,61,0.4)] z-50 active:scale-95 transition-transform"
-          >
-            <Plus className="w-6 h-6" />
-          </Link>
+          {/* Quick Log FAB for Mobile - Only for Growers */}
+          {!isPCA && (
+            <Link 
+              href="/app/log" 
+              className="fixed bottom-24 right-4 bg-primary text-primary-foreground p-4 rounded-full shadow-[0_4px_20px_rgba(234,153,61,0.4)] z-50 active:scale-95 transition-transform"
+            >
+              <Plus className="w-6 h-6" />
+            </Link>
+          )}
 
           {/* Mobile Full Menu Overlay */}
           <div 

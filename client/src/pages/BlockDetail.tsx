@@ -1,8 +1,8 @@
 import { useRoute, useLocation } from "wouter";
 import { useStore } from "@/lib/store";
-import { Droplets, Sprout, ShieldAlert, ArrowLeft, Info, Lock, Edit2, Trash2 } from "lucide-react";
+import { Droplets, Sprout, ShieldAlert, ArrowLeft, Info, Lock, Edit2, Trash2, CheckCircle2 } from "lucide-react";
 import { Link } from "wouter";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { getActiveSeasonWindow } from "@/utils/season";
 import { getSeasonSpendForBlock } from "@/utils/rollups";
 import { isWithin } from "@/utils/dates";
@@ -12,20 +12,31 @@ import { useGating } from "@/utils/gating";
 import { useToast } from "@/hooks/use-toast";
 import BlockLogs from "@/components/BlockLogs";
 import { BlockSuggestionsCard } from "@/components/blocks/BlockSuggestionsCard";
+import { Badge } from "@/components/ui/badge";
 
 export default function BlockDetail() {
   const [, params] = useRoute("/app/blocks/:id");
   const [, setLocation] = useLocation();
   const { toast } = useToast();
   
+  const user = useStore(s => s.user);
+  const isPCA = user?.role === 'PCA';
+  
   const block = useStore(s => s.blocks.find(b => b.id === params?.id));
+  const ranch = useStore(s => s.ranches.find(r => r.id === block?.ranchId));
   const updateBlock = useStore(s => s.updateBlock);
   const deleteBlock = useStore(s => s.deleteBlock);
   const chemicalApps = useStore(s => s.chemicalApps);
+  const recommendations = useStore(s => s.recommendations);
   const { requireCostEngine } = useGating();
 
   const [isEditing, setIsEditing] = useState(false);
   const [editForm, setEditForm] = useState<Partial<typeof block>>(block || {});
+
+  const blockRecs = useMemo(() => recommendations?.filter(r => r.blockId === block?.id) || [], [recommendations, block?.id]);
+  const latestRec = useMemo(() => [...blockRecs].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0], [blockRecs]);
+  const blockApps = useMemo(() => chemicalApps.filter(a => a.blockId === block?.id), [chemicalApps, block?.id]);
+  const missingInfoApps = useMemo(() => blockApps.filter(a => a.costStatus === 'UNIT_MISMATCH' || !a.estimatedCost || !a.rateValue), [blockApps]);
 
   if (!block) return <div>Block not found</div>;
 
@@ -167,6 +178,119 @@ export default function BlockDetail() {
     );
   }
 
+  // PCA Block Workspace View
+  if (isPCA) {
+    return (
+      <div className="animate-in fade-in duration-500 max-w-4xl mx-auto pb-20">
+        <div className="flex justify-between items-center mb-6">
+          <Link href="/app" className="inline-flex items-center text-xs font-bold uppercase tracking-widest text-muted-foreground hover:text-foreground">
+            <ArrowLeft className="w-4 h-4 mr-2" /> Back to Ranch
+          </Link>
+        </div>
+
+        <header className="mb-8">
+          <div className="flex flex-wrap items-center gap-4 mb-2">
+            <h1 className="text-4xl md:text-5xl font-black uppercase tracking-tighter text-foreground">{block.name}</h1>
+            <span className="bg-primary/20 text-primary px-3 py-1 rounded text-sm font-bold uppercase tracking-widest">
+              {block.acreage} ACRES
+            </span>
+          </div>
+          <p className="text-muted-foreground font-medium text-lg">{ranch?.name} • {block.variety} • {block.seasonGroup} Season</p>
+        </header>
+
+        {/* Action Priority Section */}
+        <div className="mb-8">
+          <h2 className="text-sm font-black uppercase tracking-widest text-muted-foreground mb-4 border-b border-border pb-2">Status & Actions</h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Recommendation Status */}
+            <div className={`p-6 rounded-xl border ${latestRec && latestRec.status === 'PENDING' ? 'bg-purple-500/10 border-purple-500/30' : latestRec && latestRec.status === 'APPLIED' ? 'bg-green-500/10 border-green-500/30' : 'bg-card border-border'} flex flex-col`}>
+              <div className="flex justify-between items-start mb-4">
+                <h3 className="font-bold text-sm uppercase tracking-widest text-foreground">Recommendation</h3>
+                {latestRec ? (
+                  <Badge variant="outline" className={`text-[10px] ${latestRec.status === 'PENDING' ? 'text-purple-400 border-purple-400/30' : latestRec.status === 'APPLIED' ? 'text-green-400 border-green-400/30' : 'text-blue-400 border-blue-400/30'}`}>
+                    {latestRec.status}
+                  </Badge>
+                ) : (
+                  <Badge variant="outline" className="text-[10px] text-muted-foreground">None Active</Badge>
+                )}
+              </div>
+              
+              {latestRec ? (
+                <div className="mb-6 flex-1">
+                  <p className="font-bold text-lg text-foreground mb-1">{latestRec.product}</p>
+                  <p className="text-sm text-muted-foreground">{(latestRec as any).rate} • Target: {(latestRec as any).targetPest || 'N/A'}</p>
+                </div>
+              ) : (
+                <div className="mb-6 flex-1 flex items-center justify-center border border-dashed border-border rounded-lg p-4">
+                  <p className="text-sm text-muted-foreground">No recent recommendations.</p>
+                </div>
+              )}
+              
+              <div className="mt-auto">
+                {latestRec?.status === 'PENDING' && (
+                  <Link href="/app/recommendations">
+                    <Button className="w-full py-6 font-bold uppercase tracking-widest">Review Grower Progress</Button>
+                  </Link>
+                )}
+                {latestRec?.status === 'APPLIED' && (
+                  <Link href="/app/recommendations">
+                    <Button className="w-full py-6 bg-green-600/20 text-green-500 hover:bg-green-600/30 font-bold uppercase tracking-widest">Close Recommendation</Button>
+                  </Link>
+                )}
+                {(!latestRec || latestRec.status === 'CLOSED') && (
+                  <Link href="/app/recommendations">
+                    <Button variant="outline" className="w-full py-6 font-bold uppercase tracking-widest">Create New Rec</Button>
+                  </Link>
+                )}
+              </div>
+            </div>
+
+            {/* Record Status */}
+            <div className={`p-6 rounded-xl border ${missingInfoApps.length > 0 ? 'bg-red-500/10 border-red-500/30' : 'bg-card border-border'} flex flex-col`}>
+              <div className="flex justify-between items-start mb-4">
+                <h3 className="font-bold text-sm uppercase tracking-widest text-foreground">Record Status</h3>
+                {missingInfoApps.length > 0 ? (
+                  <Badge variant="outline" className="text-[10px] text-red-400 border-red-400/30 bg-red-400/10">Needs Cleanup</Badge>
+                ) : (
+                  <Badge variant="outline" className="text-[10px] text-green-400 border-green-400/30 bg-green-400/10">Clean</Badge>
+                )}
+              </div>
+
+              <div className="mb-6 flex-1">
+                {missingInfoApps.length > 0 ? (
+                  <>
+                    <p className="font-bold text-red-400 text-lg mb-1">{missingInfoApps.length} Flagged Record{missingInfoApps.length !== 1 ? 's' : ''}</p>
+                    <p className="text-sm text-muted-foreground">Missing application rates or unit mismatches are blocking a clean export.</p>
+                  </>
+                ) : (
+                  <div className="h-full flex flex-col items-center justify-center text-center p-4">
+                    <CheckCircle2 className="w-8 h-8 text-green-500/50 mb-2" />
+                    <p className="text-sm text-muted-foreground">All application records for this block are fully detailed and ready for export.</p>
+                  </div>
+                )}
+              </div>
+
+              <div className="mt-auto">
+                {missingInfoApps.length > 0 ? (
+                  <Link href="/app/reports/variance">
+                    <Button className="w-full py-6 bg-red-500/20 text-red-500 hover:bg-red-500/30 font-bold uppercase tracking-widest">Fix Missing Info</Button>
+                  </Link>
+                ) : (
+                  <Button disabled variant="outline" className="w-full py-6 font-bold uppercase tracking-widest opacity-50">Records Clean</Button>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <h2 className="text-sm font-black uppercase tracking-widest text-muted-foreground mb-4 border-b border-border pb-2">Block Logs</h2>
+        <BlockLogs blockId={block.id} />
+      </div>
+    );
+  }
+
+  // Grower Block View (Original)
   return (
     <div className="animate-in fade-in duration-500">
       <div className="flex justify-between items-center mb-6">

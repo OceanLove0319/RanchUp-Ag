@@ -1,0 +1,501 @@
+Refactor the PCA experience in RanchUp to a ranch-first, progressively focused command system.
+
+Core product principle:
+The PCA should perform the fewest possible actions.
+The interface must feel elite in organization, calm, obvious, and operationally sharp.
+Do NOT create a busy dashboard.
+Do NOT overload the screen with too many widgets, cards, tables, colors, or decisions.
+Every screen should reduce cognitive load and answer one question at a time.
+
+Primary PCA user:
+Karl W.
+Company: Simplot Grower Solutions
+Role: PCA
+
+What Karl needs to do:
+1. See which ranch needs attention
+2. Tap into that ranch
+3. See which block or issue needs action
+4. Resolve the issue or close the recommendation
+5. Export clean proof when ready
+
+This should feel like:
+- a tightly organized command layer
+- minimal clicks
+- mobile-first
+- high clarity
+- large tap targets
+- older-user friendly
+- no horizontal scrolling
+- no visual clutter
+- no admin-panel chaos
+- no “too many things happening at once”
+
+==================================================
+NEW PCA INFORMATION ARCHITECTURE
+==================================================
+
+Change the PCA dashboard from a generic KPI dashboard into a ranch-first drill-down workflow.
+
+New hierarchy:
+1. All Ranches
+2. Selected Ranch
+3. Selected Block or Issue
+4. Action / Fix / Close / Export
+
+This is a progressive-disclosure design.
+Show less first.
+Only reveal detail when the PCA asks for it.
+
+==================================================
+SCREEN 1: PCA HOME = ALL RANCHES
+==================================================
+
+This is now the PCA landing page.
+
+Purpose:
+Immediately show Karl which ranches are under control and which ranches need attention.
+
+Layout:
+- clean header
+- calm summary strip
+- ranch cards/list as the dominant content
+- minimal supporting information
+- no giant analytics dashboard
+
+Header:
+- Karl W.
+- Simplot Grower Solutions
+- Ranch switcher/search
+- small “Export” access
+- optional date
+
+Top summary strip:
+Keep this extremely light.
+Show only 4 simple summary values:
+- Ranches Managed
+- Needs Attention
+- Pending Follow-Through
+- Records Blocking Clean Export
+
+Do not overdo charts.
+Do not add more than these top-level stats.
+
+Main section:
+Ranch status cards or ranch rows
+This is the primary focus of the screen.
+
+Each ranch card/row should include:
+- Ranch name
+- Primary crop or crop mix
+- Open recommendations count
+- Pending follow-through count
+- Record issues count
+- Packet readiness
+- Last activity
+- Overall status
+
+Overall status labels:
+- Clean
+- Needs Follow-Up
+- Needs Record Cleanup
+- Priority
+
+Use restrained visual signals:
+- subtle status pill
+- small icon
+- no aggressive color overload
+
+Each ranch card must have only one dominant CTA:
+- “Open Ranch”
+
+Optional secondary text links, but no more than:
+- View Packet
+- View Issues
+
+The main click target should be the full card.
+
+Behavior:
+When Karl taps a ranch, the UI should focus into that ranch and reduce everything else.
+
+==================================================
+SCREEN 2: SELECTED RANCH FOCUS
+==================================================
+
+When a ranch is selected, open a focused ranch workspace.
+
+This can be:
+- a dedicated page, or
+- a master-detail layout on desktop with a full-screen panel on mobile
+
+Purpose:
+Show Karl only what matters for this ranch.
+
+Top ranch header:
+- Ranch name
+- Crop(s)
+- Total blocks
+- Open recs
+- Pending follow-through
+- Record issues
+- Export readiness
+
+Add a very clear single sentence summary:
+Examples:
+- “2 recommendations still need grower follow-through.”
+- “3 record issues are blocking a clean export.”
+- “This ranch is clean and packet-ready.”
+
+Priority section:
+This should be near the top and very simple.
+
+Title:
+“What needs attention”
+
+Show no more than 3–5 priority items.
+Each item should be plain and actionable, for example:
+- Block 14 recommendation still pending
+- Block 7 application record missing rate
+- Block 9 marked complete but no matching record found
+
+Each priority item must have one primary action:
+- Review
+- Fix
+- Close
+- View
+
+Do not show large tables first.
+Start with priority-driven organization.
+
+Below that:
+Block status list
+
+Each block row/card includes only:
+- Block name
+- Crop / variety
+- Latest recommendation status
+- Record status
+- Flag count
+- One CTA: “Open Block”
+
+Do not pack in too much information.
+Keep it scannable.
+No dense spreadsheet feeling.
+
+==================================================
+SCREEN 3: BLOCK DETAIL / ISSUE DETAIL
+==================================================
+
+When Karl opens a block, show a highly focused block workspace.
+
+Purpose:
+Let the PCA understand the block, see the current recommendation/record status, and take one clear action.
+
+Block header:
+- Block name
+- Ranch
+- Crop / variety
+- Acres
+- Current stage if available
+
+Section 1:
+Latest recommendation
+Show:
+- product
+- rate
+- date sent
+- status
+- grower response if any
+
+Section 2:
+Record follow-through status
+Show:
+- matching application record found / not found
+- missing fields if any
+- unit mismatch if any
+- clean / not clean
+
+Section 3:
+Recommended action
+This is the most important element on the screen.
+
+Based on the block state, show one dominant action card:
+Examples:
+- “Fix missing rate”
+- “Review grower follow-through”
+- “Close recommendation”
+- “Link matching application record”
+- “Ready for packet”
+
+Only one dominant action should visually lead the screen.
+
+Secondary actions may exist below, but they must not compete with the primary action.
+
+==================================================
+SCREEN 4: ACTION FLOW DESIGN
+==================================================
+
+Every action flow should be extremely short.
+
+Examples:
+
+Fix issue flow:
+1. Open issue
+2. Edit missing field
+3. Save
+4. Return to block/ranch cleanly
+
+Close recommendation flow:
+1. Open recommendation
+2. Confirm matching record exists
+3. Mark closed
+4. Return to block/ranch
+
+Export flow:
+1. Open ranch
+2. View readiness
+3. See blocking issues or “ready”
+4. Export PDF
+
+No long wizard unless absolutely necessary.
+No complex form stacks for PCA MVP.
+
+==================================================
+REDUCE COGNITIVE LOAD RULES
+==================================================
+
+Implement these UX rules across the PCA experience:
+
+1. One dominant action per screen
+Every screen should make the next action obvious.
+
+2. Show summary first, detail second
+Never dump full detail immediately.
+
+3. Limit visible choices
+Avoid showing too many buttons or filters at once.
+
+4. Use plain language
+Prefer:
+- Needs attention
+- Missing info
+- Ready to export
+- Waiting on grower
+Instead of overly technical internal labels.
+
+5. Collapse secondary information
+Advanced details should be hidden behind expanders or detail views.
+
+6. Avoid dashboard sprawl
+No more than a few sections per screen.
+No “wall of cards.”
+
+7. Keep tables lightweight
+Prefer lists/cards unless tables are clearly better.
+On mobile, stack rows vertically.
+
+8. Use calm visual hierarchy
+Strong headings
+Comfortable spacing
+Large tap areas
+Minimal decorative noise
+
+9. Reduce badge chaos
+Do not add too many chips, colors, and indicators at once.
+Statuses should be readable but restrained.
+
+10. Keep the mental model consistent
+Ranch → Block → Action
+Do not break this pattern.
+
+==================================================
+NAVIGATION REFACTOR
+==================================================
+
+Simplify PCA navigation to only:
+- Home
+- Recommendations
+- Records Review
+- Export
+
+Optional:
+- Ranches
+
+But ideally Home already functions as Ranches.
+
+Navigation labels must be short and obvious.
+Do not add unnecessary sections.
+
+==================================================
+RECOMMENDATIONS PAGE REFACTOR
+==================================================
+
+Keep the Recommendations page, but align it with the ranch-first model.
+
+Recommendations page purpose:
+A clean filtered workspace for recommendation management.
+
+Must include:
+- search
+- filter by ranch
+- filter by status
+- filter by block
+
+Default view:
+Group recommendations by ranch, then by status.
+Not one giant undifferentiated list.
+
+Each recommendation row/card should show:
+- ranch
+- block
+- product
+- date
+- status
+- record linked? yes/no
+- one primary action
+
+Primary actions:
+- Open
+- Send
+- Close
+
+Do not show too many controls at once.
+
+==================================================
+RECORDS REVIEW PAGE REFACTOR
+==================================================
+
+Make Records Review a clean exception queue.
+
+Purpose:
+Only show records needing cleanup.
+Do not make it feel like a data dump.
+
+Group issues by:
+- ranch first
+- then severity or issue type
+
+Each issue row/card:
+- ranch
+- block
+- date
+- issue
+- why it matters
+- one primary action: Fix
+
+Optional small secondary action:
+- Mark reviewed
+
+Make the page feel like a punch list, not a database.
+
+==================================================
+EXPORT PAGE REFACTOR
+==================================================
+
+Purpose:
+Confidence-building clean proof generation.
+
+For each ranch, show:
+- Ready to Export / Not Ready
+- Number of blocking issues
+- last export date if available
+
+If not ready:
+Show the exact blockers in a simple checklist.
+
+If ready:
+Show a clear “Export Packet” action.
+
+Message language should reinforce trust:
+- “Clean records create clean proof.”
+- “This ranch is export-ready.”
+- “2 issues need cleanup before export.”
+
+==================================================
+DESKTOP + MOBILE BEHAVIOR
+==================================================
+
+Desktop:
+- left side can show ranch list
+- main panel shows selected ranch or selected block
+- right panel can show priorities only if it stays calm and uncluttered
+
+Mobile:
+- screen 1 = ranch list
+- screen 2 = ranch focus
+- screen 3 = block detail
+- screen 4 = action flow
+
+On mobile:
+- no tiny controls
+- sticky primary action button when useful
+- no side-by-side dense grids
+- no horizontal tables
+
+==================================================
+VISUAL / UI DIRECTION
+==================================================
+
+UI tone:
+- premium operational clarity
+- practical
+- trustworthy
+- Central Valley relevant
+- quiet confidence
+- not flashy
+- not overly corporate
+- not trendy for trend’s sake
+
+Use:
+- clean spacing
+- strong typography
+- large touch targets
+- restrained icons
+- simple status pills
+- soft card structure
+
+Avoid:
+- excessive charts
+- too many colors
+- too many cards
+- too many widgets
+- tiny click areas
+- visual noise
+- crowded filters
+
+==================================================
+MOCK DATA / DEMO LOGIC
+==================================================
+
+Use seeded mock data for:
+- Neufeld Farms
+- Jackson Family Orchards
+- Valley Crest Nut Co.
+- Reedley Ridge Farms
+
+Ensure each ranch has a different state:
+- one clean
+- one waiting on grower follow-through
+- one with record issues
+- one high-priority ranch with multiple blockers
+
+This will make the ranch-first model obvious in the demo.
+
+==================================================
+SUCCESS TEST
+==================================================
+
+When finished, the PCA experience should pass this test:
+
+A PCA opens the app and instantly understands:
+- which ranch needs attention
+- why it needs attention
+- which block is causing the issue
+- what single action to take next
+- whether the ranch is clean enough to export
+
+The interface should feel exceptionally organized, simple, and intentional.
+
+Final litmus test:
+This should not feel like software making Karl think harder.
+It should feel like software doing the organizing for him.

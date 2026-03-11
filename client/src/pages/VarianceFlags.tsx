@@ -1,16 +1,20 @@
 import { useState, useMemo } from "react";
 import { useStore } from "@/lib/store";
 import { Link, useLocation } from "wouter";
-import { ArrowLeft, AlertTriangle, TrendingUp, DollarSign, CheckCircle2 } from "lucide-react";
-import { format, subMonths, startOfMonth, endOfMonth } from "date-fns";
+import { ArrowLeft, AlertTriangle, TrendingUp, DollarSign, CheckCircle2, ChevronRight } from "lucide-react";
+import { format, subMonths } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
+import { Badge } from "@/components/ui/badge";
 
 export default function VarianceFlags() {
+  const user = useStore(s => s.user);
+  const isPCA = user?.role === 'PCA';
+  const allRanches = useStore(s => s.ranches);
   const activeRanchId = useStore(s => s.activeRanchId);
-  const activeRanch = useStore(s => s.ranches.find(r => r.id === activeRanchId));
   const allBlocks = useStore(s => s.blocks);
-  const blocks = useMemo(() => allBlocks.filter(b => b.ranchId === activeRanchId), [allBlocks, activeRanchId]);
+  const allApps = useStore(s => s.chemicalApps);
+  const allLogs = useStore(s => s.logs);
   
   const [, setLocation] = useLocation();
   const { toast } = useToast();
@@ -22,7 +26,146 @@ export default function VarianceFlags() {
   const currentMonthPrefix = format(today, 'yyyy-MM');
   const lastMonthPrefix = format(subMonths(today, 1), 'yyyy-MM');
 
-  const allApps = useStore(s => s.chemicalApps);
+  const handleResolveIssue = (blockId: string) => {
+    // Basic mock resolution
+    setResolvedIssues(prev => [...prev, blockId]);
+    
+    if (deriveNextStepFromAction) {
+      deriveNextStepFromAction("FIX_ISSUE");
+    }
+    
+    toast({
+      title: "Issue Addressed",
+      description: "Record has been updated.",
+    });
+  };
+
+  // --------------------------------------------------------------------------------
+  // PCA VIEW (All Ranches Exception Queue)
+  // --------------------------------------------------------------------------------
+  if (isPCA) {
+    const issuesByRanch = useMemo(() => {
+      const issues: Record<string, any[]> = {};
+      
+      allRanches.forEach(ranch => {
+        issues[ranch.id] = [];
+        
+        const ranchApps = allApps.filter(a => a.ranchId === ranch.id);
+        const ranchLogs = allLogs.filter(l => l.ranchId === ranch.id);
+
+        ranchApps.forEach(app => {
+          if (app.costStatus === 'UNIT_MISMATCH' || !app.estimatedCost || !app.rateValue) {
+            const block = allBlocks.find(b => b.id === app.blockId);
+            issues[ranch.id].push({
+              id: app.id,
+              blockId: block?.id,
+              blockName: block?.name || 'Unknown Block',
+              date: app.dateApplied,
+              type: 'Missing Information',
+              desc: `Application record for ${app.productName} is missing unit or cost data.`,
+              severity: 'high'
+            });
+          }
+        });
+
+        ranchLogs.forEach(log => {
+          if (!log.amount || !log.unit) {
+            const block = allBlocks.find(b => b.id === log.blockId);
+            issues[ranch.id].push({
+              id: log.id,
+              blockId: block?.id,
+              blockName: block?.name || 'Unknown Block',
+              date: log.date,
+              type: 'Incomplete Log',
+              desc: `Log for ${log.material} is missing amount or units.`,
+              severity: 'medium'
+            });
+          }
+        });
+      });
+
+      return issues;
+    }, [allRanches, allApps, allLogs, allBlocks]);
+
+    return (
+      <div className="animate-in fade-in duration-500 max-w-4xl mx-auto pb-20">
+        <div className="flex justify-between items-center mb-6">
+          <Link href="/app" className="inline-flex items-center text-xs font-bold uppercase tracking-widest text-muted-foreground hover:text-foreground">
+            <ArrowLeft className="w-4 h-4 mr-2" /> Command Center
+          </Link>
+        </div>
+
+        <header className="mb-8">
+          <div className="flex items-center gap-3 text-red-400 mb-2">
+            <AlertTriangle className="w-8 h-8" />
+            <h1 className="text-3xl md:text-4xl font-black uppercase tracking-tighter text-foreground">Records Review</h1>
+          </div>
+          <p className="text-muted-foreground font-medium text-lg">Clean up exceptions and missing data before exporting.</p>
+        </header>
+
+        <div className="space-y-8">
+          {allRanches.map(ranch => {
+            const ranchIssues = issuesByRanch[ranch.id]?.filter(issue => !resolvedIssues.includes(issue.blockId)) || [];
+            if (ranchIssues.length === 0) return null;
+
+            return (
+              <div key={ranch.id} className="space-y-3">
+                <h2 className="text-lg font-black uppercase tracking-widest text-foreground border-b border-border pb-2">
+                  {ranch.name} <span className="text-red-400 ml-2">({ranchIssues.length})</span>
+                </h2>
+                <div className="grid grid-cols-1 gap-3">
+                  {ranchIssues.map(issue => (
+                    <div key={issue.id} className="bg-card border border-red-500/20 p-4 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-sm hover:border-red-500/50 transition-colors">
+                      <div>
+                        <div className="flex items-center gap-2 mb-1">
+                          <Badge variant="outline" className="text-[10px] uppercase tracking-widest border-red-500/30 text-red-400 bg-red-500/10">
+                            {issue.type}
+                          </Badge>
+                          <span className="text-xs font-bold text-muted-foreground">{format(new Date(issue.date), 'MMM d')}</span>
+                        </div>
+                        <h3 className="font-bold text-foreground text-base">Block: {issue.blockName}</h3>
+                        <p className="text-sm text-muted-foreground">{issue.desc}</p>
+                      </div>
+                      <div className="flex gap-2 w-full sm:w-auto mt-2 sm:mt-0">
+                        <Button 
+                          variant="outline" 
+                          className="w-full sm:w-auto text-xs font-black uppercase tracking-widest"
+                          onClick={() => handleResolveIssue(issue.blockId)}
+                        >
+                          Mark Reviewed
+                        </Button>
+                        <Button 
+                          className="w-full sm:w-auto text-xs font-black uppercase tracking-widest bg-background border border-border hover:border-primary/50 text-foreground"
+                          onClick={() => handleResolveIssue(issue.blockId)}
+                        >
+                          Fix Issue
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            );
+          })}
+
+          {Object.values(issuesByRanch).flat().filter(issue => !resolvedIssues.includes(issue.blockId)).length === 0 && (
+            <div className="text-center p-12 bg-card border border-border border-dashed rounded-xl">
+              <CheckCircle2 className="w-12 h-12 text-green-500 mx-auto mb-4 opacity-80" />
+              <h3 className="text-lg font-bold text-foreground mb-1">All Records Clean</h3>
+              <p className="text-muted-foreground text-sm">No data issues found across your managed ranches.</p>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+
+  // --------------------------------------------------------------------------------
+  // GROWER VIEW (Active Ranch Variances)
+  // --------------------------------------------------------------------------------
+  const activeRanch = allRanches.find(r => r.id === activeRanchId);
+  const blocks = useMemo(() => allBlocks.filter(b => b.ranchId === activeRanchId), [allBlocks, activeRanchId]);
   const ranchApps = useMemo(() => allApps.filter(a => a.ranchId === activeRanchId), [allApps, activeRanchId]);
 
   // 1. Calculate Month-over-Month Cost Spikes per Block
@@ -61,39 +204,13 @@ export default function VarianceFlags() {
   const unitMismatches = ranchApps.filter(a => 
     a.dateApplied.startsWith(currentMonthPrefix) && 
     a.costStatus === 'UNIT_MISMATCH' &&
-    !resolvedIssues.includes(a.id)
+    !resolvedIssues.includes(a.blockId)
   );
 
   const mismatchesByBlock = unitMismatches.reduce((acc, app) => {
     acc[app.blockId] = (acc[app.blockId] || 0) + 1;
     return acc;
   }, {} as Record<string, number>);
-
-  const handleResolveIssue = (blockId: string) => {
-    // Find apps in this block to "resolve"
-    const appsToResolve = unitMismatches.filter(a => a.blockId === blockId);
-    setResolvedIssues(prev => [...prev, ...appsToResolve.map(a => a.id)]);
-    
-    if (deriveNextStepFromAction) {
-      deriveNextStepFromAction("FIX_ISSUE");
-    }
-    
-    // Check if there are other issues remaining after this
-    const remainingIssues = Object.keys(mismatchesByBlock).length - 1;
-    
-    toast({
-      title: "Issue Resolved",
-      description: remainingIssues > 0 ? `${remainingIssues} blocks still need review.` : "All data issues resolved.",
-      action: (
-        <button 
-          onClick={() => remainingIssues > 0 ? null : setLocation("/app/projections")}
-          className="bg-primary text-primary-foreground px-3 py-1.5 rounded text-xs font-bold uppercase tracking-widest whitespace-nowrap"
-        >
-          {remainingIssues > 0 ? "Continue Review" : "Next: Plan"}
-        </button>
-      )
-    });
-  };
 
   return (
     <div className="animate-in fade-in duration-500 max-w-4xl mx-auto pb-20">
