@@ -111,17 +111,19 @@ export const RANCHUP_SEASON_TOC_V1: PacketSection[] = [
         } else {
           blocks.push({ 
             type: "TABLE", 
-            columns: ["Date", "Activity", "Material", "Rate/Unit", "Acres", "Est Cost"],
+            columns: ["Date", "Activity", "Material", "Rate/Unit", "Acres", "Est Cost", "Actual Cost"],
             rows: blockLogs.map(l => {
               const app = state.apps.find(a => a.id === `app-${l.id}`);
-              const costStr = app && app.estimatedCost ? `$${app.estimatedCost.toLocaleString()}` : '—';
+              const estCostStr = app && app.estimatedCost ? `$${app.estimatedCost.toLocaleString()}` : '—';
+              const actCostStr = l.cost ? `$${l.cost.toLocaleString()}` : '—';
               return [
                 new Date(l.date).toLocaleDateString() || "—",
                 l.actionType || "—",
                 l.material || "—",
                 `${l.amount || 0} ${l.unit || ""}`,
                 block.acreage ? block.acreage.toString() : "0",
-                costStr
+                estCostStr,
+                actCostStr
               ];
             })
           });
@@ -272,24 +274,43 @@ export const RANCHUP_SEASON_TOC_V1: PacketSection[] = [
       const blocks: RenderBlock[] = [{ type: "HEADING", level: 1, text: "9. SEASON ROLLUPS" }];
       
       // Calculate spend by block
-      const blockSpend: Record<string, number> = {};
-      let totalSpend = 0;
+      const blockSpendEst: Record<string, number> = {};
+      const blockSpendAct: Record<string, number> = {};
+      let totalSpendEst = 0;
+      let totalSpendAct = 0;
       
       state.apps.forEach(app => {
          if (app.estimatedCost && app.costStatus !== 'UNIT_MISMATCH') {
             const blockName = state.blocks.find(b => b.id === app.blockId)?.name || "Unknown";
-            blockSpend[blockName] = (blockSpend[blockName] || 0) + app.estimatedCost;
-            totalSpend += app.estimatedCost;
+            blockSpendEst[blockName] = (blockSpendEst[blockName] || 0) + app.estimatedCost;
+            totalSpendEst += app.estimatedCost;
          }
       });
+
+      state.logs.forEach(log => {
+        if (log.cost) {
+          const blockName = state.blocks.find(b => b.id === log.blockId)?.name || "Unknown";
+          blockSpendAct[blockName] = (blockSpendAct[blockName] || 0) + log.cost;
+          totalSpendAct += log.cost;
+        }
+      });
       
-      blocks.push({ type: "HEADING", level: 2, text: `Total Estimated Spend: $${totalSpend.toLocaleString()}` });
+      blocks.push({ type: "HEADING", level: 2, text: `Total Estimated Spend: $${totalSpendEst.toLocaleString()}` });
+      blocks.push({ type: "HEADING", level: 2, text: `Total Actual Spend: $${totalSpendAct.toLocaleString()}` });
       
-      if (Object.keys(blockSpend).length > 0) {
+      const allBlocksSet = new Set([...Object.keys(blockSpendEst), ...Object.keys(blockSpendAct)]);
+      
+      if (allBlocksSet.size > 0) {
          blocks.push({ 
            type: "TABLE", 
-           columns: ["Block", "Estimated Spend"],
-           rows: Object.entries(blockSpend).map(([b, s]) => [b || "Unknown", `$${(s || 0).toLocaleString()}`])
+           columns: ["Block", "Estimated Spend", "Actual Spend", "Variance"],
+           rows: Array.from(allBlocksSet).map(b => {
+             const est = blockSpendEst[b] || 0;
+             const act = blockSpendAct[b] || 0;
+             const variance = est - act;
+             const varianceStr = variance === 0 ? "—" : (variance > 0 ? `-$${variance.toLocaleString()}` : `+$${Math.abs(variance).toLocaleString()}`);
+             return [b, `$${est.toLocaleString()}`, act > 0 ? `$${act.toLocaleString()}` : '—', varianceStr];
+           })
          });
       } else {
          blocks.push({ type: "PARAGRAPH", text: "No cost data available for rollups." });
