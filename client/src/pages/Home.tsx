@@ -450,11 +450,11 @@ export default function Home() {
                      <div className="grid grid-cols-2 gap-2 mb-4 bg-background/50 p-3 rounded-lg border border-border/50">
                        <div>
                          <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-0.5">Est. Cost/Ac</p>
-                         <p className="text-sm font-bold text-foreground">${estCostPerAcre.toFixed(2)}</p>
+                         <p className="text-sm font-bold text-foreground">${rec.estimatedCostPerAcre?.toFixed(2) || estCostPerAcre.toFixed(2)}</p>
                        </div>
                        <div>
                          <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-0.5">Est. Block Total</p>
-                         <p className="text-sm font-bold text-primary">${estTotalCost.toLocaleString()}</p>
+                         <p className="text-sm font-bold text-primary">${rec.estimatedTotalCost?.toLocaleString() || estTotalCost.toLocaleString()}</p>
                        </div>
                      </div>
                    </div>

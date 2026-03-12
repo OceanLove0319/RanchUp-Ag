@@ -4,6 +4,7 @@ import { FlaskConical, Plus, TrendingUp, AlertTriangle, Info } from "lucide-reac
 import { getActiveSeasonWindow } from "@/utils/season";
 import { getSeasonSpendForBlock } from "@/utils/rollups";
 import { isWithin } from "@/utils/dates";
+import { Badge } from "@/components/ui/badge";
 
 export default function Chemicals() {
   const blocks = useStore(s => s.blocks);
@@ -84,9 +85,18 @@ export default function Chemicals() {
                           </div>
                         </div>
                       </div>
-                      <div className="text-right">
-                        <p className="font-black text-foreground text-lg">${app.estimatedCost?.toFixed(2) || '0.00'}</p>
-                        <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mt-1">Estimated</p>
+                      <div className="text-right flex flex-col items-end gap-1">
+                        <div className="flex items-center gap-2">
+                          <p className="font-black text-foreground text-lg">${app.estimatedCost?.toFixed(2) || '0.00'}</p>
+                          <Badge variant="outline" className={`text-[10px] uppercase tracking-widest ${
+                            app.costStatus === 'UNIT_MISMATCH' ? 'text-orange-400 border-orange-400/30 bg-orange-400/10' :
+                            app.costStatus === 'INVOICE' ? 'text-green-400 border-green-400/30 bg-green-400/10' :
+                            'text-blue-400 border-blue-400/30 bg-blue-400/10'
+                          }`}>
+                            {app.costStatus === 'UNIT_MISMATCH' ? 'Needs Review' :
+                             app.costStatus === 'INVOICE' ? 'Actual' : 'Est'}
+                          </Badge>
+                        </div>
                       </div>
                     </div>
                   );

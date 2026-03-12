@@ -59,7 +59,15 @@ export default function BlockLogs({ blockId }: { blockId: string }) {
                     <p className="text-sm text-gray-400 mt-2 italic">"{log.notes}"</p>
                   )}
                   {log.cost && (
-                    <p className="text-xs font-bold text-primary mt-2 uppercase tracking-widest">${log.cost} Cost</p>
+                    <div className="mt-2 flex gap-3">
+                      <p className="text-xs font-bold text-primary uppercase tracking-widest">${log.cost} Actual</p>
+                      {useStore.getState().chemicalApps.find(a => a.id === `app-${log.id}`)?.estimatedCost && (
+                         <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest">${useStore.getState().chemicalApps.find(a => a.id === `app-${log.id}`)?.estimatedCost} Est</p>
+                      )}
+                    </div>
+                  )}
+                  {!log.cost && useStore.getState().chemicalApps.find(a => a.id === `app-${log.id}`)?.estimatedCost && (
+                     <p className="text-xs font-bold text-muted-foreground mt-2 uppercase tracking-widest">${useStore.getState().chemicalApps.find(a => a.id === `app-${log.id}`)?.estimatedCost} Est</p>
                   )}
                 </div>
                 

@@ -6,6 +6,7 @@ import { isWithin } from "@/utils/dates";
 import { Link, useLocation } from "wouter";
 import { useGating } from "@/utils/gating";
 import { useToast } from "@/hooks/use-toast";
+import { Badge } from "@/components/ui/badge";
 
 // Deterministic Sort
 const sortLogsDeterministic = (logs: any[]) => {
@@ -175,14 +176,19 @@ export default function Vault() {
                   </span>
                 </div>
                 <div className="flex flex-col items-end gap-1">
-                  <span className="font-bold text-foreground">
-                    {Number.isFinite(app.estimatedCost) ? `$${app.estimatedCost.toLocaleString()}` : '—'}
-                  </span>
-                  {app.costStatus === 'UNIT_MISMATCH' && (
-                    <span className="text-[9px] font-bold uppercase tracking-widest text-orange-400 bg-orange-400/10 px-1.5 py-0.5 rounded border border-orange-400/30">
-                      Unit Mismatch
+                  <div className="flex items-center gap-2">
+                    <span className="font-bold text-foreground">
+                      {Number.isFinite(app.estimatedCost) ? `$${app.estimatedCost.toLocaleString()}` : '—'}
                     </span>
-                  )}
+                    <Badge variant="outline" className={`text-[10px] uppercase tracking-widest ${
+                      app.costStatus === 'UNIT_MISMATCH' ? 'text-orange-400 border-orange-400/30 bg-orange-400/10' :
+                      app.costStatus === 'INVOICE' ? 'text-green-400 border-green-400/30 bg-green-400/10' :
+                      'text-blue-400 border-blue-400/30 bg-blue-400/10'
+                    }`}>
+                      {app.costStatus === 'UNIT_MISMATCH' ? 'Needs Review' :
+                       app.costStatus === 'INVOICE' ? 'Actual' : 'Est'}
+                    </Badge>
+                  </div>
                 </div>
               </div>
               <h3 className="text-lg font-black text-foreground">{app.chemicalName}</h3>
@@ -213,14 +219,19 @@ export default function Vault() {
                   </span>
                 </div>
                 <div className="flex flex-col items-end gap-1">
-                  <span className="font-bold text-foreground">
-                    {Number.isFinite(app.estimatedCost) ? `$${app.estimatedCost.toLocaleString()}` : '—'}
-                  </span>
-                  {app.costStatus === 'UNIT_MISMATCH' && (
-                    <span className="text-[9px] font-bold uppercase tracking-widest text-orange-400 bg-orange-400/10 px-1.5 py-0.5 rounded border border-orange-400/30">
-                      Unit Mismatch
+                  <div className="flex items-center gap-2">
+                    <span className="font-bold text-foreground">
+                      {Number.isFinite(app.estimatedCost) ? `$${app.estimatedCost.toLocaleString()}` : '—'}
                     </span>
-                  )}
+                    <Badge variant="outline" className={`text-[10px] uppercase tracking-widest ${
+                      app.costStatus === 'UNIT_MISMATCH' ? 'text-orange-400 border-orange-400/30 bg-orange-400/10' :
+                      app.costStatus === 'INVOICE' ? 'text-green-400 border-green-400/30 bg-green-400/10' :
+                      'text-blue-400 border-blue-400/30 bg-blue-400/10'
+                    }`}>
+                      {app.costStatus === 'UNIT_MISMATCH' ? 'Needs Review' :
+                       app.costStatus === 'INVOICE' ? 'Actual' : 'Est'}
+                    </Badge>
+                  </div>
                 </div>
               </div>
               <h3 className="text-lg font-black text-foreground">{app.chemicalName}</h3>
