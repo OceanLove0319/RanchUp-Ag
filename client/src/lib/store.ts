@@ -15,9 +15,12 @@ export type ProductLibraryItem = {
   category: ProductCategory;
   type: string;
   unitDefault?: string;
+  unit?: string;
   notes?: string;
   aliases?: string[];
   brandFamily?: "INNVICTIS" | "GENERIC";
+  pricePerUnit?: number;
+  defaultRate?: number;
 };
 
 export type Ranch = {

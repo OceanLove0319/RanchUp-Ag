@@ -1,0 +1,362 @@
+Build a new RanchUp module called “Budget Watch” for PCA mode only.
+
+OVERALL GOAL
+Create a lightweight, budget-awareness module for Pest Control Advisers (PCAs). This is NOT a full farm budgeting or accounting system. It is a decision-support and exception-management module that helps a PCA understand season cost posture before and after making recommendations.
+
+This module should feel simple, fast, readable, and useful for a PCA managing many ranches. It should be ranch-first, block-aware, and focused on minimal actions only.
+
+CORE POSITIONING
+Growers own the budget.
+PCAs need limited season-cost visibility so they can make smarter, more adoptable, and more defensible recommendations.
+
+MODULE NAME
+Use:
+- “Budget Watch” as the visible module name in PCA mode
+
+Optional subtitle:
+- “Season cost posture and recommendation impact”
+
+SCOPE
+This module is for PCA mode only.
+Do not turn this into accounting software.
+Do not create editable ledger-style budgeting.
+Do not create invoice workflows.
+Do not create profit-and-loss reporting.
+Do not create ERP complexity.
+
+PRIMARY USER
+A PCA managing multiple ranches who needs to:
+- see which ranches/blocks are financially drifting
+- understand estimated vs actual spend
+- preview recommendation cost impact
+- identify top variance drivers
+- leave short context notes for budget variance
+
+MINIMAL ACTIONS ONLY
+The PCA should be able to do only these things:
+
+1. View budget status
+- At ranch level and block level show:
+  - planned season budget
+  - actual spend to date
+  - variance dollars
+  - variance percent
+  - status badge: On Track / Watch / Over
+
+2. View spend by category
+- Show simple category rollups:
+  - Crop Protection
+  - Fertilizer
+  - Irrigation
+  - Labor
+  - Custom / Other
+
+3. Preview recommendation cost impact
+- When a PCA drafts or reviews a recommendation, show:
+  - estimated cost per acre
+  - estimated total block cost
+  - impact on season plan
+  - whether the recommendation would keep the block On Track, move it to Watch, or push it Over
+
+4. View top variance drivers
+- Show a short, simple list of likely reasons for variance, such as:
+  - extra application pass
+  - higher-than-expected rate
+  - premium product instead of lower-cost option
+  - missing actual field log
+  - unit mismatch affecting totals
+
+5. Add variance note
+- Allow PCA to add a short note explaining a budget issue or recommendation-related cost change
+- Example notes:
+  - “Second pass added due to pressure increase.”
+  - “Premium chemistry used due to resistance concern.”
+  - “Actual log appears missing; variance may not be final.”
+
+6. Filter by budget risk
+- Add simple filters:
+  - All
+  - On Track
+  - Watch
+  - Over
+  - Missing Actuals
+  - High Recommendation Impact
+
+WHAT THE PCA MUST NOT BE ABLE TO DO
+Do NOT allow the PCA to:
+- create season budgets from scratch
+- edit master budget line items
+- manage invoices
+- own accounting workflows
+- edit detailed labor costing structures
+- run margin or profitability reporting
+- become the financial administrator
+
+USER EXPERIENCE REQUIREMENTS
+This should match the existing RanchUp PCA architecture:
+- ranch-first command center feel
+- fast triage
+- exception oriented
+- clean, readable, minimal clicks
+- mobile responsive
+- no horizontal scrolling on main screens
+- large touch targets
+- simple visual hierarchy
+- good contrast for older users
+- no cluttered finance dashboard
+
+PAGE STRUCTURE
+
+1. Budget Watch Dashboard Page
+Create a main page for PCA mode at:
+- /pca/budget-watch
+
+Top summary cards:
+- Ranches On Track
+- Ranches Watch
+- Ranches Over
+- Blocks Needing Review
+
+Under summary cards, add a clean data table or stacked card list with these columns/fields:
+- Ranch Name
+- Block Name
+- Planned Budget
+- Actual Spend
+- Variance $
+- Variance %
+- Status Badge
+- Last Recommendation Impact
+- Variance Note Indicator
+
+Status badge logic:
+- On Track = within acceptable threshold
+- Watch = moderate variance
+- Over = clearly above target
+
+Use simple thresholds in mockup form:
+- On Track: within +/- 5%
+- Watch: between 5% and 15% over plan
+- Over: more than 15% over plan
+You can also flag underspend if useful, but keep visual emphasis on overages and exception review.
+
+2. Block Budget Detail Side Panel or Drill-In View
+When user clicks a ranch/block row, open a side panel or detail page showing:
+
+A. Budget Summary
+- Planned season budget
+- Actual spend to date
+- Variance $
+- Variance %
+- Status badge
+
+B. Spend by Category
+- Crop Protection
+- Fertilizer
+- Irrigation
+- Labor
+- Custom / Other
+
+Use a simple bar visualization or stacked list.
+Keep it visually clean and not overly analytical.
+
+C. Recommendation Impact Panel
+Show the latest or currently drafted recommendation:
+- product/program name
+- estimated cost per acre
+- estimated block total
+- projected status after recommendation
+- message like:
+  - “Keeps block On Track”
+  - “Moves block to Watch”
+  - “Pushes block Over Plan”
+
+D. Top Variance Drivers
+Show 3–5 concise drivers pulled from mock logic:
+- extra pass
+- rate increase
+- premium product
+- missing log
+- unit mismatch
+
+E. Variance Note
+Simple note box:
+- add/edit short note
+- save locally in mock state
+- show note author as PCA user if mock users exist
+- show timestamp if easy
+
+RECOMMENDATION INTEGRATION
+Integrate Budget Watch into the existing PCA recommendation flow.
+
+In recommendation drafting or review:
+- show a “Budget Impact” panel before final sending
+- include:
+  - cost per acre
+  - block total
+  - alternative option cost if available
+  - delta from current recommendation
+  - projected block status after applying recommendation
+
+If there is a lower-cost valid alternative, show:
+- current option
+- lower-cost option
+- savings amount
+- brief label such as:
+  - “Lower-cost alternative”
+  - “Premium efficacy option”
+
+Do not overcomplicate agronomic logic.
+Mock enough data to make this feel real.
+
+DATA MODEL / MOCK STATE
+Use frontend-only mock state consistent with the existing RanchUp architecture.
+
+Add PCA-facing budget-watch data structures such as:
+- ranchs
+- blocks
+- seasonBudget
+- actualSpendToDate
+- varianceAmount
+- variancePercent
+- status
+- categorySpend
+- recommendationImpact
+- varianceDrivers
+- varianceNotes
+
+Suggested block object shape:
+{
+  id: string,
+  ranchId: string,
+  ranchName: string,
+  blockName: string,
+  cropType: string,
+  acres: number,
+  plannedBudget: number,
+  actualSpend: number,
+  varianceAmount: number,
+  variancePercent: number,
+  status: "On Track" | "Watch" | "Over",
+  categorySpend: {
+    cropProtection: number,
+    fertilizer: number,
+    irrigation: number,
+    labor: number,
+    customOther: number
+  },
+  recommendationImpact: {
+    recommendationName: string,
+    costPerAcre: number,
+    blockTotal: number,
+    projectedStatus: "On Track" | "Watch" | "Over",
+    alternativeName?: string,
+    alternativeCostPerAcre?: number,
+    alternativeBlockTotal?: number,
+    savingsDelta?: number
+  },
+  varianceDrivers: string[],
+  varianceNote?: string,
+  updatedAt: string
+}
+
+SEED DATA
+Create realistic demo data for multiple ranches and blocks.
+Use permanent crop examples such as:
+- almonds
+- citrus
+- peaches
+- nectarines
+- walnuts
+
+Make sure the seed data includes a mix of:
+- On Track blocks
+- Watch blocks
+- Over blocks
+- blocks with missing actuals
+- blocks with premium-vs-alternative chemistry scenarios
+
+Include at least:
+- 4 ranches
+- 3–5 blocks per ranch
+
+DESIGN REQUIREMENTS
+Frontend stack should match current RanchUp style:
+- React
+- TypeScript
+- Tailwind
+- shadcn/ui if already used
+
+Design style:
+- practical
+- ag-friendly
+- simple
+- high readability
+- strong spacing
+- no tiny controls
+- no dense finance jargon
+- mobile responsive
+- desktop friendly
+- no horizontal scroll on key workflows
+
+Suggested components:
+- summary cards
+- filter chips
+- searchable/sortable table or stacked cards
+- slide-over detail panel
+- note field
+- status badges
+- compact spend bars
+
+FILTERS AND INTERACTION
+At the top of Budget Watch add:
+- search by ranch or block
+- filter chips:
+  - All
+  - On Track
+  - Watch
+  - Over
+  - Missing Actuals
+  - High Recommendation Impact
+
+Optional sort options:
+- highest variance %
+- highest variance $
+- most recent recommendation
+- ranch name
+
+Keep interaction simple and fast.
+
+MOCK LOGIC
+Implement mock logic for:
+- status badge generation from variance %
+- projected status after recommendation impact
+- flagging missing actuals
+- showing alternative savings delta
+- saving variance notes in local mock state
+- filtering table/card list by status and risk
+
+EMPTY / EDGE STATES
+Handle these cleanly:
+- no blocks in selected filter
+- no variance drivers
+- no recommendation impact yet
+- missing actual spend data
+- zero planned budget
+- null values without crashing UI
+
+TESTING EXPECTATIONS
+Since this is frontend-only mockup work, ensure:
+- no crashes with missing/null data
+- stable rendering between PCA pages
+- proper local state updates for notes and filters
+- responsive behavior on mobile/tablet/desktop
+- recommendation impact panel updates correctly from seed/mock data
+- status calculations remain deterministic
+
+NAVIGATION
+Add Budget Watch to PCA mode navigation only.
+Do not show it in Grower mode.
+Do not leak PCA budget-watch components into grower rendering paths.
+
+DELIVERABLE
+Build the complete PCA “Budget Watch” module UI and mock behavior with seeded data and integrated recommendation cost impact, using minimal actions only and keeping the experience lightweight, readable, and useful.

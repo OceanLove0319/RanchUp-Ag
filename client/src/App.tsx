@@ -43,6 +43,10 @@ import InputsLibrary from "@/pages/operations/InputsLibrary";
 import ProductLoggingGuide from "@/pages/help/ProductLoggingGuide";
 import GrowerMaterialsGuide from "@/pages/help/GrowerMaterialsGuide";
 
+import BudgetWatch from "@/pages/pca/BudgetWatch";
+import BudgetWatchDetail from "@/pages/pca/BudgetWatchDetail";
+import RecommendationNew from "@/pages/RecommendationNew";
+
 function ScrollToTop() {
   const [pathname] = useLocation();
 
@@ -84,6 +88,9 @@ function Router() {
       </Route>
       <Route path="/app/log">
         <Shell><Log /></Shell>
+      </Route>
+      <Route path="/app/recommendations/new">
+        <Shell><RecommendationNew /></Shell>
       </Route>
       <Route path="/app/recommendations">
         <Shell><Recommendations /></Shell>
@@ -137,6 +144,14 @@ function Router() {
       </Route>
       <Route path="/app/reports/variance">
         <Shell><VarianceFlags /></Shell>
+      </Route>
+
+      {/* PCA Routes */}
+      <Route path="/pca/budget-watch">
+        <Shell><BudgetWatch /></Shell>
+      </Route>
+      <Route path="/pca/budget-watch/:id">
+        <Shell><BudgetWatchDetail /></Shell>
       </Route>
       
       {/* Legacy today packet, redirecting or keeping for backwards compat for now */}

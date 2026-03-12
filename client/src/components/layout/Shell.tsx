@@ -1,5 +1,5 @@
 import { Link, useLocation } from "wouter";
-import { Home, Map as MapIcon, ClipboardEdit, Archive, Settings, LogOut, FlaskConical, LineChart, Plus, Menu, X, BookOpen, Package, FileText, ClipboardList, AlertTriangle } from "lucide-react";
+import { Home, Map as MapIcon, ClipboardEdit, Archive, Settings, LogOut, FlaskConical, LineChart, Plus, Menu, X, BookOpen, Package, FileText, ClipboardList, AlertTriangle, DollarSign } from "lucide-react";
 import { useStore } from "@/lib/store";
 import { useState } from "react";
 import { useIsMobile } from "@/hooks/useIsMobile";
@@ -21,6 +21,7 @@ export default function Shell({ children }: { children: React.ReactNode }) {
     ...(!isPCA ? [{ href: "/app/blocks", icon: MapIcon, label: "Blocks" }] : []),
     ...(isMobile || isPCA ? [] : [{ href: "/app/log", icon: ClipboardEdit, label: "Log" }]),
     ...(isPCA ? [
+      { href: "/pca/budget-watch", icon: DollarSign, label: "Budget" },
       { href: "/app/recommendations", icon: ClipboardList, label: "Recs" },
       { href: "/app/reports/variance", icon: AlertTriangle, label: "Review" },
       { href: "/app/packets/season", icon: FileText, label: "Export" }
