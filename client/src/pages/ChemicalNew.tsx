@@ -1,15 +1,17 @@
 import { useState } from "react";
 import { useLocation, Link } from "wouter";
 import { useStore } from "@/lib/store";
+import { useBlocks, useChemicals, useCreateChemicalApp } from "@/hooks/useData";
 import { ArrowLeft, Check } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { todayPacificISO } from "@/utils/dates";
 
 export default function ChemicalNew() {
   const [, setLocation] = useLocation();
-  const blocks = useStore(s => s.blocks);
-  const chemicals = useStore(s => s.chemicals);
-  const addChemicalApp = useStore(s => s.addChemicalApp);
+  const activeRanchId = useStore(s => s.activeRanchId);
+  const { data: blocks = [] } = useBlocks(activeRanchId);
+  const { data: chemicals = [] } = useChemicals();
+  const createChemicalApp = useCreateChemicalApp();
   const { toast } = useToast();
 
   const [formData, setFormData] = useState({
@@ -27,9 +29,8 @@ export default function ChemicalNew() {
 
     const chemical = chemicals.find(c => c.id === formData.chemicalId);
     
-    addChemicalApp({
-      id: Date.now().toString(),
-      ranchId: "ranch-1",
+    createChemicalApp.mutate({
+      ranchId: activeRanchId!,
       blockId: formData.blockId,
       chemicalId: formData.chemicalId,
       chemicalName: chemical?.name || "Unknown",

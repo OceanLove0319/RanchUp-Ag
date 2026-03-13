@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { useStore, ProductLibraryItem } from "@/lib/store";
+import { useProductLibrary, ProductLibraryItem } from "@/hooks/useData";
 import { Search, X, Check, Package, Zap, Clock } from "lucide-react";
 
 interface UnifiedInputPickerProps {
@@ -14,7 +14,7 @@ export default function UnifiedInputPicker({
   maxSelection = 5
 }: UnifiedInputPickerProps) {
   const [searchTerm, setSearchTerm] = useState("");
-  const productLibrary = useStore(s => s.productLibrary);
+  const { data: productLibrary = [] } = useProductLibrary();
   
   // Basic search
   const filteredProducts = useMemo(() => {

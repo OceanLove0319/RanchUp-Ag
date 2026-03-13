@@ -1,5 +1,5 @@
 import { isWithin } from "./dates";
-import { ChemicalApp } from "@/lib/store";
+import { ChemicalApp } from "@/hooks/useData";
 
 export function getSeasonSpendForBlock(
   blockId: string, 

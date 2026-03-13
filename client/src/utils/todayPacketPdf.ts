@@ -1,5 +1,5 @@
 import { jsPDF } from "jspdf";
-import { Block, FieldLog, ChemicalApp } from "@/lib/store";
+import { Block, FieldLog, ChemicalApp } from "@/hooks/useData";
 import { format } from "date-fns";
 
 interface PdfData {

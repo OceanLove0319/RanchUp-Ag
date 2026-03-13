@@ -1,5 +1,6 @@
 import { useState, useMemo } from "react";
 import { useStore } from "@/lib/store";
+import { useRanches, useBlocks, useChemicalApps } from "@/hooks/useData";
 import { Link } from "wouter";
 import { ArrowLeft, Printer, FileText, AlertTriangle } from "lucide-react";
 import { format, subDays } from "date-fns";
@@ -9,10 +10,11 @@ export default function WeeklyPacket() {
   const [endDate, setEndDate] = useState(format(new Date(), 'yyyy-MM-dd'));
   
   const activeRanchId = useStore(s => s.activeRanchId);
-  const activeRanch = useStore(s => s.ranches.find(r => r.id === activeRanchId));
-  const allBlocks = useStore(s => s.blocks);
-  const allApps = useStore(s => s.chemicalApps);
-  
+  const { data: allRanches = [] } = useRanches();
+  const activeRanch = allRanches.find(r => r.id === activeRanchId);
+  const { data: allBlocks = [] } = useBlocks(activeRanchId);
+  const { data: allApps = [] } = useChemicalApps(activeRanchId);
+
   const blocks = useMemo(() => allBlocks.filter(b => b.ranchId === activeRanchId), [allBlocks, activeRanchId]);
   
   // Combine logs and chem apps for a full picture (or just use chem apps for cost, logs for generic)

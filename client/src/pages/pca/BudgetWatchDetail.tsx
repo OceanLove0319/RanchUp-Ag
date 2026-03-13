@@ -1,3 +1,5 @@
+import { useAuth } from "@/hooks/useAuth";
+import { useRanches, useBlocks, useChemicalApps, useFieldLogs, useRecommendations } from "@/hooks/useData";
 import { useStore } from "@/lib/store";
 import { Link, useRoute } from "wouter";
 import { ArrowLeft, AlertTriangle, TrendingUp, CheckCircle2, Save, FileText, ChevronRight, MessageSquareText, Search } from "lucide-react";
@@ -9,15 +11,16 @@ import { useToast } from "@/hooks/use-toast";
 export default function BudgetWatchDetail() {
   const [, params] = useRoute("/pca/budget-watch/:id");
   const blockId = params?.id;
-  
-  const user = useStore(s => s.user);
+
+  const { user } = useAuth();
   const isPCA = user?.role === 'PCA';
-  
-  const blocks = useStore(s => s.blocks);
-  const ranches = useStore(s => s.ranches);
-  const allApps = useStore(s => s.chemicalApps);
-  const allLogs = useStore(s => s.logs);
-  const recommendations = useStore(s => s.recommendations);
+
+  const activeRanchId = useStore(s => s.activeRanchId);
+  const { data: blocks = [] } = useBlocks(activeRanchId);
+  const { data: ranches = [] } = useRanches();
+  const { data: allApps = [] } = useChemicalApps(activeRanchId);
+  const { data: allLogs = [] } = useFieldLogs(activeRanchId);
+  const { data: recommendations = [] } = useRecommendations(activeRanchId);
   
   const { toast } = useToast();
   

@@ -1,5 +1,4 @@
 import { useLocation } from "wouter";
-import { useStore } from "@/lib/store";
 import { ChevronRight, LayoutList, CheckCircle2, AlertCircle, FileText, SprayCan, Sprout, Map } from "lucide-react";
 import { useIsMobile } from "@/hooks/useIsMobile";
 import { GuideMeRail } from "./GuideMeRail";

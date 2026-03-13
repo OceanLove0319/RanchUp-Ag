@@ -1,6 +1,8 @@
 import { Link } from "wouter";
 import { CheckCircle2, AlertCircle, FileText, SprayCan, Sprout, Map, ClipboardList, ChevronDown, ChevronUp } from "lucide-react";
 import { useStore } from "@/lib/store";
+import { useAuth } from "@/hooks/useAuth";
+import { useBlocks, useFieldLogs, useChemicalApps, useRecommendations } from "@/hooks/useData";
 import { isWithin } from "@/utils/dates";
 import { getActiveSeasonWindow } from "@/utils/season";
 import { useMemo, useState } from "react";
@@ -11,11 +13,11 @@ interface GuideMeRailProps {
 
 export function GuideMeRail({ compact = false }: GuideMeRailProps) {
   const activeRanchId = useStore(s => s.activeRanchId);
-  const user = useStore(s => s.user);
-  const allBlocks = useStore(s => s.blocks);
-  const allLogs = useStore(s => s.logs);
-  const allChemicalApps = useStore(s => s.chemicalApps);
-  const allRecommendations = useStore(s => s.recommendations) || [];
+  const { user } = useAuth();
+  const { data: allBlocks = [] } = useBlocks(activeRanchId);
+  const { data: allLogs = [] } = useFieldLogs(activeRanchId);
+  const { data: allChemicalApps = [] } = useChemicalApps(activeRanchId);
+  const { data: allRecommendations = [] } = useRecommendations(activeRanchId);
   
   const [isExpanded, setIsExpanded] = useState(true);
 

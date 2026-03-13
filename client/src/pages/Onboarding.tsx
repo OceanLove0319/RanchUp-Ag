@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { useLocation } from "wouter";
-import { useStore } from "@/lib/store";
+import { useAuth } from "@/hooks/useAuth";
+import { useCreateBlock } from "@/hooks/useData";
 
 export default function Onboarding() {
   const [step, setStep] = useState(1);
   const [, setLocation] = useLocation();
-  const setOnboarded = useStore(s => s.setOnboarded);
-  const addBlock = useStore(s => s.addBlock);
+  const { updateProfile } = useAuth();
+  const createBlock = useCreateBlock();
 
   const [formData, setFormData] = useState({
     operationName: "",
@@ -24,10 +25,9 @@ export default function Onboarding() {
   const irrigation = ["Flood", "Drip", "Fanjet", "Sprinkler"];
   const yields = ["20", "30", "40"];
 
-  const handleComplete = () => {
-    setOnboarded(formData);
-    addBlock({
-      id: Date.now().toString(),
+  const handleComplete = async () => {
+    await updateProfile({ onboarded: true, name: formData.operationName || undefined, org: formData.operationName || undefined });
+    createBlock.mutate({
       ranchId: "ranch-1",
       name: formData.blockName || "First Block",
       acreage: Number(formData.acreage) || 10,

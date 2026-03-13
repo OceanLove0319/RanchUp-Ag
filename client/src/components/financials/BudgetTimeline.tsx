@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine } from "recharts";
-import { Block, ChemicalApp, Recommendation } from "@/lib/store";
+import { Block, ChemicalApp, Recommendation } from "@/hooks/useData";
 import { format, parseISO, startOfMonth, addMonths, endOfMonth, isWithinInterval, subMonths } from "date-fns";
 
 interface BudgetTimelineProps {

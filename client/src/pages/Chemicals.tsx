@@ -1,5 +1,6 @@
 import { Link } from "wouter";
 import { useStore } from "@/lib/store";
+import { useBlocks, useChemicalApps } from "@/hooks/useData";
 import { FlaskConical, Plus, TrendingUp, AlertTriangle, Info } from "lucide-react";
 import { getActiveSeasonWindow } from "@/utils/season";
 import { getSeasonSpendForBlock } from "@/utils/rollups";
@@ -7,8 +8,9 @@ import { isWithin } from "@/utils/dates";
 import { Badge } from "@/components/ui/badge";
 
 export default function Chemicals() {
-  const blocks = useStore(s => s.blocks);
-  const chemicalApps = useStore(s => s.chemicalApps);
+  const activeRanchId = useStore(s => s.activeRanchId);
+  const { data: blocks = [] } = useBlocks(activeRanchId);
+  const { data: chemicalApps = [] } = useChemicalApps(activeRanchId);
 
   // Calculate active spend across all blocks
   const totalSpend = blocks.reduce((sum, block) => {

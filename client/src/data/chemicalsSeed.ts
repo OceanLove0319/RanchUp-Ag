@@ -1,4 +1,4 @@
-import { Chemical } from "@/lib/store";
+import { Chemical } from "@/hooks/useData";
 
 export const CHEMICALS_SEED: Chemical[] = [
   // -------------------------

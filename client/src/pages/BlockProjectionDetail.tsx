@@ -1,22 +1,28 @@
 import { useState, useMemo } from "react";
 import { useRoute, useLocation, Link } from "wouter";
-import { useStore, ProgramLine } from "@/lib/store";
+import { useStore } from "@/lib/store";
+import { useBlocks, useTemplates, useProjections, useChemicals, useChemicalApps, useCreateProjection, ProgramTemplateLine } from "@/hooks/useData";
 import { ArrowLeft, Copy, RotateCcw, AlertTriangle, ShieldAlert, Sprout, Droplets } from "lucide-react";
 import { summarizeBlockProjection } from "@/utils/projections";
+
+type ProgramLine = ProgramTemplateLine;
 
 export default function BlockProjectionDetail() {
   const [, params] = useRoute("/app/projections/block/:id");
   const blockId = params?.id || "";
-  
-  const block = useStore(s => s.blocks.find(b => b.id === blockId));
-  const templates = useStore(s => s.templates);
-  const projections = useStore(s => s.projections);
-  const chemicals = useStore(s => s.chemicals);
-  const chemicalApps = useStore(s => s.chemicalApps);
-  
-  const setProjection = useStore(s => s.setProjection);
-  const updateProjectionLineOverride = useStore(s => s.updateProjectionLineOverride);
-  const resetProjectionOverrides = useStore(s => s.resetProjectionOverrides);
+  const activeRanchId = useStore(s => s.activeRanchId);
+
+  const { data: allBlocks = [] } = useBlocks(activeRanchId);
+  const block = allBlocks.find(b => b.id === blockId);
+  const { data: templates = [] } = useTemplates();
+  const { data: projections = [] } = useProjections(blockId);
+  const { data: chemicals = [] } = useChemicals();
+  const { data: chemicalApps = [] } = useChemicalApps(activeRanchId);
+
+  const createProjection = useCreateProjection();
+  // TODO: updateProjectionLineOverride and resetProjectionOverrides need corresponding hooks in useData.ts
+  const updateProjectionLineOverride = (_blockId: string, _lineId: string, _override: Record<string, any>) => { console.warn("updateProjectionLineOverride not yet migrated to API hook"); };
+  const resetProjectionOverrides = (_blockId: string) => { console.warn("resetProjectionOverrides not yet migrated to API hook"); };
 
   const projection = projections.find(p => p.blockId === blockId);
   const activeTemplate = templates.find(t => t.id === projection?.templateId);
@@ -29,7 +35,7 @@ export default function BlockProjectionDetail() {
   if (!block || !summary) return <div>Block not found</div>;
 
   const handleTemplateSelect = (templateId: string) => {
-    setProjection(blockId, templateId);
+    createProjection.mutate({ blockId, templateId });
   };
 
   const handleOverride = (lineId: string, field: keyof ProgramLine, value: string | number) => {

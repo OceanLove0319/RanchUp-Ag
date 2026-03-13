@@ -1,19 +1,21 @@
 import { useStore } from "@/lib/store";
+import { useBlocks, useFieldLogs, useTemplates, useProductLibrary } from "@/hooks/useData";
 import { getSuggestionsForBlock } from "@/lib/suggestions/getSuggestionsForBlock";
 import { SuggestionCard } from "./SuggestionCard";
 import { Lightbulb, Info } from "lucide-react";
 import { useMemo } from "react";
 
 export function BlockSuggestionsCard({ blockId }: { blockId: string }) {
-  const allBlocks = useStore(s => s.blocks);
+  const activeRanchId = useStore(s => s.activeRanchId);
+  const { data: allBlocks = [] } = useBlocks(activeRanchId);
   const block = allBlocks.find(b => b.id === blockId);
-  const logs = useStore(s => s.logs);
-  const templates = useStore(s => s.templates);
-  const library = useStore(s => s.productLibrary);
-  
-  // Suggestion state management (simulated persistence)
-  const dismissedSuggestions = useStore(s => (s as any).dismissedSuggestions) || [];
-  const dismissSuggestion = useStore(s => (s as any).dismissSuggestion || (() => {}));
+  const { data: logs = [] } = useFieldLogs(activeRanchId);
+  const { data: templates = [] } = useTemplates();
+  const { data: library = [] } = useProductLibrary();
+
+  // Suggestion state management (local UI state in Zustand)
+  const dismissedSuggestions = useStore(s => s.dismissedSuggestions) || [];
+  const dismissSuggestion = useStore(s => s.dismissSuggestion);
   
   const suggestions = useMemo(() => {
     if (!block) return [];

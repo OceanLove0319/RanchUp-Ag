@@ -1,5 +1,6 @@
 import { todayPacificISO } from '@/utils/dates';
-import { Ranch, Block, FieldLog, ChemicalApp } from '@/lib/store';
+// Types are now strict (from API). Seed data is legacy demo-only, use loose typing.
+type Ranch = any; type Block = any; type FieldLog = any; type ChemicalApp = any;
 import { format, subDays, subMonths } from 'date-fns';
 
 const today = new Date();

@@ -1,4 +1,5 @@
 import { useStore } from "@/lib/store";
+import { useRanches, useBlocks, useFieldLogs, useChemicalApps } from "@/hooks/useData";
 import { Link } from "wouter";
 import { ArrowLeft, Send, Download, MessageSquare, Mail, Copy, CheckCircle2 } from "lucide-react";
 import { format, isToday, parseISO } from "date-fns";
@@ -9,10 +10,11 @@ import { useToast } from "@/hooks/use-toast";
 
 export default function TodayPacket() {
   const activeRanchId = useStore(s => s.activeRanchId);
-  const activeRanch = useStore(s => s.ranches.find(r => r.id === activeRanchId));
-  const allBlocks = useStore(s => s.blocks);
-  const allLogs = useStore(s => s.logs);
-  const allApps = useStore(s => s.chemicalApps);
+  const { data: allRanches = [] } = useRanches();
+  const activeRanch = allRanches.find(r => r.id === activeRanchId);
+  const { data: allBlocks = [] } = useBlocks(activeRanchId);
+  const { data: allLogs = [] } = useFieldLogs(activeRanchId);
+  const { data: allApps = [] } = useChemicalApps(activeRanchId);
   const { toast } = useToast();
   
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);

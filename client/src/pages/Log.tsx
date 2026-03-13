@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { useStore } from "@/lib/store";
+import { useBlocks, useChemicals, useProductLibrary, useCreateFieldLog, useCreateChemicalApp } from "@/hooks/useData";
 import { Droplets, Sprout, ShieldAlert, Check, Zap, Star, Package, Users } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { todayPacificISO } from "@/utils/dates";
@@ -77,11 +78,12 @@ export default function Log() {
   const initialInputType = queryParams.get("type"); // "CHEMICAL" or "MATERIAL"
   
   const activeRanchId = useStore(s => s.activeRanchId);
-  const allBlocks = useStore(s => s.blocks);
+  const { data: allBlocks = [] } = useBlocks(activeRanchId);
   const blocks = allBlocks.filter(b => b.ranchId === activeRanchId);
-  const addLog = useStore(s => s.addLog);
-  const productLibrary = useStore(s => s.productLibrary);
-  const chemicals = useStore(s => s.chemicals);
+  const createLog = useCreateFieldLog();
+  const createChemApp = useCreateChemicalApp();
+  const { data: productLibrary = [] } = useProductLibrary();
+  const { data: chemicals = [] } = useChemicals();
   const { toast } = useToast();
 
   const [selectedBlock, setSelectedBlock] = useState(blocks[0]?.id || "");
@@ -108,10 +110,9 @@ export default function Log() {
   // If a specific chemical was passed instead of a material, pre-fill the string name since quick log natively handles chemical names there
   useEffect(() => {
     if (initialInputId && initialInputType === "CHEMICAL") {
-      const chem = useStore.getState().chemicals.find(c => c.id === initialInputId);
+      const chem = chemicals.find(c => c.id === initialInputId);
       if (chem) {
         setFormData(prev => ({ ...prev, material: chem.name, unit: chem.unit }));
-        // Ensure action matches chemical category
         if (chem.category === "FERTILIZER" || chem.category === "NUTRITION") {
           setAction("FERT");
         } else {
@@ -119,15 +120,15 @@ export default function Log() {
         }
       }
     } else if (initialInputId && initialInputType === "MATERIAL") {
-       const mat = useStore.getState().productLibrary.find(m => m.id === initialInputId);
+       const mat = productLibrary.find(m => m.id === initialInputId);
        if (mat) {
          setFormData(prev => ({ ...prev, material: mat.name, unit: mat.unitDefault || "" }));
-         
+
          const isFert = ["NUTRITION", "AMENDMENT", "BIOLOGICAL"].includes(mat.category);
          setAction(isFert ? "FERT" : "SPRAY");
        }
     }
-  }, [initialInputId, initialInputType]);
+  }, [initialInputId, initialInputType, chemicals, productLibrary]);
 
   const block = blocks.find(b => b.id === selectedBlock);
   const blockContext = block ? {
@@ -275,8 +276,7 @@ export default function Log() {
 
     // Try to match material to the new Chemical Library seed
     if (action === 'SPRAY' || action === 'FERT') {
-      const allChemicals = useStore.getState().chemicals;
-      const matchedChem = allChemicals.find(c => 
+      const matchedChem = chemicals.find(c =>
         c.name.toLowerCase() === activeChemicalName.toLowerCase() || 
         c.aliases?.some(alias => activeChemicalName.toLowerCase().includes(alias.toLowerCase()))
       );
@@ -315,7 +315,6 @@ export default function Log() {
     }
 
     const newLogId = Date.now().toString();
-    const productLibrary = useStore.getState().productLibrary;
     
     // Create product snapshots if any were selected
     const productEntries = selectedIds.map(id => {
@@ -338,7 +337,7 @@ export default function Log() {
     }).filter(Boolean) as any[];
 
     // 1. Save standard Field Log
-    addLog({
+    createLog.mutate({
       id: newLogId,
       ranchId: activeRanchId || "", // Add this
       blockId: selectedBlock,
@@ -348,33 +347,32 @@ export default function Log() {
       amount: Number(formData.amount),
       unit: formData.unit || (action === 'IRRIGATE' ? 'hrs' : 'lbs'),
       cost: estimatedCost,
-      productIds: selectedIds,
       productEntries: productEntries.length > 0 ? productEntries : undefined
     });
 
     // 2. If it's a Spray or Fert, auto-generate a ChemicalApp for the Vault
     if (action === 'SPRAY' || action === 'FERT') {
-      useStore.getState().addChemicalApp({
+      createChemApp.mutate({
         id: `app-${newLogId}`,
-        ranchId: activeRanchId || "", // Add this
+        ranchId: activeRanchId || "",
         blockId: selectedBlock,
         chemicalId: activeChemicalId || `custom-${Date.now()}`,
         chemicalName: activeChemicalName,
-        category: action === 'FERT' ? 'FERTILIZER' : 'OTHER', // Default fallback category
+        category: action === 'FERT' ? 'FERTILIZER' : 'OTHER',
         dateApplied: formData.date,
         method: action,
         estimatedCost: estimatedCost,
         costStatus: costStatus,
-        notes: isPerAcreUnit(formData.unit) 
-          ? `Logged via Quick Log: ${formData.amount} ${formData.unit}` 
+        notes: isPerAcreUnit(formData.unit)
+          ? `Logged via Quick Log: ${formData.amount} ${formData.unit}`
           : `Logged via Quick Log`
       });
     }
 
     // 3. Update guided flow state
-    const deriveNextStepFromAction = useStore.getState().deriveNextStepFromAction;
-    if (deriveNextStepFromAction) {
-      deriveNextStepFromAction("SAVE_LOG");
+    const deriveNext = useStore.getState().deriveNextStepFromAction;
+    if (deriveNext) {
+      deriveNext("SAVE_LOG");
     }
 
     toast({
@@ -435,8 +433,7 @@ export default function Log() {
               setSelectedProductIds([suggestion.productId]);
             } else if (suggestion.productName) {
               // Try to find the product ID from the library
-              const allProducts = useStore.getState().productLibrary;
-              const matchedProd = allProducts.find(p => p.name.toLowerCase() === suggestion.productName?.toLowerCase());
+              const matchedProd = productLibrary.find(p => p.name.toLowerCase() === suggestion.productName?.toLowerCase());
               if (matchedProd) {
                 setSelectedProductIds([matchedProd.id]);
               }

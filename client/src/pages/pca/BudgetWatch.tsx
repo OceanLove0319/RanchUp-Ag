@@ -1,4 +1,6 @@
-import { useStore, Block } from "@/lib/store";
+import { useAuth } from "@/hooks/useAuth";
+import { useRanches, useBlocks, useChemicalApps, useFieldLogs, Block } from "@/hooks/useData";
+import { useStore } from "@/lib/store";
 import { Link } from "wouter";
 import { ArrowLeft, Search, Filter, AlertTriangle, TrendingUp, CheckCircle2, ChevronRight, MessageSquareText, DollarSign, ExternalLink, Lock } from "lucide-react";
 import { useState, useMemo } from "react";
@@ -6,13 +8,14 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
 export default function BudgetWatch() {
-  const user = useStore(s => s.user);
+  const { user } = useAuth();
   const isPCA = user?.role === 'PCA';
-  
-  const blocks = useStore(s => s.blocks);
-  const allApps = useStore(s => s.chemicalApps);
-  const allLogs = useStore(s => s.logs);
-  const ranches = useStore(s => s.ranches);
+
+  const activeRanchId = useStore(s => s.activeRanchId);
+  const { data: blocks = [] } = useBlocks(activeRanchId);
+  const { data: allApps = [] } = useChemicalApps(activeRanchId);
+  const { data: allLogs = [] } = useFieldLogs(activeRanchId);
+  const { data: ranches = [] } = useRanches();
   
   const [searchQuery, setSearchQuery] = useState("");
   const [activeFilter, setActiveFilter] = useState<"All" | "On Track" | "Watch" | "Over" | "Missing Actuals" | "High Impact">("All");

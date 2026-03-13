@@ -1,4 +1,6 @@
 import { useStore } from "@/lib/store";
+import { useAuth } from "@/hooks/useAuth";
+import { useRanches, useBlocks, useFieldLogs, useChemicalApps } from "@/hooks/useData";
 import { Link } from "wouter";
 import { ArrowLeft, Download, CheckCircle2, FileText, AlertCircle, BookOpen, ChevronRight } from "lucide-react";
 import { format } from "date-fns";
@@ -11,15 +13,15 @@ import { generatePdfFromBlocks, triggerPdfDownload } from "@/utils/pdf/generateP
 import { Badge } from "@/components/ui/badge";
 
 export default function PacketSeason() {
-  const user = useStore(s => s.user);
+  const { user } = useAuth();
   const isPCA = user?.role === 'PCA';
-  const allRanches = useStore(s => s.ranches);
   const activeRanchId = useStore(s => s.activeRanchId);
-  const activeRanch = useStore(s => s.ranches.find(r => r.id === activeRanchId));
-  
-  const allBlocks = useStore(s => s.blocks);
-  const allLogs = useStore(s => s.logs);
-  const allApps = useStore(s => s.chemicalApps);
+  const { data: allRanches = [] } = useRanches();
+  const activeRanch = allRanches.find(r => r.id === activeRanchId);
+
+  const { data: allBlocks = [] } = useBlocks(activeRanchId);
+  const { data: allLogs = [] } = useFieldLogs(activeRanchId);
+  const { data: allApps = [] } = useChemicalApps(activeRanchId);
 
   const { toast } = useToast();
   

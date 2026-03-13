@@ -1,9 +1,9 @@
-import { Recommendation } from "@/lib/store";
+import { Recommendation } from "@/hooks/useData";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { CheckCircle2, DollarSign, ArrowRight } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { useStore } from "@/lib/store";
+import { useRecommendations, useBlocks, useUpdateRecommendation } from "@/hooks/useData";
 
 interface SavingsCenterProps {
   ranchId: string;
@@ -11,9 +11,9 @@ interface SavingsCenterProps {
 
 export function SavingsCenter({ ranchId }: SavingsCenterProps) {
   const { toast } = useToast();
-  const allRecs = useStore(s => s.recommendations);
-  const allBlocks = useStore(s => s.blocks);
-  const updateRec = useStore(s => s.updateRecommendation);
+  const { data: allRecs = [] } = useRecommendations(ranchId);
+  const { data: allBlocks = [] } = useBlocks(ranchId);
+  const updateRecMutation = useUpdateRecommendation();
 
   // Find recommendations with cheaper alternatives
   const opportunities = allRecs.filter(rec => {
@@ -22,16 +22,17 @@ export function SavingsCenter({ ranchId }: SavingsCenterProps) {
     
     // Check if any alternative is cheaper
     const currentCost = rec.estimatedCostPerAcre || 0;
-    return rec.alternatives.some(alt => alt.estimatedCostPerAcre < currentCost);
+    return rec.alternatives.some((alt: any) => alt.estimatedCostPerAcre < currentCost);
   });
 
   const handleSwitchToAlternative = (recId: string, alt: any) => {
-    updateRec(recId, {
+    updateRecMutation.mutate({
+      id: recId,
       product: alt.productName,
       estimatedPricePerUnit: alt.estimatedPricePerUnit,
       estimatedCostPerAcre: alt.estimatedCostPerAcre,
       // Clear out alternatives since we've picked one
-      alternatives: [] 
+      alternatives: []
     });
     
     toast({

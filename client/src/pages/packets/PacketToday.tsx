@@ -1,4 +1,5 @@
 import { useStore } from "@/lib/store";
+import { useRanches, useBlocks, useFieldLogs, useChemicalApps } from "@/hooks/useData";
 import { Link } from "wouter";
 import { ArrowLeft, Download, MessageSquare, Mail, Copy, CheckCircle2, FileText, AlertCircle } from "lucide-react";
 import { format, startOfDay, endOfDay } from "date-fns";
@@ -11,12 +12,12 @@ import { generatePdfFromBlocks, triggerPdfDownload } from "@/utils/pdf/generateP
 
 export default function PacketToday() {
   const activeRanchId = useStore(s => s.activeRanchId);
-  const activeRanch = useStore(s => s.ranches.find(r => r.id === activeRanchId));
-  
-  // Extract full arrays first to prevent infinite loop on update
-  const allBlocks = useStore(s => s.blocks);
-  const allLogs = useStore(s => s.logs);
-  const allApps = useStore(s => s.chemicalApps);
+  const { data: allRanches = [] } = useRanches();
+  const activeRanch = allRanches.find(r => r.id === activeRanchId);
+
+  const { data: allBlocks = [] } = useBlocks(activeRanchId);
+  const { data: allLogs = [] } = useFieldLogs(activeRanchId);
+  const { data: allApps = [] } = useChemicalApps(activeRanchId);
   
   const { toast } = useToast();
   

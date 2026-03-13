@@ -1,5 +1,6 @@
 import { todayPacificISO } from '@/utils/dates';
-import { Block, FieldLog, ChemicalApp, ProgramTemplate, BillingState, Ranch } from '@/lib/store';
+// Legacy demo seed — loose typing since this data is no longer used in production
+type Ranch = any; type Block = any; type FieldLog = any; type ChemicalApp = any; type ProgramTemplate = any; type BillingState = any;
 
 export const DEMO_RANCHES: Ranch[] = [
   { id: "ranch-traver", name: "Traver Ranch", region: "Central Valley" },

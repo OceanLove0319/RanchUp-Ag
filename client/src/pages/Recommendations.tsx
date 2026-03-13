@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { Link } from "wouter";
 import { useStore } from "@/lib/store";
+import { useRanches, useBlocks, useRecommendations, useUpdateRecommendation, useCreateRecommendation } from "@/hooks/useData";
 import { format } from "date-fns";
 import { ClipboardList, ArrowLeft, CheckCircle2, AlertCircle, Clock, Map as MapIcon, Filter, Plus, ChevronRight } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -9,11 +10,12 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 
 export default function Recommendations() {
-  const allRecommendations = useStore(s => s.recommendations) || [];
-  const allRanches = useStore(s => s.ranches);
-  const allBlocks = useStore(s => s.blocks);
-  const updateRecommendation = useStore(s => s.updateRecommendation);
-  const addRecommendation = useStore(s => s.addRecommendation);
+  const activeRanchId = useStore(s => s.activeRanchId);
+  const { data: allRanches = [] } = useRanches();
+  const { data: allBlocks = [] } = useBlocks(activeRanchId);
+  const { data: allRecommendations = [] } = useRecommendations(activeRanchId);
+  const updateRecommendationMutation = useUpdateRecommendation();
+  const createRecommendationMutation = useCreateRecommendation();
   const { toast } = useToast();
   
   const [statusFilter, setStatusFilter] = useState<string>("ALL");
@@ -48,7 +50,7 @@ export default function Recommendations() {
       targetPest: newRecPest
     };
 
-    addRecommendation(newRec);
+    createRecommendationMutation.mutate(newRec);
     setIsNewRecOpen(false);
     toast({ title: "Draft Recommendation Created", description: "You can now send it to the grower." });
     
@@ -84,7 +86,7 @@ export default function Recommendations() {
   };
 
   const handleUpdateStatus = (id: string, newStatus: any) => {
-    updateRecommendation(id, { status: newStatus });
+    updateRecommendationMutation.mutate({ id, status: newStatus });
   };
 
   // Group recommendations by ranch first

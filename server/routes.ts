@@ -14,6 +14,9 @@ import {
   hashPassword, verifyPassword, generateToken, authMiddleware, requireRole,
 } from "./auth";
 
+/** Extract a single route param as string (Express types it as string | string[]). */
+const p = (v: string | string[] | undefined): string => Array.isArray(v) ? v[0] : v ?? "";
+
 export async function registerRoutes(
   httpServer: Server,
   app: Express,
@@ -110,25 +113,27 @@ export async function registerRoutes(
   });
 
   app.put("/api/ranches/:id", authMiddleware, async (req, res) => {
+    const ranchId = p(req.params.id);
     const [ranch] = await db.select().from(ranches)
-      .where(and(eq(ranches.id, req.params.id), eq(ranches.userId, req.userId!)))
+      .where(and(eq(ranches.id, ranchId), eq(ranches.userId, req.userId!)))
       .limit(1);
     if (!ranch) return res.status(404).json({ error: "Ranch not found" });
 
     const [updated] = await db.update(ranches)
       .set({ name: req.body.name, region: req.body.region })
-      .where(eq(ranches.id, req.params.id))
+      .where(eq(ranches.id, ranchId))
       .returning();
     return res.json(updated);
   });
 
   app.delete("/api/ranches/:id", authMiddleware, async (req, res) => {
+    const ranchId = p(req.params.id);
     const [ranch] = await db.select().from(ranches)
-      .where(and(eq(ranches.id, req.params.id), eq(ranches.userId, req.userId!)))
+      .where(and(eq(ranches.id, ranchId), eq(ranches.userId, req.userId!)))
       .limit(1);
     if (!ranch) return res.status(404).json({ error: "Ranch not found" });
 
-    await db.delete(ranches).where(eq(ranches.id, req.params.id));
+    await db.delete(ranches).where(eq(ranches.id, ranchId));
     return res.json({ success: true });
   });
 
@@ -139,23 +144,23 @@ export async function registerRoutes(
   app.get("/api/ranches/:ranchId/blocks", authMiddleware, async (req, res) => {
     // verify ranch ownership
     const [ranch] = await db.select().from(ranches)
-      .where(and(eq(ranches.id, req.params.ranchId), eq(ranches.userId, req.userId!)))
+      .where(and(eq(ranches.id, p(req.params.ranchId)), eq(ranches.userId, req.userId!)))
       .limit(1);
     if (!ranch) return res.status(404).json({ error: "Ranch not found" });
 
     const result = await db.select().from(blocks)
-      .where(eq(blocks.ranchId, req.params.ranchId))
+      .where(eq(blocks.ranchId, p(req.params.ranchId)))
       .orderBy(blocks.name);
     return res.json(result);
   });
 
   app.post("/api/ranches/:ranchId/blocks", authMiddleware, async (req, res) => {
     const [ranch] = await db.select().from(ranches)
-      .where(and(eq(ranches.id, req.params.ranchId), eq(ranches.userId, req.userId!)))
+      .where(and(eq(ranches.id, p(req.params.ranchId)), eq(ranches.userId, req.userId!)))
       .limit(1);
     if (!ranch) return res.status(404).json({ error: "Ranch not found" });
 
-    const parsed = insertBlockSchema.safeParse({ ...req.body, ranchId: req.params.ranchId });
+    const parsed = insertBlockSchema.safeParse({ ...req.body, ranchId: p(req.params.ranchId) });
     if (!parsed.success) {
       return res.status(400).json({ error: parsed.error.flatten().fieldErrors });
     }
@@ -164,7 +169,7 @@ export async function registerRoutes(
   });
 
   app.put("/api/blocks/:id", authMiddleware, async (req, res) => {
-    const [block] = await db.select().from(blocks).where(eq(blocks.id, req.params.id)).limit(1);
+    const [block] = await db.select().from(blocks).where(eq(blocks.id, p(req.params.id))).limit(1);
     if (!block) return res.status(404).json({ error: "Block not found" });
 
     // verify ownership through ranch
@@ -176,13 +181,13 @@ export async function registerRoutes(
     const { id, createdAt, ...updateData } = req.body;
     const [updated] = await db.update(blocks)
       .set(updateData)
-      .where(eq(blocks.id, req.params.id))
+      .where(eq(blocks.id, p(req.params.id)))
       .returning();
     return res.json(updated);
   });
 
   app.delete("/api/blocks/:id", authMiddleware, async (req, res) => {
-    const [block] = await db.select().from(blocks).where(eq(blocks.id, req.params.id)).limit(1);
+    const [block] = await db.select().from(blocks).where(eq(blocks.id, p(req.params.id))).limit(1);
     if (!block) return res.status(404).json({ error: "Block not found" });
 
     const [ranch] = await db.select().from(ranches)
@@ -190,7 +195,7 @@ export async function registerRoutes(
       .limit(1);
     if (!ranch) return res.status(403).json({ error: "Not your block" });
 
-    await db.delete(blocks).where(eq(blocks.id, req.params.id));
+    await db.delete(blocks).where(eq(blocks.id, p(req.params.id)));
     return res.json({ success: true });
   });
 
@@ -200,23 +205,23 @@ export async function registerRoutes(
 
   app.get("/api/ranches/:ranchId/field-logs", authMiddleware, async (req, res) => {
     const [ranch] = await db.select().from(ranches)
-      .where(and(eq(ranches.id, req.params.ranchId), eq(ranches.userId, req.userId!)))
+      .where(and(eq(ranches.id, p(req.params.ranchId)), eq(ranches.userId, req.userId!)))
       .limit(1);
     if (!ranch) return res.status(404).json({ error: "Ranch not found" });
 
     const result = await db.select().from(fieldLogs)
-      .where(eq(fieldLogs.ranchId, req.params.ranchId))
+      .where(eq(fieldLogs.ranchId, p(req.params.ranchId)))
       .orderBy(desc(fieldLogs.createdAt));
     return res.json(result);
   });
 
   app.post("/api/ranches/:ranchId/field-logs", authMiddleware, async (req, res) => {
     const [ranch] = await db.select().from(ranches)
-      .where(and(eq(ranches.id, req.params.ranchId), eq(ranches.userId, req.userId!)))
+      .where(and(eq(ranches.id, p(req.params.ranchId)), eq(ranches.userId, req.userId!)))
       .limit(1);
     if (!ranch) return res.status(404).json({ error: "Ranch not found" });
 
-    const parsed = insertFieldLogSchema.safeParse({ ...req.body, ranchId: req.params.ranchId });
+    const parsed = insertFieldLogSchema.safeParse({ ...req.body, ranchId: p(req.params.ranchId) });
     if (!parsed.success) {
       return res.status(400).json({ error: parsed.error.flatten().fieldErrors });
     }
@@ -225,7 +230,7 @@ export async function registerRoutes(
   });
 
   app.delete("/api/field-logs/:id", authMiddleware, async (req, res) => {
-    const [log] = await db.select().from(fieldLogs).where(eq(fieldLogs.id, req.params.id)).limit(1);
+    const [log] = await db.select().from(fieldLogs).where(eq(fieldLogs.id, p(req.params.id))).limit(1);
     if (!log) return res.status(404).json({ error: "Field log not found" });
 
     const [ranch] = await db.select().from(ranches)
@@ -233,7 +238,7 @@ export async function registerRoutes(
       .limit(1);
     if (!ranch) return res.status(403).json({ error: "Not your log" });
 
-    await db.delete(fieldLogs).where(eq(fieldLogs.id, req.params.id));
+    await db.delete(fieldLogs).where(eq(fieldLogs.id, p(req.params.id)));
     return res.json({ success: true });
   });
 
@@ -243,23 +248,23 @@ export async function registerRoutes(
 
   app.get("/api/ranches/:ranchId/chemical-apps", authMiddleware, async (req, res) => {
     const [ranch] = await db.select().from(ranches)
-      .where(and(eq(ranches.id, req.params.ranchId), eq(ranches.userId, req.userId!)))
+      .where(and(eq(ranches.id, p(req.params.ranchId)), eq(ranches.userId, req.userId!)))
       .limit(1);
     if (!ranch) return res.status(404).json({ error: "Ranch not found" });
 
     const result = await db.select().from(chemicalApps)
-      .where(eq(chemicalApps.ranchId, req.params.ranchId))
+      .where(eq(chemicalApps.ranchId, p(req.params.ranchId)))
       .orderBy(desc(chemicalApps.createdAt));
     return res.json(result);
   });
 
   app.post("/api/ranches/:ranchId/chemical-apps", authMiddleware, async (req, res) => {
     const [ranch] = await db.select().from(ranches)
-      .where(and(eq(ranches.id, req.params.ranchId), eq(ranches.userId, req.userId!)))
+      .where(and(eq(ranches.id, p(req.params.ranchId)), eq(ranches.userId, req.userId!)))
       .limit(1);
     if (!ranch) return res.status(404).json({ error: "Ranch not found" });
 
-    const parsed = insertChemicalAppSchema.safeParse({ ...req.body, ranchId: req.params.ranchId });
+    const parsed = insertChemicalAppSchema.safeParse({ ...req.body, ranchId: p(req.params.ranchId) });
     if (!parsed.success) {
       return res.status(400).json({ error: parsed.error.flatten().fieldErrors });
     }
@@ -268,7 +273,7 @@ export async function registerRoutes(
   });
 
   app.delete("/api/chemical-apps/:id", authMiddleware, async (req, res) => {
-    const [ca] = await db.select().from(chemicalApps).where(eq(chemicalApps.id, req.params.id)).limit(1);
+    const [ca] = await db.select().from(chemicalApps).where(eq(chemicalApps.id, p(req.params.id))).limit(1);
     if (!ca) return res.status(404).json({ error: "Chemical app not found" });
 
     const [ranch] = await db.select().from(ranches)
@@ -276,7 +281,7 @@ export async function registerRoutes(
       .limit(1);
     if (!ranch) return res.status(403).json({ error: "Not yours" });
 
-    await db.delete(chemicalApps).where(eq(chemicalApps.id, req.params.id));
+    await db.delete(chemicalApps).where(eq(chemicalApps.id, p(req.params.id)));
     return res.json({ success: true });
   });
 
@@ -314,25 +319,25 @@ export async function registerRoutes(
 
   app.put("/api/product-library/:id", authMiddleware, async (req, res) => {
     const [item] = await db.select().from(productLibrary)
-      .where(and(eq(productLibrary.id, req.params.id), eq(productLibrary.userId, req.userId!)))
+      .where(and(eq(productLibrary.id, p(req.params.id)), eq(productLibrary.userId, req.userId!)))
       .limit(1);
     if (!item) return res.status(404).json({ error: "Product not found" });
 
     const { id, ...updateData } = req.body;
     const [updated] = await db.update(productLibrary)
       .set(updateData)
-      .where(eq(productLibrary.id, req.params.id))
+      .where(eq(productLibrary.id, p(req.params.id)))
       .returning();
     return res.json(updated);
   });
 
   app.delete("/api/product-library/:id", authMiddleware, async (req, res) => {
     const [item] = await db.select().from(productLibrary)
-      .where(and(eq(productLibrary.id, req.params.id), eq(productLibrary.userId, req.userId!)))
+      .where(and(eq(productLibrary.id, p(req.params.id)), eq(productLibrary.userId, req.userId!)))
       .limit(1);
     if (!item) return res.status(404).json({ error: "Product not found" });
 
-    await db.delete(productLibrary).where(eq(productLibrary.id, req.params.id));
+    await db.delete(productLibrary).where(eq(productLibrary.id, p(req.params.id)));
     return res.json({ success: true });
   });
 
@@ -379,12 +384,12 @@ export async function registerRoutes(
 
   app.delete("/api/templates/:id", authMiddleware, async (req, res) => {
     const [template] = await db.select().from(programTemplates)
-      .where(and(eq(programTemplates.id, req.params.id), eq(programTemplates.userId, req.userId!)))
+      .where(and(eq(programTemplates.id, p(req.params.id)), eq(programTemplates.userId, req.userId!)))
       .limit(1);
     if (!template) return res.status(404).json({ error: "Template not found" });
 
     // cascade deletes lines
-    await db.delete(programTemplates).where(eq(programTemplates.id, req.params.id));
+    await db.delete(programTemplates).where(eq(programTemplates.id, p(req.params.id)));
     return res.json({ success: true });
   });
 
@@ -394,13 +399,13 @@ export async function registerRoutes(
 
   app.get("/api/blocks/:blockId/projections", authMiddleware, async (req, res) => {
     const result = await db.select().from(blockProjections)
-      .where(eq(blockProjections.blockId, req.params.blockId));
+      .where(eq(blockProjections.blockId, p(req.params.blockId)));
     return res.json(result);
   });
 
   app.post("/api/blocks/:blockId/projections", authMiddleware, async (req, res) => {
     const [proj] = await db.insert(blockProjections).values({
-      blockId: req.params.blockId,
+      blockId: p(req.params.blockId),
       templateId: req.body.templateId,
       overrides: req.body.overrides,
     }).returning();
@@ -408,7 +413,7 @@ export async function registerRoutes(
   });
 
   app.delete("/api/projections/:id", authMiddleware, async (req, res) => {
-    await db.delete(blockProjections).where(eq(blockProjections.id, req.params.id));
+    await db.delete(blockProjections).where(eq(blockProjections.id, p(req.params.id)));
     return res.json({ success: true });
   });
 
@@ -418,12 +423,12 @@ export async function registerRoutes(
 
   app.get("/api/ranches/:ranchId/recommendations", authMiddleware, async (req, res) => {
     const [ranch] = await db.select().from(ranches)
-      .where(and(eq(ranches.id, req.params.ranchId), eq(ranches.userId, req.userId!)))
+      .where(and(eq(ranches.id, p(req.params.ranchId)), eq(ranches.userId, req.userId!)))
       .limit(1);
     if (!ranch) return res.status(404).json({ error: "Ranch not found" });
 
     const result = await db.select().from(recommendations)
-      .where(eq(recommendations.ranchId, req.params.ranchId))
+      .where(eq(recommendations.ranchId, p(req.params.ranchId)))
       .orderBy(desc(recommendations.createdAt));
     return res.json(result);
   });
@@ -431,7 +436,7 @@ export async function registerRoutes(
   app.post("/api/ranches/:ranchId/recommendations", authMiddleware, async (req, res) => {
     const parsed = insertRecommendationSchema.safeParse({
       ...req.body,
-      ranchId: req.params.ranchId,
+      ranchId: p(req.params.ranchId),
       createdBy: req.userId!,
     });
     if (!parsed.success) {
@@ -445,14 +450,14 @@ export async function registerRoutes(
     const { id, createdAt, ...updateData } = req.body;
     const [updated] = await db.update(recommendations)
       .set(updateData)
-      .where(eq(recommendations.id, req.params.id))
+      .where(eq(recommendations.id, p(req.params.id)))
       .returning();
     if (!updated) return res.status(404).json({ error: "Recommendation not found" });
     return res.json(updated);
   });
 
   app.delete("/api/recommendations/:id", authMiddleware, async (req, res) => {
-    await db.delete(recommendations).where(eq(recommendations.id, req.params.id));
+    await db.delete(recommendations).where(eq(recommendations.id, p(req.params.id)));
     return res.json({ success: true });
   });
 
@@ -521,7 +526,7 @@ export async function registerRoutes(
     const { role } = req.body;
     const [updated] = await db.update(users)
       .set({ role })
-      .where(eq(users.id, req.params.id))
+      .where(eq(users.id, p(req.params.id)))
       .returning();
     return res.json(updated);
   });

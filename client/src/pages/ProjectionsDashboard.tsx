@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { useStore } from "@/lib/store";
+import { useRanches, useBlocks, useTemplates, useProjections, useChemicals, useChemicalApps } from "@/hooks/useData";
 import { Link, useLocation } from "wouter";
 import { BarChart3, AlertCircle, ArrowRight, Settings } from "lucide-react";
 import { summarizeBlockProjection } from "@/utils/projections";
@@ -7,12 +8,12 @@ import { summarizeBlockProjection } from "@/utils/projections";
 export default function ProjectionsDashboard() {
   const [, setLocation] = useLocation();
   const activeRanchId = useStore(s => s.activeRanchId);
-  const ranches = useStore(s => s.ranches);
-  const allBlocks = useStore(s => s.blocks);
-  const templates = useStore(s => s.templates);
-  const projections = useStore(s => s.projections);
-  const chemicals = useStore(s => s.chemicals);
-  const chemicalApps = useStore(s => s.chemicalApps);
+  const { data: ranches = [] } = useRanches();
+  const { data: allBlocks = [] } = useBlocks(activeRanchId);
+  const { data: templates = [] } = useTemplates();
+  const { data: projections = [] } = useProjections(activeRanchId);
+  const { data: chemicals = [] } = useChemicals();
+  const { data: chemicalApps = [] } = useChemicalApps(activeRanchId);
 
   const [selectedRanch, setSelectedRanch] = useState<string | "ALL">(activeRanchId || "ALL");
   const [needsSetupFilter, setNeedsSetupFilter] = useState(false);

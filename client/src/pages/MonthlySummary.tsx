@@ -1,5 +1,6 @@
 import { useState, useMemo } from "react";
 import { useStore } from "@/lib/store";
+import { useRanches, useBlocks, useChemicalApps } from "@/hooks/useData";
 import { Link } from "wouter";
 import { ArrowLeft, BarChart, DollarSign, Activity, AlertTriangle } from "lucide-react";
 import { format } from "date-fns";
@@ -8,9 +9,10 @@ export default function MonthlySummary() {
   const [selectedMonth, setSelectedMonth] = useState(format(new Date(), 'yyyy-MM'));
   
   const activeRanchId = useStore(s => s.activeRanchId);
-  const activeRanch = useStore(s => s.ranches.find(r => r.id === activeRanchId));
-  const allBlocks = useStore(s => s.blocks);
-  const allApps = useStore(s => s.chemicalApps);
+  const { data: allRanches = [] } = useRanches();
+  const activeRanch = allRanches.find(r => r.id === activeRanchId);
+  const { data: allBlocks = [] } = useBlocks(activeRanchId);
+  const { data: allApps = [] } = useChemicalApps(activeRanchId);
   
   const blocks = useMemo(() => allBlocks.filter(b => b.ranchId === activeRanchId), [allBlocks, activeRanchId]);
   
@@ -34,7 +36,8 @@ export default function MonthlySummary() {
 
   // Spend by Type
   const spendByType = apps.reduce((acc, app) => {
-    acc[app.method] = (acc[app.method] || 0) + (app.estimatedCost || 0);
+    const method = app.method ?? "Unknown";
+    acc[method] = (acc[method] || 0) + (app.estimatedCost || 0);
     return acc;
   }, {} as Record<string, number>);
 

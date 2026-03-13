@@ -1,4 +1,5 @@
 import { useStore } from "@/lib/store";
+import { useBlocks, useFieldLogs, useChemicalApps, useDeleteChemicalApp } from "@/hooks/useData";
 import { FileText, Download, Filter, Printer, ChevronDown, Lock, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { getActiveSeasonWindow } from "@/utils/season";
@@ -18,10 +19,9 @@ const sortLogsDeterministic = (logs: any[]) => {
 };
 
 export default function Vault() {
-  const logs = useStore(s => s.logs);
-  const blocks = useStore(s => s.blocks);
-  const chemApps = useStore(s => s.chemicalApps);
-  const deleteChemicalApp = useStore(s => s.deleteChemicalApp);
+  const activeRanchId = useStore(s => s.activeRanchId);
+  const { data: blocks = [] } = useBlocks(activeRanchId);
+  const { data: chemApps = [] } = useChemicalApps(activeRanchId);
   const [, setLocation] = useLocation();
   const { toast } = useToast();
   const [expandedNotes, setExpandedNotes] = useState<Record<string, boolean>>({});

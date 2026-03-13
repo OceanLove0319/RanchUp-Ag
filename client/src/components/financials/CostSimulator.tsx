@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { Block, Recommendation } from "@/lib/store";
+import { Block, Recommendation } from "@/hooks/useData";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Calculator, RotateCcw, AlertTriangle, ArrowRight } from "lucide-react";

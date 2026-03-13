@@ -4,6 +4,7 @@ import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { AuthProvider } from "@/hooks/useAuth";
 import NotFound from "@/pages/not-found";
 
 import Landing from "@/pages/Landing";
@@ -71,7 +72,7 @@ function Router() {
       <Route path="/how-it-works" component={HowItWorks} />
       <Route path="/login" component={Login} />
       <Route path="/onboarding" component={Onboarding} />
-      
+
       {/* Print route must be outside the normal Shell so it takes over the full page styling */}
       <Route path="/app/vault/print/:id" component={VaultPrint} />
 
@@ -122,7 +123,7 @@ function Router() {
       <Route path="/app/settings/billing">
         <Shell><Billing /></Shell>
       </Route>
-      
+
       <Route path="/app/packets">
         <Shell><PacketsHome /></Shell>
       </Route>
@@ -135,7 +136,7 @@ function Router() {
       <Route path="/app/packets/season">
         <Shell><PacketSeason /></Shell>
       </Route>
-      
+
       <Route path="/app/reports/weekly">
         <Shell><WeeklyPacket /></Shell>
       </Route>
@@ -153,12 +154,12 @@ function Router() {
       <Route path="/pca/budget-watch/:id">
         <Shell><BudgetWatchDetail /></Shell>
       </Route>
-      
-      {/* Legacy today packet, redirecting or keeping for backwards compat for now */}
+
+      {/* Legacy today packet */}
       <Route path="/app/share/today">
         <Shell><PacketToday /></Shell>
       </Route>
-      
+
       <Route path="/app/glossary">
         <Shell><Glossary /></Shell>
       </Route>
@@ -177,11 +178,13 @@ function Router() {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <ScrollToTop />
-        <Toaster />
-        <Router />
-      </TooltipProvider>
+      <AuthProvider>
+        <TooltipProvider>
+          <ScrollToTop />
+          <Toaster />
+          <Router />
+        </TooltipProvider>
+      </AuthProvider>
     </QueryClientProvider>
   );
 }

@@ -1,6 +1,6 @@
 import { Link, useLocation } from "wouter";
 import { Home, Map as MapIcon, ClipboardEdit, Archive, Settings, LogOut, FlaskConical, LineChart, Plus, Menu, X, BookOpen, Package, FileText, ClipboardList, AlertTriangle, DollarSign } from "lucide-react";
-import { useStore } from "@/lib/store";
+import { useAuth } from "@/hooks/useAuth";
 import { useState } from "react";
 import { useIsMobile } from "@/hooks/useIsMobile";
 import { GuidedFlowReturnBar } from "@/components/navigation/GuidedFlowReturnBar";
@@ -9,11 +9,24 @@ import { DemoModeBanner } from "@/components/layout/DemoModeBanner";
 
 export default function Shell({ children }: { children: React.ReactNode }) {
   const [location, setLocation] = useLocation();
-  const logout = useStore((state) => state.logout);
-  const user = useStore((state) => state.user);
+  const { user, logout, loading } = useAuth();
   const isMobile = useIsMobile();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  
+
+  // Redirect to login if not authenticated
+  if (!loading && !user) {
+    setLocation("/login");
+    return null;
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <p className="text-muted-foreground text-sm font-medium uppercase tracking-widest">Loading...</p>
+      </div>
+    );
+  }
+
   const isPCA = user?.role === 'PCA';
 
   const mainNavItems = [
@@ -68,7 +81,7 @@ export default function Shell({ children }: { children: React.ReactNode }) {
             <img src="/ranchup-logo.png" alt="RANCHUP™" className="h-8 mb-4" />
             <RanchSwitcher />
           </div>
-          
+
           <div className="flex flex-col justify-start w-full gap-2">
             {[...mainNavItems, ...secondaryNavItems].map((item) => {
               const isActive = location === item.href || (location.startsWith(item.href) && item.href !== "/app");
@@ -79,7 +92,7 @@ export default function Shell({ children }: { children: React.ReactNode }) {
                 </Link>
               );
             })}
-            
+
             <div className="mt-4 mb-2 px-3">
               <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 mb-2">Help & References</p>
               {helpNavItems.map((item) => {
@@ -93,12 +106,9 @@ export default function Shell({ children }: { children: React.ReactNode }) {
               })}
             </div>
           </div>
-          
+
           <div className="mt-auto border-t border-border pt-4">
-            <button onClick={() => {
-              logout();
-              setLocation('/');
-            }} className="flex items-center gap-3 p-3 text-muted-foreground hover:text-white transition-colors w-full">
+            <button onClick={() => logout()} className="flex items-center gap-3 p-3 text-muted-foreground hover:text-white transition-colors w-full">
               <LogOut className="w-5 h-5" />
               <span className="text-sm font-semibold tracking-wider uppercase">Log Out</span>
             </button>
@@ -114,7 +124,7 @@ export default function Shell({ children }: { children: React.ReactNode }) {
             <GuidedFlowReturnBar />
           </div>
         )}
-        
+
         {/* Main Content */}
         <main className="flex-1 p-4 md:p-8 pb-24 md:pb-8 max-w-5xl mx-auto w-full min-w-0">
           {children}
@@ -134,10 +144,10 @@ export default function Shell({ children }: { children: React.ReactNode }) {
                 </Link>
               );
             })}
-            
+
             {/* Mobile Menu Toggle */}
-            <button 
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} 
+            <button
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               className={`flex flex-col items-center p-2 min-w-[64px] ${isMobileMenuOpen ? 'text-primary' : 'text-muted-foreground'}`}
             >
               {isMobileMenuOpen ? <X className="w-6 h-6 mb-1" /> : <Menu className="w-6 h-6 mb-1" />}
@@ -147,8 +157,8 @@ export default function Shell({ children }: { children: React.ReactNode }) {
 
           {/* Quick Log FAB for Mobile - Only for Growers */}
           {!isPCA && (
-            <Link 
-              href="/app/log" 
+            <Link
+              href="/app/log"
               className="fixed bottom-24 right-4 bg-primary text-primary-foreground p-4 rounded-full shadow-[0_4px_20px_rgba(234,153,61,0.4)] z-50 active:scale-95 transition-transform"
             >
               <Plus className="w-6 h-6" />
@@ -156,7 +166,7 @@ export default function Shell({ children }: { children: React.ReactNode }) {
           )}
 
           {/* Mobile Full Menu Overlay */}
-          <div 
+          <div
             className={`fixed inset-0 bg-background z-40 transition-transform duration-300 ease-in-out pt-20 pb-24 px-4 overflow-y-auto ${
               isMobileMenuOpen ? 'translate-y-0' : 'translate-y-full'
             }`}
@@ -165,8 +175,8 @@ export default function Shell({ children }: { children: React.ReactNode }) {
               <h2 className="text-xs font-black uppercase tracking-widest text-muted-foreground mb-4">Management</h2>
               <div className="grid gap-3 mb-8">
                 {secondaryNavItems.map((item) => (
-                  <button 
-                    key={item.href} 
+                  <button
+                    key={item.href}
                     onClick={() => handleMobileNavClick(item.href)}
                     className="flex items-center gap-4 p-4 rounded-lg bg-background border border-border transition-colors hover:border-primary/50 text-left"
                   >
@@ -175,12 +185,12 @@ export default function Shell({ children }: { children: React.ReactNode }) {
                   </button>
                 ))}
               </div>
-              
+
               <h2 className="text-xs font-black uppercase tracking-widest text-muted-foreground mb-4">Help & References</h2>
               <div className="grid gap-3 mb-8">
                 {helpNavItems.map((item) => (
-                  <button 
-                    key={item.href} 
+                  <button
+                    key={item.href}
                     onClick={() => handleMobileNavClick(item.href)}
                     className="flex items-center gap-4 p-4 rounded-lg bg-background border border-border transition-colors hover:border-primary/50 text-left"
                   >
@@ -189,13 +199,10 @@ export default function Shell({ children }: { children: React.ReactNode }) {
                   </button>
                 ))}
               </div>
-              
+
               <div className="mt-auto pt-6 border-t border-border">
-                <button 
-                  onClick={() => {
-                    logout();
-                    setLocation('/');
-                  }}
+                <button
+                  onClick={() => logout()}
                   className="flex items-center gap-4 p-4 rounded-lg text-muted-foreground hover:text-white transition-colors text-left w-full"
                 >
                   <LogOut className="w-5 h-5" />

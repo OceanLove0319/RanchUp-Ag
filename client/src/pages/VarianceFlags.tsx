@@ -1,5 +1,7 @@
 import { useState, useMemo } from "react";
 import { useStore } from "@/lib/store";
+import { useAuth } from "@/hooks/useAuth";
+import { useRanches, useBlocks, useChemicalApps, useFieldLogs, useRecommendations } from "@/hooks/useData";
 import { Link, useLocation } from "wouter";
 import { ArrowLeft, AlertTriangle, TrendingUp, DollarSign, CheckCircle2, ChevronRight, ClipboardX } from "lucide-react";
 import { format, subMonths } from "date-fns";
@@ -8,18 +10,18 @@ import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
 
 export default function VarianceFlags() {
-  const user = useStore(s => s.user);
+  const { user } = useAuth();
   const isPCA = user?.role === 'PCA';
-  const allRanches = useStore(s => s.ranches);
   const activeRanchId = useStore(s => s.activeRanchId);
-  const allBlocks = useStore(s => s.blocks);
-  const allApps = useStore(s => s.chemicalApps);
-  const allLogs = useStore(s => s.logs);
-  const allRecs = useStore(s => s.recommendations);
-  
+  const { data: allRanches = [] } = useRanches();
+  const { data: allBlocks = [] } = useBlocks(activeRanchId);
+  const { data: allApps = [] } = useChemicalApps(activeRanchId);
+  const { data: allLogs = [] } = useFieldLogs(activeRanchId);
+  const { data: allRecs = [] } = useRecommendations(activeRanchId);
+
   const [, setLocation] = useLocation();
   const { toast } = useToast();
-  const deriveNextStepFromAction = useStore(s => (s as any).deriveNextStepFromAction);
+  const deriveNextStepFromAction = useStore(s => s.deriveNextStepFromAction);
 
   const [resolvedIssues, setResolvedIssues] = useState<string[]>([]);
   

@@ -1,6 +1,7 @@
 import { useState, useMemo } from "react";
 import { Link, useLocation } from "wouter";
 import { useStore } from "@/lib/store";
+import { useRanches, useBlocks, useProductLibrary, useCreateRecommendation } from "@/hooks/useData";
 import { ArrowLeft, Check, Search, PlusCircle, AlertTriangle, Info, TrendingUp, DollarSign, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
@@ -9,14 +10,14 @@ import { format } from "date-fns";
 export default function RecommendationNew() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
-  const addRecommendation = useStore(s => s.addRecommendation);
-  
-  const ranches = useStore(s => s.ranches);
-  const blocks = useStore(s => s.blocks);
-  const products = useStore(s => s.productLibrary);
-  
-  // PCA Context
+  const createRecommendation = useCreateRecommendation();
+
   const activeRanchId = useStore(s => s.activeRanchId);
+  const { data: ranches = [] } = useRanches();
+  const { data: blocks = [] } = useBlocks(activeRanchId);
+  const { data: products = [] } = useProductLibrary();
+
+  // PCA Context
   const activeRanch = ranches.find(r => r.id === activeRanchId);
   const ranchBlocks = blocks.filter(b => b.ranchId === activeRanchId);
   
@@ -54,7 +55,7 @@ export default function RecommendationNew() {
       if (prod) {
         setRates(prev => ({
           ...prev,
-          [productId]: { value: prod.defaultRate || 1, unit: prod.unit || 'gal' }
+          [productId]: { value: prod.defaultRate || 1, unit: prod.unitDefault || 'gal' }
         }));
       }
     }
@@ -109,8 +110,7 @@ export default function RecommendationNew() {
     const primaryProduct = selectedProducts[0];
     const rateInfo = rates[primaryProduct.id];
 
-    addRecommendation({
-      id: recId,
+    createRecommendation.mutate({
       ranchId: activeRanchId!,
       blockId: selectedBlockId,
       title: `Treat ${targetPest || 'Block'}`,
@@ -214,7 +214,7 @@ export default function RecommendationNew() {
                   <div key={prod.id} className="bg-background/50 border border-border p-3 rounded-lg flex items-center justify-between">
                     <div>
                       <p className="font-bold text-sm text-foreground">{prod.name}</p>
-                      <p className="text-xs text-muted-foreground">${prod.pricePerUnit}/{prod.unit}</p>
+                      <p className="text-xs text-muted-foreground">${prod.pricePerUnit}/{prod.unitDefault}</p>
                     </div>
                     <div className="flex items-center gap-2">
                       <input 
@@ -225,7 +225,7 @@ export default function RecommendationNew() {
                         onChange={e => setRates(prev => ({...prev, [prod.id]: { ...prev[prod.id], value: parseFloat(e.target.value) }}))}
                         className="w-20 bg-card border border-border rounded px-2 py-1 text-sm text-right"
                       />
-                      <span className="text-xs text-muted-foreground w-8">{rates[prod.id]?.unit || prod.unit}/ac</span>
+                      <span className="text-xs text-muted-foreground w-8">{rates[prod.id]?.unit || prod.unitDefault}/ac</span>
                       <button onClick={() => toggleProduct(prod.id)} className="p-1 text-muted-foreground hover:text-red-400">
                         <AlertTriangle className="w-4 h-4" /> {/* Should be X icon */}
                       </button>
@@ -247,7 +247,7 @@ export default function RecommendationNew() {
                   >
                     <div className="flex flex-col">
                       <span className="text-sm font-medium text-foreground group-hover:text-primary transition-colors">{prod.name}</span>
-                      <span className="text-[10px] text-muted-foreground">{prod.category} • ${prod.pricePerUnit}/{prod.unit}</span>
+                      <span className="text-[10px] text-muted-foreground">{prod.category} • ${prod.pricePerUnit}/{prod.unitDefault}</span>
                     </div>
                     <PlusCircle className="w-4 h-4 text-muted-foreground group-hover:text-primary" />
                   </div>

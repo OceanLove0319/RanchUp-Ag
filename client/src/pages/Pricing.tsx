@@ -1,31 +1,31 @@
-import { useStore } from "@/lib/store";
+import { useBilling, useUpdateBilling } from "@/hooks/useData";
 import { PLANS, ADD_ONS, ONBOARDING_FEES, PlanId, AddOnId } from "@/config/pricing";
 import { Check, Zap, ShieldAlert, Users, TrendingUp } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
 
 export default function Pricing() {
-  const billing = useStore(s => s.billing);
-  const setPlan = useStore(s => s.setPlan);
-  const toggleAnnual = useStore(s => s.toggleAnnual);
-  const setAddOn = useStore(s => s.setAddOn);
-  const purchaseOnboarding = useStore(s => s.purchaseOnboarding);
+  const { data: billing } = useBilling();
+  const updateBilling = useUpdateBilling();
+  const planId = billing?.planId ?? "STARTER";
+  const billingAddOns = billing?.addOns ?? {};
+  const billingOnboardingPurchased = billing?.onboardingPurchased ?? false;
   const { toast } = useToast();
 
-  const [localAnnual, setLocalAnnual] = useState(billing.isAnnual);
+  const [localAnnual, setLocalAnnual] = useState(billing?.isAnnual ?? false);
 
-  const handleUpgrade = (planId: PlanId) => {
-    setPlan(planId, localAnnual);
+  const handleUpgrade = (newPlanId: PlanId) => {
+    updateBilling.mutate({ planId: newPlanId, isAnnual: localAnnual });
     toast({
       title: "Plan Updated (Demo)",
-      description: `You are now on the ${PLANS[planId].name} plan. Billing will be wired to Stripe in production.`,
+      description: `You are now on the ${PLANS[newPlanId].name} plan. Billing will be wired to Stripe in production.`,
       duration: 5000,
     });
   };
 
   const handleToggleAddOn = (addOnId: AddOnId) => {
-    const isEnabled = !!billing.addOns[addOnId];
-    setAddOn(addOnId, !isEnabled);
+    const isEnabled = !!billingAddOns[addOnId];
+    updateBilling.mutate({ addOns: { ...billingAddOns, [addOnId]: !isEnabled } });
     toast({
       title: "Add-on Updated (Demo)",
       description: `${ADD_ONS[addOnId].name} has been ${!isEnabled ? 'enabled' : 'disabled'}.`,
@@ -33,9 +33,9 @@ export default function Pricing() {
   };
 
   const handleSeatChange = (addOnId: AddOnId, delta: number) => {
-    const current = (billing.addOns[addOnId] as number) || 0;
+    const current = (billingAddOns[addOnId] as number) || 0;
     const next = Math.max(0, current + delta);
-    setAddOn(addOnId, next);
+    updateBilling.mutate({ addOns: { ...billingAddOns, [addOnId]: next } });
   };
 
   return (
@@ -65,7 +65,7 @@ export default function Pricing() {
 
       <div className="grid md:grid-cols-3 gap-6 mb-16">
         {(Object.values(PLANS) as (typeof PLANS[PlanId])[]).map(plan => {
-          const isCurrent = billing.planId === plan.id;
+          const isCurrent = planId === plan.id;
           const price = localAnnual ? plan.annualPrice / 12 : plan.monthlyPrice;
           
           return (
@@ -120,16 +120,16 @@ export default function Pricing() {
           <div className="space-y-4">
             {(Object.values(ADD_ONS) as (typeof ADD_ONS[AddOnId])[]).map(addon => {
               const isQuantity = 'type' in addon && addon.type === 'quantity';
-              const isEnabled = !!billing.addOns[addon.id];
-              const count = (billing.addOns[addon.id] as number) || 0;
-              const isLocked = 'requires' in addon && addon.requires && PLANS[billing.planId].monthlyPrice < PLANS[addon.requires as PlanId].monthlyPrice;
+              const isEnabled = !!billingAddOns[addon.id];
+              const count = (billingAddOns[addon.id] as number) || 0;
+              const isLocked = 'requires' in addon && addon.requires && PLANS[planId as keyof typeof PLANS].monthlyPrice < PLANS[addon.requires as keyof typeof PLANS].monthlyPrice;
 
               return (
                 <div key={addon.id} className={`bg-card border p-5 rounded-lg flex items-center justify-between ${isLocked ? 'border-border opacity-50' : isEnabled || count > 0 ? 'border-primary/50 bg-primary/5' : 'border-border'}`}>
                   <div>
                     <div className="flex items-center gap-2 mb-1">
                       <h4 className="font-bold text-foreground">{addon.name}</h4>
-                      {isLocked && 'requires' in addon && <span className="text-[10px] font-bold uppercase tracking-widest bg-background px-2 py-0.5 rounded text-muted-foreground">Requires {PLANS[addon.requires as PlanId].name}</span>}
+                      {isLocked && 'requires' in addon && <span className="text-[10px] font-bold uppercase tracking-widest bg-background px-2 py-0.5 rounded text-muted-foreground">Requires {PLANS[addon.requires as keyof typeof PLANS].name}</span>}
                     </div>
                     <p className="text-sm text-muted-foreground">{addon.description}</p>
                     <p className="text-xs font-bold uppercase tracking-widest text-primary mt-2">+${addon.price}/mo {isQuantity ? 'per seat' : ''}</p>
@@ -171,13 +171,13 @@ export default function Pricing() {
                 </div>
                 <button
                   onClick={() => {
-                    purchaseOnboarding();
+                    updateBilling.mutate({ onboardingPurchased: true });
                     toast({ title: "Setup added", description: "Our team will contact you shortly." });
                   }}
-                  disabled={billing.onboardingPurchased}
+                  disabled={billingOnboardingPurchased}
                   className="shrink-0 ml-4 px-4 py-2 border border-primary text-primary font-bold uppercase tracking-widest text-xs rounded hover:bg-primary/10 transition-colors disabled:opacity-50 disabled:border-border disabled:text-muted-foreground"
                 >
-                  {billing.onboardingPurchased ? 'Added' : 'Add'}
+                  {billingOnboardingPurchased ? 'Added' : 'Add'}
                 </button>
               </div>
             ))}

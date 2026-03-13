@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useStore } from "@/lib/store";
+import { useProductLibrary } from "@/hooks/useData";
 import { Search, Plus, Check, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -8,7 +8,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { PRODUCT_CATEGORIES } from "@/data/materialsSeed";
 
 export default function ProductPicker({ selectedProductIds = [], onSelectionChange }: { selectedProductIds?: string[], onSelectionChange: (ids: string[]) => void }) {
-  const { productLibrary } = useStore();
+  const { data: productLibrary = [] } = useProductLibrary();
   const [search, setSearch] = useState("");
   const [recentIds, setRecentIds] = useState<string[]>([]);
 

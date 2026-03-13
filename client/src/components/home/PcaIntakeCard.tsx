@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { useStore } from "@/lib/store";
+import { useBlocks } from "@/hooks/useData";
 import { packerShipperSchema, restrictedMaterialSchema, type PcaIntake, type PackerShipperIntake, type RestrictedMaterialIntake, defaultPackerShipper, defaultRestrictedMaterial } from "@/schemas/pcaIntake";
 import { FileText, Printer, Save, History, ChevronDown, ChevronUp, AlertCircle, RefreshCw, Check } from "lucide-react";
 import { z } from "zod";
@@ -15,9 +16,9 @@ export default function PcaIntakeCard() {
   const [saveToast, setSaveToast] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   
-  // Shared state via zustand
-  const blocks = useStore((s: any) => s.blocks);
+  // Shared state
   const activeRanchId = useStore((s: any) => s.activeRanchId);
+  const { data: blocks = [] } = useBlocks(activeRanchId);
 
   // Form states
   const [psForm, setPsForm] = useState<Partial<PackerShipperIntake>>(defaultPackerShipper);
@@ -43,7 +44,7 @@ export default function PcaIntakeCard() {
         ...currentForm,
         blockId: block.id,
         blockName: block.name,
-        acresTreated: block.acres,
+        acresTreated: block.acreage,
         crop: block.crop,
         variety: block.variety || "",
       });

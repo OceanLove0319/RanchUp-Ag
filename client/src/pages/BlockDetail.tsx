@@ -1,5 +1,7 @@
 import { useRoute, useLocation } from "wouter";
-import { useStore, Block } from "@/lib/store";
+import { useStore } from "@/lib/store";
+import { useAuth } from "@/hooks/useAuth";
+import { useRanches, useBlocks, useChemicalApps, useRecommendations, useUpdateBlock, useDeleteBlock, Block } from "@/hooks/useData";
 import { Droplets, Sprout, ShieldAlert, ArrowLeft, Info, Lock, Edit2, Trash2, CheckCircle2, DollarSign } from "lucide-react";
 import { Link } from "wouter";
 import { useState, useMemo } from "react";
@@ -22,15 +24,18 @@ export default function BlockDetail() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
   
-  const user = useStore(s => s.user);
+  const { user } = useAuth();
   const isPCA = user?.role === 'PCA';
-  
-  const block = useStore(s => s.blocks.find(b => b.id === params?.id));
-  const ranch = useStore(s => s.ranches.find(r => r.id === block?.ranchId));
-  const updateBlock = useStore(s => s.updateBlock);
-  const deleteBlock = useStore(s => s.deleteBlock);
-  const chemicalApps = useStore(s => s.chemicalApps);
-  const recommendations = useStore(s => s.recommendations);
+
+  const activeRanchId = useStore(s => s.activeRanchId);
+  const { data: allBlocks = [] } = useBlocks(activeRanchId);
+  const { data: allRanches = [] } = useRanches();
+  const block = allBlocks.find(b => b.id === params?.id);
+  const ranch = allRanches.find(r => r.id === block?.ranchId);
+  const updateBlockMutation = useUpdateBlock();
+  const deleteBlockMutation = useDeleteBlock();
+  const { data: chemicalApps = [] } = useChemicalApps(activeRanchId);
+  const { data: recommendations = [] } = useRecommendations(activeRanchId);
   const { requireCostEngine } = useGating();
 
   const [isEditing, setIsEditing] = useState(false);
@@ -44,7 +49,7 @@ export default function BlockDetail() {
   if (!block) return <div>Block not found</div>;
 
   const handleSaveEdit = () => {
-    updateBlock(block.id, editForm);
+    updateBlockMutation.mutate({ id: block.id, ...editForm });
     setIsEditing(false);
     toast({
       title: "Block Updated",
@@ -54,7 +59,7 @@ export default function BlockDetail() {
 
   const handleDelete = () => {
     if (window.confirm("Are you sure you want to delete this block and all its records? This cannot be undone.")) {
-      deleteBlock(block.id);
+      deleteBlockMutation.mutate(block.id);
       toast({
         title: "Block Deleted",
         description: "The block has been removed.",

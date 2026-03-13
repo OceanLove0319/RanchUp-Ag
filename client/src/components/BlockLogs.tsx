@@ -1,12 +1,15 @@
 import { useMemo } from "react";
 import { Link, useLocation } from "wouter";
 import { useStore } from "@/lib/store";
+import { useFieldLogs, useChemicalApps } from "@/hooks/useData";
 import { Copy, PlusCircle } from "lucide-react";
 import { format } from "date-fns";
 
 export default function BlockLogs({ blockId }: { blockId: string }) {
   const [, setLocation] = useLocation();
-  const allLogs = useStore(s => s.logs);
+  const activeRanchId = useStore(s => s.activeRanchId);
+  const { data: allLogs = [] } = useFieldLogs(activeRanchId);
+  const { data: chemicalApps = [] } = useChemicalApps(activeRanchId);
   
   const logs = useMemo(() => 
     allLogs
@@ -61,13 +64,13 @@ export default function BlockLogs({ blockId }: { blockId: string }) {
                   {log.cost && (
                     <div className="mt-2 flex gap-3">
                       <p className="text-xs font-bold text-primary uppercase tracking-widest">${log.cost} Actual</p>
-                      {useStore.getState().chemicalApps.find(a => a.id === `app-${log.id}`)?.estimatedCost && (
-                         <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest">${useStore.getState().chemicalApps.find(a => a.id === `app-${log.id}`)?.estimatedCost} Est</p>
+                      {chemicalApps.find(a => a.id === `app-${log.id}`)?.estimatedCost && (
+                         <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest">${chemicalApps.find(a => a.id === `app-${log.id}`)?.estimatedCost} Est</p>
                       )}
                     </div>
                   )}
-                  {!log.cost && useStore.getState().chemicalApps.find(a => a.id === `app-${log.id}`)?.estimatedCost && (
-                     <p className="text-xs font-bold text-muted-foreground mt-2 uppercase tracking-widest">${useStore.getState().chemicalApps.find(a => a.id === `app-${log.id}`)?.estimatedCost} Est</p>
+                  {!log.cost && chemicalApps.find(a => a.id === `app-${log.id}`)?.estimatedCost && (
+                     <p className="text-xs font-bold text-muted-foreground mt-2 uppercase tracking-widest">${chemicalApps.find(a => a.id === `app-${log.id}`)?.estimatedCost} Est</p>
                   )}
                 </div>
                 

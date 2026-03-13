@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { useStore } from "@/lib/store";
+import { useChemicals, useProductLibrary, useCreateProduct, useUpdateProduct, useDeleteProduct } from "@/hooks/useData";
 import { Plus, Search, Package, FlaskConical, Filter, Edit2, Trash2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -14,7 +14,11 @@ type TopTab = "ALL" | "CHEMICALS" | "MATERIALS";
 
 export default function InputsLibrary() {
   const [, setLocation] = useLocation();
-  const { chemicals, productLibrary, addProductLibraryItem, updateProductLibraryItem, removeProductLibraryItem } = useStore();
+  const { data: chemicals = [] } = useChemicals();
+  const { data: productLibrary = [] } = useProductLibrary();
+  const addProductLibraryItem = useCreateProduct();
+  const updateProductLibraryItem = useUpdateProduct();
+  const removeProductLibraryItem = useDeleteProduct();
   const [search, setSearch] = useState("");
   const [activeTab, setActiveTab] = useState<TopTab>("ALL");
   const [activeTypeTab, setActiveTypeTab] = useState<string>("ALL");

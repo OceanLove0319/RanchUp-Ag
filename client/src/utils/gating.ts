@@ -1,5 +1,5 @@
 import { PlanId, AddOnId } from "@/config/pricing";
-import { useStore } from "@/lib/store";
+import { useBilling } from "@/hooks/useData";
 
 const PLAN_HIERARCHY: Record<PlanId, number> = {
   STARTER: 1,
@@ -12,17 +12,19 @@ export function hasPlanAtLeast(currentPlan: PlanId, requiredPlan: PlanId): boole
 }
 
 export function useGating() {
-  const billing = useStore(s => s.billing);
+  const { data: billing } = useBilling();
+  const planId = (billing?.planId ?? "STARTER") as PlanId;
+  const addOns = billing?.addOns ?? {};
 
   return {
-    hasPlanAtLeast: (requiredPlan: PlanId) => hasPlanAtLeast(billing.planId, requiredPlan),
-    hasAddOn: (addOnId: AddOnId) => !!billing.addOns[addOnId],
+    hasPlanAtLeast: (requiredPlan: PlanId) => hasPlanAtLeast(planId, requiredPlan),
+    hasAddOn: (addOnId: AddOnId) => !!addOns[addOnId],
     getAddOnCount: (addOnId: AddOnId) => {
-      const val = billing.addOns[addOnId];
+      const val = addOns[addOnId];
       return typeof val === 'number' ? val : (val ? 1 : 0);
     },
     requirePro: (featureName: string) => {
-      const allowed = hasPlanAtLeast(billing.planId, "PRO");
+      const allowed = hasPlanAtLeast(planId, "PRO");
       return {
         allowed,
         reason: allowed ? null : `${featureName} requires Pro plan`,
@@ -30,7 +32,7 @@ export function useGating() {
       };
     },
     requireOps: (featureName: string) => {
-      const allowed = hasPlanAtLeast(billing.planId, "OPS");
+      const allowed = hasPlanAtLeast(planId, "OPS");
       return {
         allowed,
         reason: allowed ? null : `${featureName} requires Ops plan`,
@@ -38,8 +40,8 @@ export function useGating() {
       };
     },
     requireCostEngine: () => {
-      const hasPro = hasPlanAtLeast(billing.planId, "PRO");
-      const hasCost = !!billing.addOns["COST_ENGINE"];
+      const hasPro = hasPlanAtLeast(planId, "PRO");
+      const hasCost = !!addOns["COST_ENGINE"];
       const allowed = hasPro && hasCost;
       return {
         allowed,

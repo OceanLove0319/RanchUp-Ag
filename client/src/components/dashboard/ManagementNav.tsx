@@ -1,9 +1,9 @@
 import { Link } from "wouter";
 import { Settings, LogOut, FileText, PieChart } from "lucide-react";
-import { useStore } from "@/lib/store";
+import { useAuth } from "@/hooks/useAuth";
 
 export function ManagementNav() {
-  const logout = useStore(s => s.logout);
+  const { logout } = useAuth();
 
   return (
     <div className="mt-12 pt-8 border-t border-border animate-in fade-in duration-300">

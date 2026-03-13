@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { useStore } from "@/lib/store";
+import { useProductLibrary, useCreateProduct, useUpdateProduct, useDeleteProduct } from "@/hooks/useData";
 import { Plus, Search, Filter, Edit2, Trash2, Package } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { PRODUCT_CATEGORIES, PRODUCT_TYPES_BY_CATEGORY } from "@/data/materialsSeed";
@@ -9,7 +9,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Button } from "@/components/ui/button";
 
 export default function MaterialsProducts() {
-  const { productLibrary, addProductLibraryItem, updateProductLibraryItem, removeProductLibraryItem } = useStore();
+  const { data: productLibrary = [] } = useProductLibrary();
+  const addProductLibraryItem = useCreateProduct();
+  const updateProductLibraryItem = useUpdateProduct();
+  const removeProductLibraryItem = useDeleteProduct();
   const [search, setSearch] = useState("");
   const [filterCategory, setFilterCategory] = useState("ALL");
   const [isAddOpen, setIsAddOpen] = useState(false);
@@ -57,7 +60,6 @@ export default function MaterialsProducts() {
   const handleSave = () => {
     if (!name) return;
     const newItem = {
-      id: editingProduct ? editingProduct.id : `prod-${Date.now()}`,
       name,
       category,
       type,
@@ -67,9 +69,9 @@ export default function MaterialsProducts() {
     };
 
     if (editingProduct) {
-      updateProductLibraryItem(editingProduct.id, newItem as any);
+      updateProductLibraryItem.mutate({ id: editingProduct.id, ...newItem } as any);
     } else {
-      addProductLibraryItem(newItem as any);
+      addProductLibraryItem.mutate(newItem as any);
     }
     setIsAddOpen(false);
   };
@@ -224,7 +226,7 @@ export default function MaterialsProducts() {
                 <Button variant="secondary" size="icon" className="h-8 w-8" onClick={() => openEdit(p)}>
                   <Edit2 className="w-4 h-4" />
                 </Button>
-                <Button variant="destructive" size="icon" className="h-8 w-8 bg-red-500/10 text-red-500 hover:bg-red-500/20" onClick={() => removeProductLibraryItem(p.id)}>
+                <Button variant="destructive" size="icon" className="h-8 w-8 bg-red-500/10 text-red-500 hover:bg-red-500/20" onClick={() => removeProductLibraryItem.mutate(p.id)}>
                   <Trash2 className="w-4 h-4" />
                 </Button>
               </div>

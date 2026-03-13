@@ -1,4 +1,4 @@
-import { useStore, Block, ProgramTemplate, ProgramLine, Chemical, BlockProjection, ChemicalApp } from "@/lib/store";
+import { Block, ProgramTemplate, ProgramTemplateLine as ProgramLine, Chemical, BlockProjection, ChemicalApp } from "@/hooks/useData";
 import { isPerAcreUnit, normalizeUnit, areUnitsCompatible } from "@/utils/mathHelpers";
 
 export type ComputedLine = {

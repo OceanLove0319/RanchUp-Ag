@@ -1,4 +1,5 @@
 import { useStore } from "@/lib/store";
+import { useBlocks, useChemicalApps } from "@/hooks/useData";
 import { getActiveSeasonWindow } from "@/utils/season";
 import { isWithin, todayPacificISO } from "@/utils/dates";
 import { useEffect, useState } from "react";
@@ -16,8 +17,9 @@ const sortLogsDeterministic = (logs: any[]) => {
 
 export default function VaultPrint() {
   const { id } = useParams();
-  const blocks = useStore(s => s.blocks);
-  const chemApps = useStore(s => s.chemicalApps);
+  const activeRanchId = useStore(s => s.activeRanchId);
+  const { data: blocks = [] } = useBlocks(activeRanchId);
+  const { data: chemApps = [] } = useChemicalApps(activeRanchId);
   const [expandedNotes, setExpandedNotes] = useState<Record<string, boolean>>({});
 
   const block = blocks.find(b => b.id === id);

@@ -1,18 +1,21 @@
 import { useState } from "react";
 import { Link } from "wouter";
-import { useStore, ProgramTemplate, ProgramLine } from "@/lib/store";
+import { useTemplates, ProgramTemplate, ProgramTemplateLine } from "@/hooks/useData";
 import { ArrowLeft, PlusCircle, Edit2, Copy, Trash2, ShieldAlert, Sprout, Package, Check, X } from "lucide-react";
 import UnifiedInputPicker from "@/components/products/UnifiedInputPicker";
 
+type ProgramLine = ProgramTemplateLine;
+
 export default function TemplatesManager() {
-  const templates = useStore(s => s.templates);
+  const { data: templates = [] } = useTemplates();
   const [activeTemplateId, setActiveTemplateId] = useState<string | null>(null);
   const [editingLineId, setEditingLineId] = useState<string | null>(null);
   const [lineProducts, setLineProducts] = useState<string[]>([]);
 
   const activeTemplate = templates.find(t => t.id === activeTemplateId);
 
-  const updateTemplateLine = useStore(s => s.updateTemplateLine);
+  // TODO: updateTemplateLine needs a corresponding hook in useData.ts
+  const updateTemplateLine = (_templateId: string, _lineId: string, _updates: Record<string, any>) => { console.warn("updateTemplateLine not yet migrated to API hook"); };
 
   const startEditingLine = (line: ProgramLine) => {
     setEditingLineId(line.id);
@@ -61,7 +64,7 @@ export default function TemplatesManager() {
               >
                 <h4 className="font-bold text-white text-sm mb-1">{t.name}</h4>
                 <div className="flex flex-wrap gap-1">
-                  {t.cropTags.map(tag => (
+                  {(t.cropTags ?? []).map(tag => (
                     <span key={tag} className="text-[9px] bg-white/10 px-1.5 py-0.5 rounded text-muted-foreground font-bold tracking-widest uppercase">
                       {tag}
                     </span>

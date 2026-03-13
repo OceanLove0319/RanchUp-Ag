@@ -1,19 +1,23 @@
-import { useStore } from "@/lib/store";
+import { useBilling } from "@/hooks/useData";
 import { PLANS, ADD_ONS, ONBOARDING_FEES } from "@/config/pricing";
 import { Link } from "wouter";
 import { FileText, ArrowRight, Settings } from "lucide-react";
 
 export default function Billing() {
-  const billing = useStore(s => s.billing);
-  const currentPlan = PLANS[billing.planId];
+  const { data: billing } = useBilling();
+  const planId = billing?.planId ?? "STARTER";
+  const isAnnual = billing?.isAnnual ?? false;
+  const addOns = billing?.addOns ?? {};
+  const onboardingPurchased = billing?.onboardingPurchased ?? false;
+  const currentPlan = PLANS[planId as keyof typeof PLANS];
   
   // Calculate totals
-  const basePrice = billing.isAnnual ? currentPlan.annualPrice / 12 : currentPlan.monthlyPrice;
+  const basePrice = isAnnual ? currentPlan.annualPrice / 12 : currentPlan.monthlyPrice;
   
   let addonsTotal = 0;
   const activeAddonsList: {name: string, cost: number}[] = [];
   
-  Object.entries(billing.addOns).forEach(([id, value]) => {
+  Object.entries(addOns).forEach(([id, value]) => {
     const addon = ADD_ONS[id as keyof typeof ADD_ONS];
     if (!addon) return;
     
@@ -48,7 +52,7 @@ export default function Billing() {
               <div>
                 <h3 className="text-3xl font-black uppercase tracking-tight text-foreground">{currentPlan.name}</h3>
                 <p className="text-primary font-bold mt-1">
-                  {billing.isAnnual ? 'Billed Annually' : 'Billed Monthly'}
+                  {isAnnual ? 'Billed Annually' : 'Billed Monthly'}
                 </p>
               </div>
               <div className="text-right">
@@ -70,7 +74,7 @@ export default function Billing() {
             
             <div className="space-y-4 text-sm">
               <div className="flex justify-between items-center pb-4 border-b border-border/50">
-                <span className="font-bold text-foreground">{currentPlan.name} Plan {billing.isAnnual ? '(Annual Rate)' : ''}</span>
+                <span className="font-bold text-foreground">{currentPlan.name} Plan {isAnnual ? '(Annual Rate)' : ''}</span>
                 <span className="font-bold">${Math.round(basePrice)}</span>
               </div>
               
@@ -89,7 +93,7 @@ export default function Billing() {
           </div>
           
           {/* One-time fees */}
-          {billing.onboardingPurchased && (
+          {onboardingPurchased && (
             <div className="bg-card border border-border rounded-lg p-6">
               <h2 className="text-sm font-bold uppercase tracking-widest text-muted-foreground mb-4">One-Time Charges</h2>
               <div className="flex justify-between items-center">
