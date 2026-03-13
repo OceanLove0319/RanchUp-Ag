@@ -2,6 +2,7 @@ import { useLocation } from "wouter";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
+import { api } from "@/lib/api";
 
 export default function Login() {
   const [, setLocation] = useLocation();
@@ -14,6 +15,7 @@ export default function Login() {
   const [name, setName] = useState("");
   const [org, setOrg] = useState("");
   const [loading, setLoading] = useState(false);
+  const [seeding, setSeeding] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,6 +37,25 @@ export default function Login() {
         description: err.message?.includes("409") ? "Email already registered" :
           err.message?.includes("401") ? "Invalid email or password" : err.message,
       });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDemoLogin = async (demoEmail: string) => {
+    setLoading(true);
+    try {
+      // Ensure demo data exists
+      if (!seeding) {
+        setSeeding(true);
+        try { await api.post("/api/seed/demo", {}); } catch { /* already seeded */ }
+        setSeeding(false);
+      }
+      await login(demoEmail, "RanchUp2026");
+      toast({ title: "Welcome to the demo", description: "Exploring with sample data." });
+      setLocation("/app");
+    } catch (err: any) {
+      toast({ variant: "destructive", title: "Demo login failed", description: err.message });
     } finally {
       setLoading(false);
     }
@@ -122,13 +143,34 @@ export default function Login() {
             <div className="w-full border-t border-border"></div>
           </div>
           <div className="relative flex justify-center text-xs">
-            <span className="bg-card px-4 text-muted-foreground font-bold uppercase tracking-widest">Test Account</span>
+            <span className="bg-card px-4 text-muted-foreground font-bold uppercase tracking-widest">Demo Accounts</span>
           </div>
         </div>
 
-        <p className="text-xs text-center text-muted-foreground">
-          grower@ranchup.ag / RanchUp2026
-        </p>
+        <div className="space-y-3">
+          <button
+            onClick={() => handleDemoLogin("grower@ranchup.ag")}
+            disabled={loading}
+            className="w-full flex items-center gap-3 bg-background border border-border rounded-lg px-4 py-3 hover:border-green-500/50 hover:bg-green-500/5 transition-colors disabled:opacity-50 text-left"
+          >
+            <div className="w-8 h-8 rounded-full bg-green-500/20 flex items-center justify-center text-green-500 text-xs font-black shrink-0">RN</div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-bold text-foreground">Ryan Neufeld</p>
+              <p className="text-[10px] text-muted-foreground uppercase tracking-widest">Grower — Neufeld Farms — 2 ranches, 5 blocks</p>
+            </div>
+          </button>
+          <button
+            onClick={() => handleDemoLogin("pca@ranchup.ag")}
+            disabled={loading}
+            className="w-full flex items-center gap-3 bg-background border border-border rounded-lg px-4 py-3 hover:border-blue-500/50 hover:bg-blue-500/5 transition-colors disabled:opacity-50 text-left"
+          >
+            <div className="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-500 text-xs font-black shrink-0">KW</div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-bold text-foreground">Karl W.</p>
+              <p className="text-[10px] text-muted-foreground uppercase tracking-widest">PCA — Simplot — 4 ranches, 18 blocks, 7 recs</p>
+            </div>
+          </button>
+        </div>
       </div>
     </div>
   );
