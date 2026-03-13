@@ -554,24 +554,31 @@ export async function registerRoutes(
       const today = new Date();
       const fmtDate = (daysAgo: number) => format(subDays(today, daysAgo), "yyyy-MM-dd");
 
-      // ── Helper: upsert user (skip if exists) ──
+      // ── Helper: upsert user + wipe old data so seed is idempotent ──
       const ensureUser = async (email: string, name: string, org: string, role: "GROWER" | "PCA", password: string) => {
         const [existing] = await db.select().from(users).where(eq(users.email, email)).limit(1);
-        if (existing) return existing;
+        if (existing) {
+          // Update name/org/password to match seed
+          const passwordHash = await hashPassword(password);
+          await db.update(users).set({ name, org, role, passwordHash, onboarded: true }).where(eq(users.id, existing.id));
+          // Delete existing ranches (cascades to blocks, logs, apps, recs, projections)
+          await db.delete(ranches).where(eq(ranches.userId, existing.id));
+          // Delete templates
+          await db.delete(programTemplates).where(eq(programTemplates.userId, existing.id));
+          return { ...existing, name, org, role };
+        }
         const passwordHash = await hashPassword(password);
         const [user] = await db.insert(users).values({ email, name, org, role, passwordHash, onboarded: true }).returning();
         await db.insert(userBilling).values({ userId: user.id });
         return user;
       };
 
-      // ── 1. Create Demo Users ──
+      // ── 1. Create Demo Users (wipes old data if exists) ──
       const grower = await ensureUser("grower@ranchup.ag", "Ryan Neufeld", "Neufeld Farms", "GROWER", "RanchUp2026");
       const pca = await ensureUser("pca@ranchup.ag", "Karl W.", "Simplot Grower Solutions", "PCA", "RanchUp2026");
 
       // ── 2. Grower: Ryan Neufeld — ranches, blocks, logs, apps, templates ──
-      // Check if grower already has data
-      const growerRanches = await db.select().from(ranches).where(eq(ranches.userId, grower.id));
-      if (growerRanches.length === 0) {
+      {
         // Ranches
         const [traver] = await db.insert(ranches).values({ userId: grower.id, name: "Traver Ranch", region: "Central Valley" }).returning();
         const [dinuba] = await db.insert(ranches).values({ userId: grower.id, name: "Dinuba Home", region: "Central Valley" }).returning();
@@ -651,8 +658,7 @@ export async function registerRoutes(
       }
 
       // ── 3. PCA: Karl W. — 4 ranches, 18 blocks, logs, apps, recs ──
-      const pcaRanches = await db.select().from(ranches).where(eq(ranches.userId, pca.id));
-      if (pcaRanches.length === 0) {
+      {
         // Ranches
         const [neufeld] = await db.insert(ranches).values({ userId: pca.id, name: "Neufeld Farms", region: "Traver" }).returning();
         const [jackson] = await db.insert(ranches).values({ userId: pca.id, name: "Jackson Family Orchards", region: "Kingsburg" }).returning();
